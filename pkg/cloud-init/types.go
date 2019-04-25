@@ -147,7 +147,7 @@ type FsSetup struct {
 	//        If you define the device as 'ephemeralX.Y' then Y will be interpetted
 	//        as a partition value. However, ephermalX.0 is the _same_ as ephemeralX.
 	Device string `yaml:"device,omitempty"`
-	// Partition definitions are overwriten if you use the '<DEVICE>.Y' notation.
+	// Partition definitions are overwritten if you use the '<DEVICE>.Y' notation.
 	//
 	//        The valid options are:
 	//        "auto|any": tell cloud-init not to care whether there is a partition
@@ -410,7 +410,7 @@ type User struct {
 	//             command available on Ubuntu systems.  If the user has an account
 	//             on the Ubuntu SSO, specifying the email will allow snap to
 	//             request a username and any public ssh keys and will import
-	//             these into the system with username specifed by SSO account./
+	//             these into the system with username specified by SSO account./
 	//             If 'username' is not set in SSO, then username will be the
 	//             shortname before the email domain.
 	Snapuser string `yaml:"snapuser,omitempty"`
@@ -499,7 +499,7 @@ type CloudInit struct {
 	//
 	// - if a device does not exist at the time, an entry will still be
 	//   written to /etc/fstab.
-	// - '/dev' can be ommitted for device names that begin with: xvd, sd, hd, vd
+	// - '/dev' can be omitted for device names that begin with: xvd, sd, hd, vd
 	// - if an entry does not have all 6 fields, they will be filled in
 	//   with values from 'mount_default_fields' below.
 	//
