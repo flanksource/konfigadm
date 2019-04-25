@@ -1,10 +1,6 @@
 package cmd
 
 import (
-	// . "github.com/moshloop/cloud-config/pkg/cloudmeta"
-	. "github.com/moshloop/cloud-config/pkg/cloud-meta"
-	"github.com/moshloop/cloud-config/pkg/systemd"
-
 	. "github.com/moshloop/configadm/pkg/cloud-meta"
 	"github.com/spf13/cobra"
 )
@@ -16,17 +12,17 @@ var (
 		Args:  cobra.MinimumNArgs(0),
 
 		Run: func(cmd *cobra.Command, args []string) {
-			cfg := SystemConfig{}
-			cfg.Init()
-			svc := systemd.DefaultSystemdService("kubelet")
-			svc.Service.ExecStart = "/bin/echo"
 
-			cfg.Services["kubelet"] = Service{
-				Extra: svc,
+			configs, err := cmd.Flags().GetStringSlice("config")
+			if err != nil {
+				panic(err)
 			}
+			vars, err := cmd.Flags().GetStringSlice("var")
+			cfg, err := NewSystemConfig(vars, configs)
 
-			cfg.Extra.FinalMessage = "Hwllow world"
-
+			if err != nil {
+				panic(nil)
+			}
 			println(cfg.ToCloudInit().String())
 
 		},
