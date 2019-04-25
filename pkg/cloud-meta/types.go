@@ -135,7 +135,7 @@ type User struct {
 	//             command available on Ubuntu systems.  If the user has an account
 	//             on the Ubuntu SSO, specifying the email will allow snap to
 	//             request a username and any public ssh keys and will import
-	//             these into the system with username specifed by SSO account./
+	//             these into the system with username specified by SSO account./
 	//             If 'username' is not set in SSO, then username will be the
 	//             shortname before the email domain.
 	Snapuser string `yaml:"snapuser,omitempty"`
