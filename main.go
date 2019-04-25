@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/moshloop/cloud-config/cmd"
+	"github.com/moshloop/configadm/cmd"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -25,12 +25,10 @@ func main() {
 		},
 	}
 
-	// root.PersistentFlags().StringP("inventory", "i", "", "Specify inventory host path or comma separated host list")
-	// root.PersistentFlags().Bool("version", false, "")
-	// root.PersistentFlags().StringSliceP("extra-vars", "e", []string{}, "Set additional variables as key=value or YAML/JSON, if filename prepend with @")
-	// root.PersistentFlags().StringP("limit", "l", "", "Limit selected hosts to an additional pattern")
+	root.PersistentFlags().StringSliceP("config", "c", []string{}, "Config files in YAML or JSON format")
+	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Variables")
 	root.PersistentFlags().CountP("loglevel", "v", "Increase logging level")
-	root.AddCommand(&cmd.Version, &cmd.CloudInit)
+	root.AddCommand(&cmd.Version, &cmd.CloudInit, &cmd.Minify)
 
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
