@@ -1,8 +1,8 @@
 package cloudmeta
 
 import (
-	. "github.com/moshloop/cloud-config/pkg/cloud-init"
-	. "github.com/moshloop/cloud-config/pkg/systemd"
+	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
+	. "github.com/moshloop/configadm/pkg/systemd"
 )
 
 type Port struct {

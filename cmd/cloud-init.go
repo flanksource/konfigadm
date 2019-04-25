@@ -5,7 +5,7 @@ import (
 	. "github.com/moshloop/cloud-config/pkg/cloud-meta"
 	"github.com/moshloop/cloud-config/pkg/systemd"
 
-	// "github.com/moshloop/cloud-config/pkg/systemd"
+	. "github.com/moshloop/configadm/pkg/cloud-meta"
 	"github.com/spf13/cobra"
 )
 

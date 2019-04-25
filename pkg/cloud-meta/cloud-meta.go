@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/moshloop/cloud-config/pkg/cloud-init"
-	. "github.com/moshloop/cloud-config/pkg/utils"
+	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
+	. "github.com/moshloop/configadm/pkg/utils"
 )
 
 func (sys *SystemConfig) Init() {

@@ -1,7 +1,7 @@
 package systemd
 
 import (
-	. "github.com/moshloop/cloud-config/pkg/utils"
+	. "github.com/moshloop/configadm/pkg/utils"
 )
 
 func (sys SystemD) ToUnitFile() string {
