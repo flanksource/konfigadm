@@ -177,7 +177,7 @@ type SystemdService struct {
 	PermissionsStartOnly     interface{} `validate:"int"`
 	PIDFile                  string
 	RemainAfterExit          interface{} `validate:"bool"`
-	//	always	on-success	on-failure	on-abnormal	on-abort	on-watchdog
+	//	always,	on-success,	on-failure,	on-abnormal,	on-abort,	on-watchdog
 	Restart                  string
 	RestartForceExitStatus   interface{} `validate:"int"`
 	RestartPreventExitStatus interface{} `validate:"int"`
