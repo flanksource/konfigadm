@@ -18,16 +18,33 @@ func (sys *SystemConfig) Init() {
 	sys.Files = make(map[string]string)
 	sys.Templates = make(map[string]string)
 	sys.Sysctls = make(map[string]string)
+	sys.Packages = Packages{}
 	sys.Context = &SystemContext{
 		Name: "cloud-config",
 		Vars: make(map[string]interface{}),
 	}
 }
 
-func NewSystemConfig(vars []string, configs []string) (*SystemConfig, error) {
+type ConfigBuilder struct {
+	configs []string
+	vars    []string
+	flags   []Flag
+}
+
+func (f *ConfigBuilder) WithVars(vars ...string) *ConfigBuilder {
+	f.vars = vars
+	return f
+}
+
+func (f *ConfigBuilder) WithFlags(flags ...Flag) *ConfigBuilder {
+	f.flags = flags
+	return f
+}
+
+func (builder *ConfigBuilder) Build() (*SystemConfig, error) {
 	cfg := &SystemConfig{}
 	cfg.Init()
-	for _, config := range configs {
+	for _, config := range builder.configs {
 		c, err := newSystemConfig(config)
 		if err != nil {
 			log.Fatalf("Error parsing %s: %s", config, err)
@@ -35,14 +52,23 @@ func NewSystemConfig(vars []string, configs []string) (*SystemConfig, error) {
 		cfg.ImportConfig(*c)
 	}
 
-	for _, v := range vars {
+	for _, v := range builder.vars {
 		if strings.Contains(v, "=") {
 			cfg.Context.Vars[strings.Split(v, "=")[0]] = strings.Split(v, "=")[1]
 		}
 	}
 
+	if len(builder.flags) > 0 {
+		cfg.MinifyWithFlags(builder.flags...)
+	}
 	cfg.Transform(*cfg.Context)
 	return cfg, nil
+}
+
+func NewConfig(configs ...string) *ConfigBuilder {
+	return &ConfigBuilder{
+		configs: configs,
+	}
 }
 
 func newSystemConfig(config string) (*SystemConfig, error) {
@@ -112,9 +138,9 @@ func (sys SystemConfig) ToCloudInit() cloudinit.CloudInit {
 }
 
 func (sys SystemConfig) String() {
-
 }
 
+//ImportConfig merges to configs together, everything but containerRuntime and Kubernetes configs are merged
 func (cfg *SystemConfig) ImportConfig(c2 SystemConfig) {
 	cfg.Commands = append(cfg.Commands, c2.Commands...)
 	cfg.PreCommands = append(cfg.PreCommands, c2.PreCommands...)
@@ -124,7 +150,6 @@ func (cfg *SystemConfig) ImportConfig(c2 SystemConfig) {
 	for k, v := range c2.Files {
 		cfg.Files[k] = v
 	}
-
 	for k, v := range c2.Templates {
 		cfg.Templates[k] = v
 	}

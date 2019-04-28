@@ -6,27 +6,41 @@ import (
 	"github.com/onsi/gomega"
 )
 
-func SetupFixtureWithArgs(name string, vars []string, t *testing.T) (*SystemConfig, *gomega.WithT) {
-	cfg := NewSystemConfigFromFixture(name, vars, t)
-	g := gomega.NewWithT(t)
-	return cfg, g
-}
-func SetupFixture(name string, t *testing.T) (*SystemConfig, *gomega.WithT) {
-	cfg := NewSystemConfigFromFixture(name, []string{}, t)
-	g := gomega.NewWithT(t)
-	return cfg, g
+type Fixture struct {
+	name  string
+	vars  []string
+	flags []Flag
+	t     *testing.T
+	g     *gomega.WithT
 }
 
-func NewSystemConfigFromFixture(name string, vars []string, t *testing.T) *SystemConfig {
-	cfg, err := NewSystemConfig(
-		vars,
-		[]string{"../../fixtures/" + name},
-	)
+func (f *Fixture) WithVars(vars ...string) *Fixture {
+	f.vars = vars
+	return f
+}
 
+func (f *Fixture) WithFlags(flags ...Flag) *Fixture {
+	f.flags = flags
+	return f
+}
+
+func (f *Fixture) Build() (*SystemConfig, *gomega.WithT) {
+	cfg, err := NewConfig("../../fixtures/" + f.name).
+		WithFlags(f.flags...).
+		WithVars(f.vars...).
+		Build()
 	if err != nil {
-		t.Error(err)
+		f.t.Error(err)
 	}
-	return cfg
+	return cfg, f.g
+}
+
+func NewFixture(name string, t *testing.T) *Fixture {
+	return &Fixture{
+		name: name,
+		t:    t,
+		g:    gomega.NewWithT(t),
+	}
 }
 
 func TestMultipleConfigs(t *testing.T) {

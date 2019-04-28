@@ -8,7 +8,7 @@ import (
 )
 
 func TestCopy(t *testing.T) {
-	cfg, g := SetupFixture("files.yml", t)
+	cfg, g := NewFixture("files.yml", t).Build()
 	data, _ := ioutil.ReadFile("../../fixtures/files.yml")
 	g.Expect(cfg.Files).To(gomega.HaveKey("/etc/test"))
 	g.Expect(cfg.Files["/etc/test"]).To(gomega.Equal(string(data)))
