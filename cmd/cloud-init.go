@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	. "github.com/moshloop/configadm/pkg/cloud-meta"
+	. "github.com/moshloop/configadm/pkg/phases"
 	"github.com/spf13/cobra"
 )
 
