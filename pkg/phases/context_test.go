@@ -18,3 +18,7 @@ func TestArgsRemotes(t *testing.T) {
 
 func TestArgsPriority(t *testing.T) {
 }
+
+func TestArgRuntimeFlags(t *testing.T) {
+
+}

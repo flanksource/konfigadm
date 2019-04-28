@@ -11,9 +11,9 @@ func init() {
 	Register(TransformContext)
 }
 
-func TransformContext(sys *SystemConfig, ctx *SystemContext) (commands []string, files map[string]string, err error) {
-	commands = []string{}
-	files = make(map[string]string)
+func TransformContext(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+	var commands []Command
+	files := Filesystem{}
 
 	sys.Environment = ToStringMap(ctx.InterpolateMap(sys.Environment))
 	sys.Files = ToStringMap(ctx.InterpolateMap(sys.Files))

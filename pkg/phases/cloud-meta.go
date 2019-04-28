@@ -6,9 +6,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ghodss/yaml"
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	. "github.com/moshloop/configadm/pkg/utils"
+	yaml "gopkg.in/yaml.v3"
 )
 
 func (sys *SystemConfig) Init() {
@@ -57,6 +57,7 @@ func newSystemConfig(config string) (*SystemConfig, error) {
 	} else {
 		return nil, fmt.Errorf("Unknown file type: %s", config)
 	}
+
 	return c, err
 }
 
@@ -70,8 +71,8 @@ func (sys *SystemConfig) ToFiles() map[string]string {
 		for name, svc := range sys.Services {
 			filename := fmt.Sprintf("/etc/systemd/system/%s.service", name)
 			files[filename] = svc.Extra.ToUnitFile()
-			sys.Commands = append(sys.Commands, "systemctl enable "+name)
-			sys.Commands = append(sys.Commands, "systemctl start "+name)
+			sys.Commands = append(sys.Commands, Command{Cmd: "systemctl enable " + name})
+			sys.Commands = append(sys.Commands, Command{Cmd: "systemctl start " + name})
 		}
 	}
 
@@ -84,24 +85,18 @@ func (sys *SystemConfig) ToFiles() map[string]string {
 
 func (sys SystemConfig) ToScript() string {
 	script := ""
-	script += strings.Join(sys.PreCommands, "\n")
-	if len(sys.PreCommands) > 0 {
-		script += "\n"
+	for _, cmd := range sys.PreCommands {
+		script += cmd.Cmd + "\n"
 	}
 	for k, v := range sys.Environment {
 		script += fmt.Sprintf("export %s=\"%s\"\n", k, v)
 	}
-
-	script += strings.Join(sys.Commands, "\n")
-	if len(sys.Commands) > 0 {
-		script += "\n"
+	for _, cmd := range sys.Commands {
+		script += cmd.Cmd + "\n"
 	}
-
-	script += strings.Join(sys.PostCommands, "\n")
-	if len(sys.PostCommands) > 0 {
-		script += "\n"
+	for _, cmd := range sys.PostCommands {
+		script += cmd.Cmd + "\n"
 	}
-
 	return script
 }
 

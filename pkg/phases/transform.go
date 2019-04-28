@@ -22,9 +22,10 @@ func (cfg *SystemConfig) Transform(ctx SystemContext) error {
 		if e != nil {
 			return fmt.Errorf("%s", e)
 		}
+
 		cfg.PreCommands = append(cfg.PreCommands, c...)
 		for k, v := range f {
-			cfg.Files[k] = v
+			cfg.Files[k] = v.Content
 		}
 	}
 	return nil

@@ -10,12 +10,12 @@ func init() {
 	Register(TransformFiles)
 }
 
-func TransformFiles(sys *SystemConfig, ctx *SystemContext) (commands []string, files map[string]string, err error) {
-	commands = []string{}
-	files = make(map[string]string)
+func TransformFiles(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+	var commands []Command
+	files := Filesystem{}
 
 	for k, v := range sys.Files {
-		files[k] = Lookup(v)
+		files[k] = File{Content: Lookup(v)}
 	}
 
 	return commands, files, nil

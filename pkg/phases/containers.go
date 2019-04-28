@@ -11,17 +11,19 @@ func init() {
 	Register(TransformContainers)
 }
 
-func TransformContainers(sys *SystemConfig, ctx *SystemContext) (commands []string, files map[string]string, err error) {
-	commands = []string{}
-	files = make(map[string]string)
+func TransformContainers(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+	var commands []Command
+	files := Filesystem{}
 	for _, c := range sys.Containers {
 		filename := fmt.Sprintf("/etc/systemd/system/%s.service", c.Name())
-		files[filename] = c.ToSystemDUnit()
-		if len(c.Env) > 0 {
-			files["/etc/environment."+c.Name()] = c.ToEnvironmentFile()
+		files[filename] = File{
+			Content: c.ToSystemDUnit(),
 		}
-		commands = append(commands, "systemctl enable "+c.Name())
-		commands = append(commands, "systemctl start "+c.Name())
+		if len(c.Env) > 0 {
+			files["/etc/environment."+c.Name()] = File{Content: c.ToEnvironmentFile()}
+		}
+		commands = append(commands, Command{Cmd: "systemctl enable " + c.Name()})
+		commands = append(commands, Command{Cmd: "systemctl start " + c.Name()})
 	}
 	return commands, files, nil
 }

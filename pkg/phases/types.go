@@ -3,6 +3,7 @@ package phases
 import (
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	. "github.com/moshloop/configadm/pkg/systemd"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type Port struct {
@@ -10,6 +11,7 @@ type Port struct {
 	Target int `json:"target,omitempty"  validate:"min=1,max=65536"`
 }
 
+//Container represents a container to be run using systemd
 type Container struct {
 	//The name of the service (e.g systemd unit name or deployment name)
 	Service string `json:"service,omitempty"`
@@ -32,7 +34,7 @@ type Container struct {
 	Templates map[string]string `json:"templates,omitempty"`
 	Volumes   []string          `json:"volumes,omitempty"`
 	//CPU limit in cores (Defaults to 1 )
-	Cpu int `json:"cpu,omitempty" validate:"min=0,max=32"`
+	CPU int `json:"cpu,omitempty" validate:"min=0,max=32"`
 	//	Memory Limit in MB. (Defaults to 1024)
 	Mem int `json:"mem,omitempty" validate:"min=0,max=1048576"`
 	//default:	user-bridge	 only
@@ -41,6 +43,7 @@ type Container struct {
 	Replicas int `json:"replicas,omitempty"`
 }
 
+//ContainerRuntime installs a container runtime such as docker or CRI-O
 type ContainerRuntime struct {
 	Type    string `json:"type,omitempty"`
 	Arg     string `json:"arg,omitempty"`
@@ -48,12 +51,15 @@ type ContainerRuntime struct {
 	Version string `json:"version,omitempty"`
 }
 
+//Kubernetes installs the packages and configures the system for kubernetes, it does not actually bootstrap and configure kuberntes itself
+//Use kubeadm in a `command` to actually configure and start kubernetes
 type Kubernetes struct {
 	Version      string `json:"version,omitempty"`
 	DownloadPath string
 	ImagePrefix  string
 }
 
+//Service is a systemd service to be installed and started
 type Service struct {
 	Name        string            `json:"name,omitempty"`
 	ExecStart   string            `json:"exec_start,omitempty"`
@@ -147,24 +153,63 @@ type User struct {
 	SSHRedirectUser bool `yaml:"ssh_redirect_user,omitempty"`
 }
 
+type File struct {
+	Content        string
+	ContentFromURL string
+	Permissions    string
+	Owner          string
+	Flags          []string
+}
+
+type Filesystem map[string]File
+
+type Command struct {
+	Cmd   string
+	Flags []string
+}
+
+func (c Command) String() string {
+	return c.Cmd
+}
+
+type Package struct {
+	Name      string
+	Mark      bool
+	Uninstall bool
+	Flags     []string
+}
+
+func (p *Package) UnmarshalYAML(value *yaml.Node) error {
+	// p.Name = value.
+	return nil
+}
+
+type PackageRepo struct {
+	URL    string
+	GPGKey string
+	Flags  []string
+}
+
+//SystemConfig is the logical model after runtime tags have been applied
 type SystemConfig struct {
-	Commands         []string             `json:"commands,omitempty"`
-	PreCommands      []string             `json:"pre_commands,omitempty"`
-	PostCommands     []string             `json:"post_commands,omitempty"`
-	Files            map[string]string    `json:"files,omitempty"`
-	Templates        map[string]string    `json:"templates,omitempty"`
-	Sysctls          map[string]string    `json:"sysctls,omitempty"`
-	Packages         []string             `json:"packages,omitempty"`
-	PackageRepos     []string             `json:"package_repos,omitempty"`
-	Images           []string             `json:"images,omitempty"`
-	Containers       []Container          `json:"containers,omitempty"`
-	ContainerRuntime *ContainerRuntime    `json:"container_runtime,omitempty"`
-	Kubernetes       *Kubernetes          `json:"kubernetes,omitempty"`
-	Environment      map[string]string    `json:"environment,omitempty"`
-	Timezone         string               `json:"timezone,omitempty"`
-	Extra            *cloudinit.CloudInit `json:"extra,omitempty"`
-	Services         map[string]Service   `json:"services,omitempty"`
-	Users            []User               `json:"users,omitempty"`
+	Commands         []Command
+	PreCommands      []Command
+	PostCommands     []Command
+	Filesystem       Filesystem
+	Files            map[string]string
+	Templates        map[string]string
+	Sysctls          map[string]string
+	Packages         []Package
+	PackageRepos     []PackageRepo
+	Images           []string
+	Containers       []Container
+	ContainerRuntime *ContainerRuntime
+	Kubernetes       *Kubernetes
+	Environment      map[string]string
+	Timezone         string
+	Extra            *cloudinit.CloudInit
+	Services         map[string]Service
+	Users            []User
 	Context          *SystemContext
 }
 
@@ -172,8 +217,9 @@ type Applier interface {
 	Apply(ctx SystemContext)
 }
 type SystemContext struct {
-	Vars map[string]interface{}
-	Name string
+	Vars  map[string]interface{}
+	Flags []string
+	Name  string
 }
 
-type Transformer func(cfg *SystemConfig, ctx *SystemContext) (commands []string, files map[string]string, err error)
+type Transformer func(cfg *SystemConfig, ctx *SystemContext) (commands []Command, files Filesystem, err error)
