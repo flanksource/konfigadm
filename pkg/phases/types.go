@@ -1,6 +1,9 @@
 package phases
 
 import (
+	"fmt"
+	"strings"
+
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	. "github.com/moshloop/configadm/pkg/systemd"
 	yaml "gopkg.in/yaml.v3"
@@ -165,7 +168,7 @@ type Filesystem map[string]File
 
 type Command struct {
 	Cmd   string
-	Flags []string
+	Flags []Flag
 }
 
 func (c Command) String() string {
@@ -176,11 +179,37 @@ type Package struct {
 	Name      string
 	Mark      bool
 	Uninstall bool
-	Flags     []string
+	Flags     []Flag
 }
 
-func (p *Package) UnmarshalYAML(value *yaml.Node) error {
-	// p.Name = value.
+func (p Package) String() string {
+	return p.Name
+}
+
+type Packages []Package
+
+func (p *Package) UnmarshalYAML(node *yaml.Node) error {
+	p.Name = node.Value
+	if strings.HasPrefix(node.Value, "!") {
+		p.Name = node.Value[1:]
+		p.Uninstall = true
+	}
+	if strings.HasPrefix(node.Value, "=") {
+		p.Name = node.Value[1:]
+		p.Mark = true
+	}
+	comment := node.LineComment
+	if !strings.Contains(comment, "#") {
+		return nil
+	}
+	comment = comment[1:]
+	for _, flag := range strings.Split(comment, " ") {
+		if FLAG, ok := FLAG_MAP[flag]; ok {
+			p.Flags = append(p.Flags, FLAG)
+		} else {
+			return fmt.Errorf("Unknown flag: %s", flag)
+		}
+	}
 	return nil
 }
 
@@ -192,25 +221,25 @@ type PackageRepo struct {
 
 //SystemConfig is the logical model after runtime tags have been applied
 type SystemConfig struct {
-	Commands         []Command
-	PreCommands      []Command
-	PostCommands     []Command
-	Filesystem       Filesystem
-	Files            map[string]string
-	Templates        map[string]string
-	Sysctls          map[string]string
-	Packages         []Package
-	PackageRepos     []PackageRepo
-	Images           []string
-	Containers       []Container
-	ContainerRuntime *ContainerRuntime
-	Kubernetes       *Kubernetes
-	Environment      map[string]string
-	Timezone         string
-	Extra            *cloudinit.CloudInit
-	Services         map[string]Service
-	Users            []User
-	Context          *SystemContext
+	Commands         []Command            `yaml:"commands,omitempty"`
+	PreCommands      []Command            `yaml:"pre_commands,omitempty"`
+	PostCommands     []Command            `yaml:"post_commands,omitempty"`
+	Filesystem       Filesystem           `yaml:"filesystem,omitempty"`
+	Files            map[string]string    `yaml:"files,omitempty"`
+	Templates        map[string]string    `yaml:"templates,omitempty"`
+	Sysctls          map[string]string    `yaml:"sysctls,omitempty"`
+	Packages         []Package            `yaml:"packages,omitempty"`
+	PackageRepos     []PackageRepo        `yaml:"package_repos,omitempty"`
+	Images           []string             `yaml:"images,omitempty"`
+	Containers       []Container          `yaml:"containers,omitempty"`
+	ContainerRuntime *ContainerRuntime    `yaml:"container_runtime,omitempty"`
+	Kubernetes       *Kubernetes          `yaml:"kubernetes,omitempty"`
+	Environment      map[string]string    `yaml:"environment,omitempty"`
+	Timezone         string               `yaml:"timezone,omitempty"`
+	Extra            *cloudinit.CloudInit `yaml:"extra,omitempty"`
+	Services         map[string]Service   `yaml:"services,omitempty"`
+	Users            []User               `yaml:"users,omitempty"`
+	Context          *SystemContext       `yaml:"context,omitempty"`
 }
 
 type Applier interface {

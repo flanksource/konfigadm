@@ -1,0 +1,9 @@
+packages:
+  - docker-ce #!rhel
+  - "!docker-ce" #+rhel
+  - docker #+rhel
+  - device-mapper-persistent-data #+centos
+  - lvm2  #+centos
+  - socat
+  - netcat #+debian
+  - nmap-netcat #+redhat
