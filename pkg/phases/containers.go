@@ -7,11 +7,11 @@ import (
 	"github.com/moshloop/configadm/pkg/systemd"
 )
 
-func init() {
-	Register(TransformContainers)
-}
+var Containers Phase = containers{}
 
-func TransformContainers(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+type containers struct{}
+
+func (p containers) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	for _, c := range sys.Containers {

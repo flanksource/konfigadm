@@ -3,13 +3,14 @@ package phases
 import (
 	"testing"
 
-	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega"
 )
 
 func TestContainers(t *testing.T) {
 	cfg, g := NewFixture("containers.yml", t).Build()
-	g.Expect(cfg).To(MatchCommand("systemctl start consul"))
-	g.Expect(cfg).To(MatchCommand("systemctl enable consul"))
-	g.Expect(cfg.Files).To(HaveKey("/etc/environment.consul"))
-	g.Expect(cfg.Files).To(HaveKey("/etc/systemd/system/consul.service"))
+	files, commands, _ := cfg.ApplyPhases()
+	g.Expect(commands).To(gomega.ContainSubstring("systemctl start consul"))
+	g.Expect(commands).To(gomega.ContainSubstring("systemctl enable consul"))
+	g.Expect(files).To(gomega.HaveKey("/etc/environment.consul"))
+	g.Expect(files).To(gomega.HaveKey("/etc/systemd/system/consul.service"))
 }

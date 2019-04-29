@@ -3,13 +3,58 @@ package phases
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
+	"reflect"
 	"strings"
 
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
-	. "github.com/moshloop/configadm/pkg/utils"
+	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v3"
 )
+
+var (
+	Phases = []Phase{
+		Context,
+		Sysctl,
+		Environment,
+		Containers,
+		Packages,
+		Services,
+		Files,
+		Commands,
+	}
+)
+
+func (sys *SystemConfig) ApplyPhases() (files Filesystem, script string, err error) {
+	for _, phase := range Phases {
+		log.Tracef("Processing flags %s(%s)", reflect.TypeOf(phase).Name(), sys.Context.Flags)
+		switch v := phase.(type) {
+		case AllPhases:
+			v.ProcessFlags(sys, sys.Context.Flags...)
+		}
+
+	}
+
+	files = Filesystem{}
+	commands := []Command{}
+
+	for _, phase := range Phases {
+		c, f, err := phase.ApplyPhase(sys, sys.Context)
+		log.Tracef("Applied phase %s: %s/%s", reflect.TypeOf(phase).Name(), c, f)
+
+		if err != nil {
+			return nil, "", err
+		}
+		for k, v := range f {
+			files[k] = v
+		}
+		commands = append(commands, c...)
+	}
+
+	//Apply flag filters on any output commands
+	commands = filter(commands, sys.Context.Flags...)
+
+	return files, sys.toScript(commands...), nil
+}
 
 func (sys *SystemConfig) Init() {
 	sys.Services = make(map[string]Service)
@@ -18,7 +63,7 @@ func (sys *SystemConfig) Init() {
 	sys.Files = make(map[string]string)
 	sys.Templates = make(map[string]string)
 	sys.Sysctls = make(map[string]string)
-	sys.Packages = Packages{}
+	sys.Packages = []Package{}
 	sys.Context = &SystemContext{
 		Name: "cloud-config",
 		Vars: make(map[string]interface{}),
@@ -44,6 +89,7 @@ func (f *ConfigBuilder) WithFlags(flags ...Flag) *ConfigBuilder {
 func (builder *ConfigBuilder) Build() (*SystemConfig, error) {
 	cfg := &SystemConfig{}
 	cfg.Init()
+	cfg.Context.Flags = builder.flags
 	for _, config := range builder.configs {
 		c, err := newSystemConfig(config)
 		if err != nil {
@@ -58,10 +104,6 @@ func (builder *ConfigBuilder) Build() (*SystemConfig, error) {
 		}
 	}
 
-	if len(builder.flags) > 0 {
-		cfg.MinifyWithFlags(builder.flags...)
-	}
-	cfg.Transform(*cfg.Context)
 	return cfg, nil
 }
 
@@ -87,29 +129,7 @@ func newSystemConfig(config string) (*SystemConfig, error) {
 	return c, err
 }
 
-func (sys *SystemConfig) ToFiles() map[string]string {
-	files := make(map[string]string)
-	for k, v := range sys.Files {
-		files[k] = v
-	}
-
-	if len(sys.Services) > 0 {
-		for name, svc := range sys.Services {
-			filename := fmt.Sprintf("/etc/systemd/system/%s.service", name)
-			files[filename] = svc.Extra.ToUnitFile()
-			sys.Commands = append(sys.Commands, Command{Cmd: "systemctl enable " + name})
-			sys.Commands = append(sys.Commands, Command{Cmd: "systemctl start " + name})
-		}
-	}
-
-	if len(sys.Environment) > 0 {
-		files["/etc/environment"] = MapToIni(sys.Environment)
-	}
-
-	return files
-}
-
-func (sys SystemConfig) ToScript() string {
+func (sys SystemConfig) toScript(commands ...Command) string {
 	script := ""
 	for _, cmd := range sys.PreCommands {
 		script += cmd.Cmd + "\n"
@@ -120,19 +140,28 @@ func (sys SystemConfig) ToScript() string {
 	for _, cmd := range sys.Commands {
 		script += cmd.Cmd + "\n"
 	}
+	for _, cmd := range commands {
+		script += cmd.Cmd + "\n"
+	}
 	for _, cmd := range sys.PostCommands {
 		script += cmd.Cmd + "\n"
 	}
 	return script
 }
 
+//ToCloudInit will apply all phases and produce a CloudInit object from the results
 func (sys SystemConfig) ToCloudInit() cloudinit.CloudInit {
 	cloud := sys.Extra
 
-	for path, content := range sys.ToFiles() {
-		cloud.AddFile(path, content)
+	files, script, err := sys.ApplyPhases()
+	if err != nil {
+		log.Fatal(err)
 	}
-	cloud.AddFile("/usr/bin/cloud-config.sh", sys.ToScript())
+
+	for path, content := range files {
+		cloud.AddFile(path, content.Content)
+	}
+	cloud.AddFile("/usr/bin/cloud-config.sh", script)
 	cloud.AddCommand("/usr/bin/cloud-config.sh")
 	return *cloud
 }
@@ -141,33 +170,33 @@ func (sys SystemConfig) String() {
 }
 
 //ImportConfig merges to configs together, everything but containerRuntime and Kubernetes configs are merged
-func (cfg *SystemConfig) ImportConfig(c2 SystemConfig) {
-	cfg.Commands = append(cfg.Commands, c2.Commands...)
-	cfg.PreCommands = append(cfg.PreCommands, c2.PreCommands...)
-	cfg.PostCommands = append(cfg.PostCommands, c2.PostCommands...)
-	cfg.Users = append(cfg.Users, c2.Users...)
+func (sys *SystemConfig) ImportConfig(c2 SystemConfig) {
+	sys.Commands = append(sys.Commands, c2.Commands...)
+	sys.PreCommands = append(sys.PreCommands, c2.PreCommands...)
+	sys.PostCommands = append(sys.PostCommands, c2.PostCommands...)
+	sys.Users = append(sys.Users, c2.Users...)
 
 	for k, v := range c2.Files {
-		cfg.Files[k] = v
+		sys.Files[k] = v
 	}
 	for k, v := range c2.Templates {
-		cfg.Templates[k] = v
+		sys.Templates[k] = v
 	}
 	for k, v := range c2.Environment {
-		cfg.Environment[k] = v
+		sys.Environment[k] = v
 	}
 	for k, v := range c2.Services {
-		cfg.Services[k] = v
+		sys.Services[k] = v
 	}
 	for k, v := range c2.Sysctls {
-		cfg.Sysctls[k] = v
+		sys.Sysctls[k] = v
 	}
 
-	cfg.Containers = append(cfg.Containers, c2.Containers...)
-	cfg.Images = append(cfg.Images, c2.Images...)
-	cfg.PackageRepos = append(cfg.PackageRepos, c2.PackageRepos...)
-	cfg.Packages = append(cfg.Packages, c2.Packages...)
-	cfg.Timezone = c2.Timezone
-	cfg.ContainerRuntime = c2.ContainerRuntime
-	cfg.Kubernetes = c2.Kubernetes
+	sys.Containers = append(sys.Containers, c2.Containers...)
+	sys.Images = append(sys.Images, c2.Images...)
+	sys.PackageRepos = append(sys.PackageRepos, c2.PackageRepos...)
+	sys.Packages = append(sys.Packages, c2.Packages...)
+	sys.Timezone = c2.Timezone
+	sys.ContainerRuntime = c2.ContainerRuntime
+	sys.Kubernetes = c2.Kubernetes
 }

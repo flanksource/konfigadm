@@ -2,9 +2,6 @@ package phases
 
 import (
 	"fmt"
-	"log"
-	"reflect"
-	"runtime"
 	"strings"
 )
 
@@ -40,20 +37,6 @@ func init() {
 	}
 
 }
-
-func RegisterFlagProcessor(fn FlagProcessor) {
-	log.Printf("Registering Flag Processor %+v\n", runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name())
-	flagProcessors = append(flagProcessors, fn)
-}
-
-//MinifyWithFlags will evaluate all flags, removing items that do not match flags
-func (sys *SystemConfig) MinifyWithFlags(flags ...Flag) {
-	for _, processor := range flagProcessors {
-		processor(sys, flags...)
-	}
-}
-
-type FlagProcessor func(cfg *SystemConfig, flags ...Flag)
 
 type Flag struct {
 	Name        string

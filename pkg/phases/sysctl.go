@@ -6,11 +6,11 @@ import (
 	. "github.com/moshloop/configadm/pkg/utils"
 )
 
-func init() {
-	Register(TransformSysctls)
-}
+var Sysctl Phase = sysctl{}
 
-func TransformSysctls(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+type sysctl struct{}
+
+func (p sysctl) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 

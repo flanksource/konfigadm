@@ -29,13 +29,12 @@ func TestPackageUninstall(t *testing.T) {
 
 func TestPackageInstall(t *testing.T) {
 	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN).Build()
-	g.Expect(cfg).To(ContainPackage("docker-ce"))
-	aptGets := cfg.FindCmd("apt-get")
-	g.Expect(aptGets).To(gomega.HaveCap(1))
-	g.Expect(aptGets[0].Cmd).To(gomega.ContainSubstring("docker-ce"))
-	g.Expect(aptGets[0].Cmd).To(gomega.ContainSubstring("socat"))
-	g.Expect(aptGets[0].Cmd).To(gomega.ContainSubstring("netcat"))
-
+	_, commands, _ := cfg.ApplyPhases()
+	g.Expect(commands).To(gomega.ContainSubstring("apt-get install -y"))
+	g.Expect(commands).To(gomega.ContainSubstring("docker-ce"))
+	g.Expect(commands).To(gomega.ContainSubstring("socat"))
+	g.Expect(commands).To(gomega.ContainSubstring("netcat"))
+	g.Expect(commands).NotTo(gomega.ContainSubstring("yum"))
 }
 
 func TestPackageMark(t *testing.T) {

@@ -186,8 +186,6 @@ func (p Package) String() string {
 	return p.Name
 }
 
-type Packages []Package
-
 func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 	p.Name = node.Value
 	if strings.HasPrefix(node.Value, "!") {
@@ -247,8 +245,23 @@ type Applier interface {
 }
 type SystemContext struct {
 	Vars  map[string]interface{}
-	Flags []string
+	Flags []Flag
 	Name  string
 }
 
 type Transformer func(cfg *SystemConfig, ctx *SystemContext) (commands []Command, files Filesystem, err error)
+
+type FlagProcessor func(cfg *SystemConfig, flags ...Flag)
+
+type AllPhases interface {
+	Phase
+	ProcessFlagsPhase
+}
+
+type Phase interface {
+	ApplyPhase(cfg *SystemConfig, ctx *SystemContext) (commands []Command, files Filesystem, err error)
+}
+
+type ProcessFlagsPhase interface {
+	ProcessFlags(cfg *SystemConfig, flags ...Flag)
+}

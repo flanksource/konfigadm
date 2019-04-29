@@ -5,12 +5,11 @@ import (
 	"strings"
 )
 
-func init() {
-	Register(PackagePhase)
-	RegisterFlagProcessor(PackageFlags)
-}
+var Packages AllPhases = packages{}
 
-func PackagePhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+type packages struct{}
+
+func (p packages) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	install := []string{}
@@ -53,8 +52,7 @@ func PackagePhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem,
 	}
 	return commands, files, nil
 }
-
-func PackageFlags(sys *SystemConfig, flags ...Flag) {
+func (p packages) ProcessFlags(sys *SystemConfig, flags ...Flag) {
 	minified := []Package{}
 	for _, pkg := range sys.Packages {
 		if MatchAll(flags, pkg.Flags) {

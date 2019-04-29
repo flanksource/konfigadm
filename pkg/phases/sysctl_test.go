@@ -8,6 +8,7 @@ import (
 
 func TestSysctl(t *testing.T) {
 	cfg, g := NewFixture("sysctl.yml", t).Build()
-	g.Expect(cfg.Files).To(gomega.HaveLen(1))
-	g.Expect(cfg.PreCommands).To(gomega.HaveLen(2))
+	files, commands, _ := cfg.ApplyPhases()
+	g.Expect(files).To(gomega.HaveLen(1))
+	g.Expect(commands).To(gomega.ContainSubstring("sysctl -w net.ipv6.conf.all.disable_ipv6 1"))
 }

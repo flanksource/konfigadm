@@ -2,15 +2,16 @@ package phases
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
-func init() {
-	Register(TransformFiles)
-}
+var Files Phase = filesPhase{}
 
-func TransformFiles(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+type filesPhase struct{}
+
+func (p filesPhase) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 

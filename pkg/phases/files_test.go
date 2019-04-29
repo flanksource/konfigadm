@@ -9,9 +9,10 @@ import (
 
 func TestCopy(t *testing.T) {
 	cfg, g := NewFixture("files.yml", t).Build()
+	fs, _, _ := cfg.ApplyPhases()
 	data, _ := ioutil.ReadFile("../../fixtures/files.yml")
-	g.Expect(cfg.Files).To(gomega.HaveKey("/etc/test"))
-	g.Expect(cfg.Files["/etc/test"]).To(gomega.Equal(string(data)))
+	g.Expect(fs).To(gomega.HaveKey("/etc/test"))
+	g.Expect(fs["/etc/test"].Content).To(gomega.Equal(string(data)))
 }
 
 func TestLookup(t *testing.T) {

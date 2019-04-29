@@ -2,6 +2,7 @@ package phases
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/onsi/gomega/types"
 )
@@ -13,7 +14,10 @@ func MatchCommand(expected interface{}) types.GomegaMatcher {
 }
 
 type CommandMatcher struct {
-	expected interface{}
+	expected   interface{}
+	commands   []Command
+	filesystem Filesystem
+	err        error
 }
 
 func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err error) {
@@ -21,17 +25,9 @@ func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err erro
 	if !ok {
 		return false, fmt.Errorf("CommandMatcher matcher expects a SystemConfig")
 	}
-	for _, cmd := range sys.PreCommands {
-		if cmd.Cmd == matcher.expected {
-			return true, nil
-		}
-	}
-	for _, cmd := range sys.Commands {
-		if cmd.Cmd == matcher.expected {
-			return true, nil
-		}
-	}
-	return false, nil
+	_, commands, err := sys.ApplyPhases()
+	return strings.Contains(commands, matcher.expected.(string)), nil
+
 }
 
 func (matcher *CommandMatcher) FailureMessage(actual interface{}) (message string) {
@@ -49,13 +45,21 @@ func ContainPackage(expected interface{}) types.GomegaMatcher {
 }
 
 type PackageMatcher struct {
-	expected interface{}
+	expected   interface{}
+	commands   []Command
+	filesystem Filesystem
+	err        error
 }
 
 func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err error) {
 	sys, ok := actual.(*SystemConfig)
+
 	if !ok {
 		return false, fmt.Errorf("PackageMatcher matcher expects a SystemConfig")
+	}
+	_, _, err = sys.ApplyPhases()
+	if err != nil {
+		return false, fmt.Errorf("Error applying phases: %s", err)
 	}
 	for _, p := range sys.Packages {
 		if p.Name == matcher.expected {

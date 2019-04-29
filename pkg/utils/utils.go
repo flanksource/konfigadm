@@ -8,7 +8,36 @@ import (
 	"reflect"
 )
 
+func takeSliceArg(arg interface{}) (out []interface{}, ok bool) {
+	val := reflect.ValueOf(arg)
+	if val.Kind() != reflect.Slice {
+		return nil, false
+	}
+
+	c := val.Len()
+	out = make([]interface{}, c)
+	for i := 0; i < val.Len(); i++ {
+		out[i] = val.Index(i).Interface()
+	}
+	return out, true
+}
+
+func IsSlice(arg interface{}) bool {
+	return reflect.ValueOf(arg).Kind() == reflect.Slice
+}
+
 func ToString(i interface{}) string {
+	if slice, ok := takeSliceArg(i); ok {
+		s := ""
+		for _, v := range slice {
+			if s != "" {
+				s += ", "
+			}
+			s += ToString(v)
+		}
+		return s
+
+	}
 	switch v := i.(type) {
 	case fmt.Stringer:
 		return v.String()

@@ -7,14 +7,13 @@ import (
 	"github.com/flosch/pongo2"
 )
 
-func init() {
-	Register(TransformContext)
-}
+var Context Phase = context{}
 
-func TransformContext(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+type context struct{}
+
+func (p context) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
-
 	sys.Environment = ToStringMap(ctx.InterpolateMap(sys.Environment))
 	sys.Files = ToStringMap(ctx.InterpolateMap(sys.Files))
 	sys.Templates = ToStringMap(ctx.InterpolateMap(sys.Templates))
