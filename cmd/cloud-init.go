@@ -2,6 +2,7 @@ package cmd
 
 import (
 	. "github.com/moshloop/configadm/pkg/phases"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -15,10 +16,32 @@ var (
 
 			configs, err := cmd.Flags().GetStringSlice("config")
 			if err != nil {
-				panic(err)
+				log.Fatalf("%s", err)
 			}
 			vars, err := cmd.Flags().GetStringSlice("var")
-			cfg, err := NewSystemConfig(vars, configs)
+			if err != nil {
+				log.Fatalf("%s", err)
+			}
+
+			flags := []Flag{}
+			flagNames, err := cmd.Flags().GetStringSlice("tag")
+			for _, name := range flagNames {
+
+				if flag, ok := FLAG_MAP[name]; ok {
+					flags = append(flags, flag)
+				} else {
+					log.Fatalf("Unknown flag %s", name)
+				}
+
+			}
+			if err != nil {
+				log.Fatalf("%s", err)
+			}
+
+			cfg, err := NewConfig(configs...).
+				WithVars(vars...).
+				WithFlags(flags...).
+				Build()
 
 			if err != nil {
 				panic(nil)

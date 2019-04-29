@@ -27,6 +27,7 @@ func main() {
 
 	root.PersistentFlags().StringSliceP("config", "c", []string{}, "Config files in YAML or JSON format")
 	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Variables")
+	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to set")
 	root.PersistentFlags().CountP("loglevel", "v", "Increase logging level")
 	root.AddCommand(&cmd.Version, &cmd.CloudInit, &cmd.Minify)
 
