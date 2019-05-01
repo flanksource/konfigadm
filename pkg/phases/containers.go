@@ -11,7 +11,7 @@ var Containers Phase = containers{}
 
 type containers struct{}
 
-func (p containers) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	for _, c := range sys.Containers {

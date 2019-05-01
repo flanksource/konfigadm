@@ -6,7 +6,7 @@ var Services Phase = services{}
 
 type services struct{}
 
-func (p services) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p services) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 

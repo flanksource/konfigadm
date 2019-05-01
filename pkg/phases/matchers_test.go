@@ -21,7 +21,7 @@ type CommandMatcher struct {
 }
 
 func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err error) {
-	sys, ok := actual.(*SystemConfig)
+	sys, ok := actual.(*Config)
 	if !ok {
 		return false, fmt.Errorf("CommandMatcher matcher expects a SystemConfig")
 	}
@@ -52,7 +52,7 @@ type PackageMatcher struct {
 }
 
 func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err error) {
-	sys, ok := actual.(*SystemConfig)
+	sys, ok := actual.(*Config)
 
 	if !ok {
 		return false, fmt.Errorf("PackageMatcher matcher expects a SystemConfig")
@@ -70,11 +70,11 @@ func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err erro
 }
 
 func (matcher *PackageMatcher) FailureMessage(actual interface{}) (message string) {
-	cfg, _ := actual.(*SystemConfig)
+	cfg, _ := actual.(*Config)
 	return fmt.Sprintf("Expected %s to contain package: %#v", cfg.Packages, matcher.expected)
 }
 
 func (matcher *PackageMatcher) NegatedFailureMessage(actual interface{}) (message string) {
-	cfg, _ := actual.(*SystemConfig)
+	cfg, _ := actual.(*Config)
 	return fmt.Sprintf("Expected %s to NOT contain Package: \t%#v", cfg.Packages, matcher.expected)
 }

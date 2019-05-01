@@ -11,7 +11,7 @@ var Context Phase = context{}
 
 type context struct{}
 
-func (p context) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p context) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	sys.Environment = ToStringMap(ctx.InterpolateMap(sys.Environment))

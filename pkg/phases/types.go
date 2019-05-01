@@ -175,6 +175,23 @@ func (c Command) String() string {
 	return c.Cmd
 }
 
+func (c *Command) UnmarshalYAML(node *yaml.Node) error {
+	c.Cmd = node.Value
+	comment := node.LineComment
+	if !strings.Contains(comment, "#") {
+		return nil
+	}
+	comment = comment[1:]
+	for _, flag := range strings.Split(comment, " ") {
+		if FLAG, ok := FLAG_MAP[flag]; ok {
+			c.Flags = append(c.Flags, FLAG)
+		} else {
+			return fmt.Errorf("Unknown flag: %s", flag)
+		}
+	}
+	return nil
+}
+
 type Package struct {
 	Name      string
 	Mark      bool
@@ -217,8 +234,8 @@ type PackageRepo struct {
 	Flags  []string
 }
 
-//SystemConfig is the logical model after runtime tags have been applied
-type SystemConfig struct {
+//Config is the logical model after runtime tags have been applied
+type Config struct {
 	Commands         []Command            `yaml:"commands,omitempty"`
 	PreCommands      []Command            `yaml:"pre_commands,omitempty"`
 	PostCommands     []Command            `yaml:"post_commands,omitempty"`
@@ -249,9 +266,9 @@ type SystemContext struct {
 	Name  string
 }
 
-type Transformer func(cfg *SystemConfig, ctx *SystemContext) (commands []Command, files Filesystem, err error)
+type Transformer func(cfg *Config, ctx *SystemContext) (commands []Command, files Filesystem, err error)
 
-type FlagProcessor func(cfg *SystemConfig, flags ...Flag)
+type FlagProcessor func(cfg *Config, flags ...Flag)
 
 type AllPhases interface {
 	Phase
@@ -259,9 +276,9 @@ type AllPhases interface {
 }
 
 type Phase interface {
-	ApplyPhase(cfg *SystemConfig, ctx *SystemContext) (commands []Command, files Filesystem, err error)
+	ApplyPhase(cfg *Config, ctx *SystemContext) (commands []Command, files Filesystem, err error)
 }
 
 type ProcessFlagsPhase interface {
-	ProcessFlags(cfg *SystemConfig, flags ...Flag)
+	ProcessFlags(cfg *Config, flags ...Flag)
 }

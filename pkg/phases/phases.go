@@ -24,7 +24,7 @@ var (
 	}
 )
 
-func (sys *SystemConfig) ApplyPhases() (files Filesystem, script string, err error) {
+func (sys *Config) ApplyPhases() (files Filesystem, script string, err error) {
 	for _, phase := range Phases {
 		log.Tracef("Processing flags %s(%s)", reflect.TypeOf(phase).Name(), sys.Context.Flags)
 		switch v := phase.(type) {
@@ -50,13 +50,13 @@ func (sys *SystemConfig) ApplyPhases() (files Filesystem, script string, err err
 		commands = append(commands, c...)
 	}
 
-	//Apply flag filters on any output commands
+	//Apply flag fiters on any output commands
 	commands = filter(commands, sys.Context.Flags...)
 
 	return files, sys.toScript(commands...), nil
 }
 
-func (sys *SystemConfig) Init() {
+func (sys *Config) Init() {
 	sys.Services = make(map[string]Service)
 	sys.Extra = &cloudinit.CloudInit{}
 	sys.Environment = make(map[string]string)
@@ -86,12 +86,12 @@ func (f *ConfigBuilder) WithFlags(flags ...Flag) *ConfigBuilder {
 	return f
 }
 
-func (builder *ConfigBuilder) Build() (*SystemConfig, error) {
-	cfg := &SystemConfig{}
+func (builder *ConfigBuilder) Build() (*Config, error) {
+	cfg := &Config{}
 	cfg.Init()
 	cfg.Context.Flags = builder.flags
 	for _, config := range builder.configs {
-		c, err := newSystemConfig(config)
+		c, err := newConfig(config)
 		if err != nil {
 			log.Fatalf("Error parsing %s: %s", config, err)
 		}
@@ -113,8 +113,8 @@ func NewConfig(configs ...string) *ConfigBuilder {
 	}
 }
 
-func newSystemConfig(config string) (*SystemConfig, error) {
-	c := &SystemConfig{}
+func newConfig(config string) (*Config, error) {
+	c := &Config{}
 	c.Init()
 	data, err := ioutil.ReadFile(config)
 	if err != nil {
@@ -129,7 +129,7 @@ func newSystemConfig(config string) (*SystemConfig, error) {
 	return c, err
 }
 
-func (sys SystemConfig) toScript(commands ...Command) string {
+func (sys Config) toScript(commands ...Command) string {
 	script := ""
 	for _, cmd := range sys.PreCommands {
 		script += cmd.Cmd + "\n"
@@ -150,7 +150,7 @@ func (sys SystemConfig) toScript(commands ...Command) string {
 }
 
 //ToCloudInit will apply all phases and produce a CloudInit object from the results
-func (sys SystemConfig) ToCloudInit() cloudinit.CloudInit {
+func (sys Config) ToCloudInit() cloudinit.CloudInit {
 	cloud := sys.Extra
 
 	files, script, err := sys.ApplyPhases()
@@ -166,11 +166,11 @@ func (sys SystemConfig) ToCloudInit() cloudinit.CloudInit {
 	return *cloud
 }
 
-func (sys SystemConfig) String() {
+func (sys Config) String() {
 }
 
 //ImportConfig merges to configs together, everything but containerRuntime and Kubernetes configs are merged
-func (sys *SystemConfig) ImportConfig(c2 SystemConfig) {
+func (sys *Config) ImportConfig(c2 Config) {
 	sys.Commands = append(sys.Commands, c2.Commands...)
 	sys.PreCommands = append(sys.PreCommands, c2.PreCommands...)
 	sys.PostCommands = append(sys.PostCommands, c2.PostCommands...)

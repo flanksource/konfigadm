@@ -9,7 +9,7 @@ var Packages AllPhases = packages{}
 
 type packages struct{}
 
-func (p packages) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	install := []string{}
@@ -52,7 +52,7 @@ func (p packages) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, 
 	}
 	return commands, files, nil
 }
-func (p packages) ProcessFlags(sys *SystemConfig, flags ...Flag) {
+func (p packages) ProcessFlags(sys *Config, flags ...Flag) {
 	minified := []Package{}
 	for _, pkg := range sys.Packages {
 		if MatchAll(flags, pkg.Flags) {

@@ -24,7 +24,7 @@ func (f *Fixture) WithFlags(flags ...Flag) *Fixture {
 	return f
 }
 
-func (f *Fixture) Build() (*SystemConfig, *gomega.WithT) {
+func (f *Fixture) Build() (*Config, *gomega.WithT) {
 	cfg, err := NewConfig("../../fixtures/" + f.name).
 		WithFlags(f.flags...).
 		WithVars(f.vars...).

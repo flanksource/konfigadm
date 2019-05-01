@@ -14,7 +14,7 @@ func (u User) Apply(ctx SystemContext) {
 
 }
 
-func (cfg SystemConfig) Apply(ctx SystemContext) {
+func (cfg Config) Apply(ctx SystemContext) {
 	for _, container := range cfg.Containers {
 		container.Apply(ctx)
 	}

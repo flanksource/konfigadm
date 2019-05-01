@@ -11,7 +11,7 @@ var Files Phase = filesPhase{}
 
 type filesPhase struct{}
 
-func (p filesPhase) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p filesPhase) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 

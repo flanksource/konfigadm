@@ -4,7 +4,7 @@ var Commands AllPhases = command{}
 
 type command struct{}
 
-func (p command) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p command) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	commands = append(commands, sys.PreCommands...)
@@ -13,7 +13,7 @@ func (p command) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, F
 
 	return commands, files, nil
 }
-func (p command) ProcessFlags(sys *SystemConfig, flags ...Flag) {
+func (p command) ProcessFlags(sys *Config, flags ...Flag) {
 	sys.PreCommands = filter(sys.PreCommands, flags...)
 	sys.Commands = filter(sys.Commands, flags...)
 	sys.PostCommands = filter(sys.PostCommands, flags...)

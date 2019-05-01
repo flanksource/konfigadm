@@ -8,7 +8,7 @@ var Environment Phase = environment{}
 
 type environment struct{}
 
-func (p environment) ApplyPhase(sys *SystemConfig, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p environment) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 
