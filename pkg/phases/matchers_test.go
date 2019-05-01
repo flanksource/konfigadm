@@ -1,8 +1,10 @@
-package phases
+package phases_test
 
 import (
 	"fmt"
 	"strings"
+
+	. "github.com/moshloop/configadm/pkg/types"
 
 	"github.com/onsi/gomega/types"
 )

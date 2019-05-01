@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	. "github.com/moshloop/configadm/pkg/types"
+
 	"github.com/flosch/pongo2"
 )
 
@@ -14,21 +16,21 @@ type context struct{}
 func (p context) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
-	sys.Environment = ToStringMap(ctx.InterpolateMap(sys.Environment))
-	sys.Files = ToStringMap(ctx.InterpolateMap(sys.Files))
-	sys.Templates = ToStringMap(ctx.InterpolateMap(sys.Templates))
+	sys.Environment = ToStringMap(InterpolateMap(ctx, sys.Environment))
+	sys.Files = ToStringMap(InterpolateMap(ctx, sys.Files))
+	sys.Templates = ToStringMap(InterpolateMap(ctx, sys.Templates))
 
 	return commands, files, nil
 }
 
-func (c SystemContext) Interpolate(s string) string {
+func Interpolate(c *SystemContext, s string) string {
 	return InterpolateString(s, c.Vars)
 }
 
-func (c SystemContext) InterpolateMap(val map[string]string) map[string]interface{} {
+func InterpolateMap(c *SystemContext, val map[string]string) map[string]interface{} {
 	var out = make(map[string]interface{})
 	for k, v := range val {
-		out[k] = c.Interpolate(v)
+		out[k] = Interpolate(c, v)
 	}
 	return out
 }

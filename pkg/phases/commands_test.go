@@ -1,9 +1,9 @@
-package phases
+package phases_test
 
 import (
-	"strings"
 	"testing"
 
+	. "github.com/moshloop/configadm/pkg/types"
 	"github.com/onsi/gomega"
 )
 
@@ -30,15 +30,4 @@ func TestPostCommand(t *testing.T) {
 	g.Expect(commands).To(gomega.ContainSubstring("echo post"))
 }
 func TestCommandInterpolation(t *testing.T) {
-}
-
-func (cfg *Config) FindCmd(prefix string) []*Command {
-	cmds := []*Command{}
-
-	for _, cmd := range cfg.PreCommands {
-		if strings.HasPrefix(cmd.Cmd, prefix) {
-			cmds = append(cmds, &cmd)
-		}
-	}
-	return cmds
 }

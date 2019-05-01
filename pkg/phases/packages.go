@@ -3,6 +3,8 @@ package phases
 import (
 	"fmt"
 	"strings"
+
+	. "github.com/moshloop/configadm/pkg/types"
 )
 
 var Packages AllPhases = packages{}
@@ -15,7 +17,7 @@ func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 	install := []string{}
 	uninstall := []string{}
 	mark := []string{}
-	for _, p := range sys.Packages {
+	for _, p := range *sys.Packages {
 		if p.Uninstall {
 			uninstall = append(uninstall, p.Name)
 		} else {
@@ -54,10 +56,10 @@ func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 }
 func (p packages) ProcessFlags(sys *Config, flags ...Flag) {
 	minified := []Package{}
-	for _, pkg := range sys.Packages {
+	for _, pkg := range *sys.Packages {
 		if MatchAll(flags, pkg.Flags) {
 			minified = append(minified, pkg)
 		}
 	}
-	sys.Packages = minified
+	sys.Packages = &minified
 }

@@ -1,5 +1,7 @@
 package phases
 
+import . "github.com/moshloop/configadm/pkg/types"
+
 var Commands AllPhases = command{}
 
 type command struct{}
@@ -14,17 +16,7 @@ func (p command) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 	return commands, files, nil
 }
 func (p command) ProcessFlags(sys *Config, flags ...Flag) {
-	sys.PreCommands = filter(sys.PreCommands, flags...)
-	sys.Commands = filter(sys.Commands, flags...)
-	sys.PostCommands = filter(sys.PostCommands, flags...)
-}
-
-func filter(commands []Command, flags ...Flag) []Command {
-	minified := []Command{}
-	for _, cmd := range commands {
-		if MatchAll(flags, cmd.Flags) {
-			minified = append(minified, cmd)
-		}
-	}
-	return minified
+	sys.PreCommands = FilterFlags(sys.PreCommands, flags...)
+	sys.Commands = FilterFlags(sys.Commands, flags...)
+	sys.PostCommands = FilterFlags(sys.PostCommands, flags...)
 }

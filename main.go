@@ -15,6 +15,8 @@ func main() {
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			level, _ := cmd.Flags().GetCount("loglevel")
 			switch {
+			case level > 2:
+				log.SetLevel(log.TraceLevel)
 			case level > 1:
 				log.SetLevel(log.DebugLevel)
 			case level > 0:

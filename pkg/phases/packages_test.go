@@ -1,7 +1,9 @@
-package phases
+package phases_test
 
 import (
 	"testing"
+
+	. "github.com/moshloop/configadm/pkg/types"
 
 	"github.com/onsi/gomega"
 )

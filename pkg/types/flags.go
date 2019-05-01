@@ -1,4 +1,4 @@
-package phases
+package types
 
 import (
 	"fmt"
@@ -27,6 +27,12 @@ var (
 	FLAGS            = []Flag{DEBIAN, REDHAT, AMAZON_LINUX, CENTOS, RHEL, UBUNTU, AWS, VMWARE, NOT_DEBIAN, NOT_REDHAT, NOT_CENTOS, NOT_RHEL, NOT_UBUNTU, NOT_AWS, NOT_VMWARE, NOT_AMAZON_LINUX}
 )
 
+type Flag struct {
+	Name        string
+	Negates     []Flag
+	AlsoMatches []Flag
+}
+
 func init() {
 	for _, flag := range FLAGS {
 		name := flag.Name
@@ -36,12 +42,6 @@ func init() {
 		}
 	}
 
-}
-
-type Flag struct {
-	Name        string
-	Negates     []Flag
-	AlsoMatches []Flag
 }
 
 func (f Flag) String() string {
@@ -81,4 +81,14 @@ outer:
 		return false
 	}
 	return true
+}
+
+func FilterFlags(commands []Command, flags ...Flag) []Command {
+	minified := []Command{}
+	for _, cmd := range commands {
+		if MatchAll(flags, cmd.Flags) {
+			minified = append(minified, cmd)
+		}
+	}
+	return minified
 }

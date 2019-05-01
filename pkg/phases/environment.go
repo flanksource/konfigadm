@@ -1,6 +1,7 @@
 package phases
 
 import (
+	. "github.com/moshloop/configadm/pkg/types"
 	"github.com/moshloop/configadm/pkg/utils"
 )
 

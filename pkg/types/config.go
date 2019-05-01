@@ -1,4 +1,4 @@
-package phases
+package types
 
 import (
 	"fmt"
@@ -8,24 +8,23 @@ import (
 
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/dig"
 	yaml "gopkg.in/yaml.v3"
 )
 
 var (
-	Phases = []Phase{
-		Context,
-		Sysctl,
-		Environment,
-		Containers,
-		Packages,
-		Services,
-		Files,
-		Commands,
-	}
+	Dig = dig.New()
 )
 
 func (sys *Config) ApplyPhases() (files Filesystem, script string, err error) {
-	for _, phase := range Phases {
+	var Phases *[]Phase
+	err = Dig.Invoke(func(_phases *[]Phase) {
+		Phases = _phases
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, phase := range *Phases {
 		log.Tracef("Processing flags %s(%s)", reflect.TypeOf(phase).Name(), sys.Context.Flags)
 		switch v := phase.(type) {
 		case AllPhases:
@@ -37,7 +36,7 @@ func (sys *Config) ApplyPhases() (files Filesystem, script string, err error) {
 	files = Filesystem{}
 	commands := []Command{}
 
-	for _, phase := range Phases {
+	for _, phase := range *Phases {
 		c, f, err := phase.ApplyPhase(sys, sys.Context)
 		log.Tracef("Applied phase %s: %s/%s", reflect.TypeOf(phase).Name(), c, f)
 
@@ -49,11 +48,50 @@ func (sys *Config) ApplyPhases() (files Filesystem, script string, err error) {
 		}
 		commands = append(commands, c...)
 	}
+	log.Tracef("Commands before filtering %+v\n", commands)
 
 	//Apply flag fiters on any output commands
-	commands = filter(commands, sys.Context.Flags...)
+	commands = FilterFlags(commands, sys.Context.Flags...)
+	log.Tracef("Commands after filtering %+v\n", commands)
 
-	return files, sys.toScript(commands...), nil
+	return files, sys.ToScript(commands...), nil
+}
+
+func (sys *Config) ToScript(commands ...Command) string {
+	script := ""
+	for _, cmd := range sys.PreCommands {
+		script += cmd.Cmd + "\n"
+	}
+	for k, v := range sys.Environment {
+		script += fmt.Sprintf("export %s=\"%s\"\n", k, v)
+	}
+	for _, cmd := range sys.Commands {
+		script += cmd.Cmd + "\n"
+	}
+	for _, cmd := range commands {
+		script += cmd.Cmd + "\n"
+	}
+	for _, cmd := range sys.PostCommands {
+		script += cmd.Cmd + "\n"
+	}
+	return script
+}
+
+//ToCloudInit will apply all phases and produce a CloudInit object from the results
+func (sys *Config) ToCloudInit() cloudinit.CloudInit {
+	cloud := sys.Extra
+
+	files, script, err := sys.ApplyPhases()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for path, content := range files {
+		cloud.AddFile(path, content.Content)
+	}
+	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", Configadm), script)
+	cloud.AddCommand(fmt.Sprintf("/usr/bin/%s.sh", Configadm))
+	return *cloud
 }
 
 func (sys *Config) Init() {
@@ -63,9 +101,9 @@ func (sys *Config) Init() {
 	sys.Files = make(map[string]string)
 	sys.Templates = make(map[string]string)
 	sys.Sysctls = make(map[string]string)
-	sys.Packages = []Package{}
+	sys.Packages = &[]Package{}
 	sys.Context = &SystemContext{
-		Name: "cloud-config",
+		Name: Configadm,
 		Vars: make(map[string]interface{}),
 	}
 }
@@ -129,43 +167,6 @@ func newConfig(config string) (*Config, error) {
 	return c, err
 }
 
-func (sys Config) toScript(commands ...Command) string {
-	script := ""
-	for _, cmd := range sys.PreCommands {
-		script += cmd.Cmd + "\n"
-	}
-	for k, v := range sys.Environment {
-		script += fmt.Sprintf("export %s=\"%s\"\n", k, v)
-	}
-	for _, cmd := range sys.Commands {
-		script += cmd.Cmd + "\n"
-	}
-	for _, cmd := range commands {
-		script += cmd.Cmd + "\n"
-	}
-	for _, cmd := range sys.PostCommands {
-		script += cmd.Cmd + "\n"
-	}
-	return script
-}
-
-//ToCloudInit will apply all phases and produce a CloudInit object from the results
-func (sys Config) ToCloudInit() cloudinit.CloudInit {
-	cloud := sys.Extra
-
-	files, script, err := sys.ApplyPhases()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for path, content := range files {
-		cloud.AddFile(path, content.Content)
-	}
-	cloud.AddFile("/usr/bin/cloud-config.sh", script)
-	cloud.AddCommand("/usr/bin/cloud-config.sh")
-	return *cloud
-}
-
 func (sys Config) String() {
 }
 
@@ -195,7 +196,8 @@ func (sys *Config) ImportConfig(c2 Config) {
 	sys.Containers = append(sys.Containers, c2.Containers...)
 	sys.Images = append(sys.Images, c2.Images...)
 	sys.PackageRepos = append(sys.PackageRepos, c2.PackageRepos...)
-	sys.Packages = append(sys.Packages, c2.Packages...)
+	pkgs := append(*sys.Packages, *c2.Packages...)
+	sys.Packages = &pkgs
 	sys.Timezone = c2.Timezone
 	sys.ContainerRuntime = c2.ContainerRuntime
 	sys.Kubernetes = c2.Kubernetes

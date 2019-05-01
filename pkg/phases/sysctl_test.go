@@ -1,4 +1,4 @@
-package phases
+package phases_test
 
 import (
 	"testing"

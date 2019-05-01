@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	. "github.com/moshloop/configadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
 

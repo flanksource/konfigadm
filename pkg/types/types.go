@@ -1,4 +1,4 @@
-package phases
+package types
 
 import (
 	"fmt"
@@ -7,6 +7,10 @@ import (
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	. "github.com/moshloop/configadm/pkg/systemd"
 	yaml "gopkg.in/yaml.v3"
+)
+
+var (
+	Configadm = "configadm"
 )
 
 type Port struct {
@@ -46,6 +50,17 @@ type Container struct {
 	Replicas int `json:"replicas,omitempty"`
 }
 
+func (c Container) Name() string {
+	if c.Service != "" {
+		return c.Service
+	}
+	name := strings.Split(c.Image, ":")[0]
+	if strings.Contains(name, "/") {
+		name = name[strings.LastIndex(name, "/")+1:]
+	}
+	return name
+}
+
 //ContainerRuntime installs a container runtime such as docker or CRI-O
 type ContainerRuntime struct {
 	Type    string `json:"type,omitempty"`
@@ -56,7 +71,7 @@ type ContainerRuntime struct {
 
 //Kubernetes installs the packages and configures the system for kubernetes, it does not actually bootstrap and configure kuberntes itself
 //Use kubeadm in a `command` to actually configure and start kubernetes
-type Kubernetes struct {
+type KubernetesSpec struct {
 	Version      string `json:"version,omitempty"`
 	DownloadPath string
 	ImagePrefix  string
@@ -171,6 +186,17 @@ type Command struct {
 	Flags []Flag
 }
 
+func (cfg *Config) FindCmd(prefix string) []*Command {
+	cmds := []*Command{}
+
+	for _, cmd := range cfg.PreCommands {
+		if strings.HasPrefix(cmd.Cmd, prefix) {
+			cmds = append(cmds, &cmd)
+		}
+	}
+	return cmds
+}
+
 func (c Command) String() string {
 	return c.Cmd
 }
@@ -231,7 +257,7 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 type PackageRepo struct {
 	URL    string
 	GPGKey string
-	Flags  []string
+	Flags  []Flag
 }
 
 //Config is the logical model after runtime tags have been applied
@@ -243,18 +269,30 @@ type Config struct {
 	Files            map[string]string    `yaml:"files,omitempty"`
 	Templates        map[string]string    `yaml:"templates,omitempty"`
 	Sysctls          map[string]string    `yaml:"sysctls,omitempty"`
-	Packages         []Package            `yaml:"packages,omitempty"`
+	Packages         *[]Package           `yaml:"packages,omitempty"`
 	PackageRepos     []PackageRepo        `yaml:"package_repos,omitempty"`
 	Images           []string             `yaml:"images,omitempty"`
 	Containers       []Container          `yaml:"containers,omitempty"`
 	ContainerRuntime *ContainerRuntime    `yaml:"container_runtime,omitempty"`
-	Kubernetes       *Kubernetes          `yaml:"kubernetes,omitempty"`
+	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`
 	Environment      map[string]string    `yaml:"environment,omitempty"`
 	Timezone         string               `yaml:"timezone,omitempty"`
 	Extra            *cloudinit.CloudInit `yaml:"extra,omitempty"`
 	Services         map[string]Service   `yaml:"services,omitempty"`
 	Users            []User               `yaml:"users,omitempty"`
 	Context          *SystemContext       `yaml:"context,omitempty"`
+}
+
+func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
+	pkg := Package{
+		Name: name,
+	}
+	if flag != nil {
+		pkg.Flags = []Flag{*flag}
+	}
+	pkgs := append(*cfg.Packages, pkg)
+	cfg.Packages = &pkgs
+	return cfg
 }
 
 type Applier interface {

@@ -2,6 +2,8 @@ package phases
 
 import "fmt"
 
+import . "github.com/moshloop/configadm/pkg/types"
+
 var Services Phase = services{}
 
 type services struct{}

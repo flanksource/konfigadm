@@ -3,6 +3,8 @@ package phases
 import (
 	"fmt"
 
+	. "github.com/moshloop/configadm/pkg/types"
+
 	. "github.com/moshloop/configadm/pkg/utils"
 )
 
