@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/moshloop/configadm/cmd"
@@ -8,10 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func main() {
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
+func main() {
 	var root = &cobra.Command{
-		Use: "cloud-config",
+		Use: "configadm",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			level, _ := cmd.Flags().GetCount("loglevel")
 			switch {
@@ -31,7 +37,18 @@ func main() {
 	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Variables")
 	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to set")
 	root.PersistentFlags().CountP("loglevel", "v", "Increase logging level")
-	root.AddCommand(&cmd.Version, &cmd.CloudInit, &cmd.Minify)
+	root.AddCommand(&cmd.CloudInit, &cmd.Minify)
+	version = fmt.Sprintf("%v, commit %v, built at %v", version, commit[0:8], date)
+	root.AddCommand(&cobra.Command{
+		Use:   "version",
+		Short: "Print the version of configadm",
+		Args:  cobra.MinimumNArgs(0),
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(version)
+		},
+	})
+
+	root.SetUsageTemplate(root.UsageTemplate() + fmt.Sprintf("\nversion: %s\n ", version))
 
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
