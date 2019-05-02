@@ -1,13 +1,17 @@
 #!/bin/bash
 NAME=configadm
 GITHUB_USER=moshloop
-TAG := $(shell git tag --points-at HEAD )
+TAG=$(shell git tag --points-at HEAD )
 
 [[ -e "checkout.txt" ]] && rm checkout.txt
 go get github.com/goreleaser/goreleaser
 goreleaser release --rm-dist
 
 go get github.com/aktau/github-release
+echo github-release upload -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME} -f dist/linux_amd64/${NAME}
+echo github-release upload -u $GITHU_USER -r ${NAME} --tag $TAG -n ${NAME}_osx -f dist/darwin_amd64/${NAME}
+echo github-release upload -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME}.exe -f dist/windows_amd64/${NAME}.exe
+
 github-release upload -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME} -f dist/linux_amd64/${NAME}
-github-release upload -u $GITHUB_USER - -r ${NAME} --tag $TAG -n ${NAME}_osx -f dist/darwin_amd64/${NAME}
-github-release upload -u $GITHUB_USER - -r ${NAME} --tag $TAG -n ${NAME}.exe -f dist/windows_amd64/${NAME}.exe
+github-release upload -u $GITHU_USER -r ${NAME} --tag $TAG -n ${NAME}_osx -f dist/darwin_amd64/${NAME}
+github-release upload -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME}.exe -f dist/windows_amd64/${NAME}.exe
