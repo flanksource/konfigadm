@@ -9,5 +9,11 @@ before_install:
 script:
   - go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic
 
+deploy:
+  provider: script
+  script: bash scripts/release.sh
+  on:
+    tags: true
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
