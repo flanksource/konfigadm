@@ -63,7 +63,7 @@ func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err erro
 	if err != nil {
 		return false, fmt.Errorf("Error applying phases: %s", err)
 	}
-	for _, p := range sys.Packages {
+	for _, p := range *sys.Packages {
 		if p.Name == matcher.expected {
 			return true, nil
 		}
@@ -73,10 +73,10 @@ func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err erro
 
 func (matcher *PackageMatcher) FailureMessage(actual interface{}) (message string) {
 	cfg, _ := actual.(*Config)
-	return fmt.Sprintf("Expected %s to contain package: %#v", cfg.Packages, matcher.expected)
+	return fmt.Sprintf("Expected %s to contain package: %#v", *cfg.Packages, matcher.expected)
 }
 
 func (matcher *PackageMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	cfg, _ := actual.(*Config)
-	return fmt.Sprintf("Expected %s to NOT contain Package: \t%#v", cfg.Packages, matcher.expected)
+	return fmt.Sprintf("Expected %s to NOT contain Package: \t%#v", *cfg.Packages, matcher.expected)
 }
