@@ -3,6 +3,7 @@ NAME=configadm
 GITHUB_USER=moshloop
 TAG := $(shell git tag --points-at HEAD )
 
+[[ -e "checkout.txt" ]] && rm checkout.txt
 go get github.com/goreleaser/goreleaser
 goreleaser release --rm-dist
 
