@@ -22,7 +22,7 @@ func (p sysctl) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesyst
 	}
 
 	for k, v := range sys.Sysctls {
-		commands = append(commands, Command{Cmd: fmt.Sprintf("sysctl -w %s %s", k, v)})
+		commands = append(commands, Command{Cmd: fmt.Sprintf("sysctl -w %s=%s", k, v)})
 	}
 	return commands, files, nil
 }
