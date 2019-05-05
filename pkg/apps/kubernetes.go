@@ -26,7 +26,7 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
 	log.Infof("%+v\n", sys.Packages)
-	sys.Sysctls["vm.swapiness"] = "0"
+	sys.Sysctls["vm.swappiness"] = "0"
 	return []Command{}, Filesystem{}, nil
 
 }

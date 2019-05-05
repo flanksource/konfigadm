@@ -16,9 +16,9 @@ var (
 	Dig = dig.New()
 )
 
-func (sys *Config) ApplyPhases() (files Filesystem, script string, err error) {
+func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	var Phases *[]Phase
-	err = Dig.Invoke(func(_phases *[]Phase) {
+	err := Dig.Invoke(func(_phases *[]Phase) {
 		Phases = _phases
 	})
 	if err != nil {
@@ -33,55 +33,38 @@ func (sys *Config) ApplyPhases() (files Filesystem, script string, err error) {
 
 	}
 
-	files = Filesystem{}
-	commands := []Command{}
+	files := Filesystem{}
+	commands := sys.PreCommands
 
 	for _, phase := range *Phases {
 		c, f, err := phase.ApplyPhase(sys, sys.Context)
 		log.Tracef("Applied phase %s: %s/%s", reflect.TypeOf(phase).Name(), c, f)
 
 		if err != nil {
-			return nil, "", err
+			return nil, []Command{}, err
 		}
 		for k, v := range f {
 			files[k] = v
 		}
 		commands = append(commands, c...)
 	}
+	commands = append(commands, sys.Commands...)
+	commands = append(commands, sys.PostCommands...)
+
 	log.Tracef("Commands before filtering %+v\n", commands)
 
 	//Apply flag fiters on any output commands
 	commands = FilterFlags(commands, sys.Context.Flags...)
 	log.Tracef("Commands after filtering %+v\n", commands)
 
-	return files, sys.ToScript(commands...), nil
-}
-
-func (sys *Config) ToScript(commands ...Command) string {
-	script := ""
-	for _, cmd := range sys.PreCommands {
-		script += cmd.Cmd + "\n"
-	}
-	for k, v := range sys.Environment {
-		script += fmt.Sprintf("export %s=\"%s\"\n", k, v)
-	}
-	for _, cmd := range sys.Commands {
-		script += cmd.Cmd + "\n"
-	}
-	for _, cmd := range commands {
-		script += cmd.Cmd + "\n"
-	}
-	for _, cmd := range sys.PostCommands {
-		script += cmd.Cmd + "\n"
-	}
-	return script
+	return files, commands, nil
 }
 
 //ToCloudInit will apply all phases and produce a CloudInit object from the results
 func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	cloud := sys.Extra
 
-	files, script, err := sys.ApplyPhases()
+	files, commands, err := sys.ApplyPhases()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,9 +72,18 @@ func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	for path, content := range files {
 		cloud.AddFile(path, content.Content)
 	}
-	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", Configadm), script)
+	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", Configadm), ToScript(commands))
 	cloud.AddCommand(fmt.Sprintf("/usr/bin/%s.sh", Configadm))
 	return *cloud
+}
+
+//ToScript returns a bash script of all the commands that can be run directly
+func ToScript(commands []Command) string {
+	script := "#!/bin/bash\n"
+	for _, command := range commands {
+		script += command.Cmd + "\n"
+	}
+	return script
 }
 
 func (sys *Config) Init() {

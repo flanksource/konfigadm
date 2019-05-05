@@ -3,10 +3,29 @@ package utils
 import (
 	"bytes"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"os/exec"
 	"reflect"
 )
+
+func Exec(sh string) error {
+	cmd := exec.Command("bash", "-c", sh)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	err := cmd.Run()
+	if err != nil {
+	}
+
+	if !cmd.ProcessState.Success() {
+		return errors.New("Failed")
+	}
+	return nil
+
+}
 
 func takeSliceArg(arg interface{}) (out []interface{}, ok bool) {
 	val := reflect.ValueOf(arg)
