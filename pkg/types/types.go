@@ -1,12 +1,10 @@
 package types
 
 import (
-	"fmt"
 	"strings"
 
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	. "github.com/moshloop/configadm/pkg/systemd"
-	yaml "gopkg.in/yaml.v3"
 )
 
 var (
@@ -181,85 +179,6 @@ type File struct {
 
 type Filesystem map[string]File
 
-type Command struct {
-	Cmd   string
-	Flags []Flag
-}
-
-func (cfg *Config) FindCmd(prefix string) []*Command {
-	cmds := []*Command{}
-
-	for _, cmd := range cfg.PreCommands {
-		if strings.HasPrefix(cmd.Cmd, prefix) {
-			cmds = append(cmds, &cmd)
-		}
-	}
-	return cmds
-}
-
-func (c Command) String() string {
-	return c.Cmd
-}
-
-func (c *Command) UnmarshalYAML(node *yaml.Node) error {
-	c.Cmd = node.Value
-	comment := node.LineComment
-	if !strings.Contains(comment, "#") {
-		return nil
-	}
-	comment = comment[1:]
-	for _, flag := range strings.Split(comment, " ") {
-		if FLAG, ok := FLAG_MAP[flag]; ok {
-			c.Flags = append(c.Flags, FLAG)
-		} else {
-			return fmt.Errorf("Unknown flag: %s", flag)
-		}
-	}
-	return nil
-}
-
-type Package struct {
-	Name      string
-	Mark      bool
-	Uninstall bool
-	Flags     []Flag
-}
-
-func (p Package) String() string {
-	return p.Name
-}
-
-func (p *Package) UnmarshalYAML(node *yaml.Node) error {
-	p.Name = node.Value
-	if strings.HasPrefix(node.Value, "!") {
-		p.Name = node.Value[1:]
-		p.Uninstall = true
-	}
-	if strings.HasPrefix(node.Value, "=") {
-		p.Name = node.Value[1:]
-		p.Mark = true
-	}
-	comment := node.LineComment
-	if !strings.Contains(comment, "#") {
-		return nil
-	}
-	comment = comment[1:]
-	for _, flag := range strings.Split(comment, " ") {
-		if FLAG, ok := FLAG_MAP[flag]; ok {
-			p.Flags = append(p.Flags, FLAG)
-		} else {
-			return fmt.Errorf("Unknown flag: %s", flag)
-		}
-	}
-	return nil
-}
-
-type PackageRepo struct {
-	URL    string
-	GPGKey string
-	Flags  []Flag
-}
-
 //Config is the logical model after runtime tags have been applied
 type Config struct {
 	Commands         []Command            `yaml:"commands,omitempty"`
@@ -280,7 +199,7 @@ type Config struct {
 	Extra            *cloudinit.CloudInit `yaml:"extra,omitempty"`
 	Services         map[string]Service   `yaml:"services,omitempty"`
 	Users            []User               `yaml:"users,omitempty"`
-	Context          *SystemContext       `yaml:"context,omitempty"`
+	Context          *SystemContext       `yaml:"-"`
 }
 
 func (cfg *Config) AddPackage(name string, flag *Flag) *Config {

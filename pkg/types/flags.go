@@ -83,6 +83,17 @@ outer:
 	return true
 }
 
+func Marshall(flags []Flag) string {
+	if len(flags) == 0 {
+		return ""
+	}
+	s := ""
+	for _, flag := range flags {
+		s += flag.String() + " "
+	}
+	return strings.TrimSpace("#" + s)
+}
+
 func FilterFlags(commands []Command, flags ...Flag) []Command {
 	minified := []Command{}
 	for _, cmd := range commands {

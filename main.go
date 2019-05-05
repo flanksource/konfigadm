@@ -37,8 +37,10 @@ func main() {
 	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Variables")
 	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to set")
 	root.PersistentFlags().CountP("loglevel", "v", "Increase logging level")
-	root.AddCommand(&cmd.CloudInit, &cmd.Minify)
-	version = fmt.Sprintf("%v, commit %v, built at %v", version, commit[0:8], date)
+	root.AddCommand(&cmd.CloudInit, &cmd.Minify, &cmd.Apply)
+	if len(commit) > 8 {
+		version = fmt.Sprintf("%v, commit %v, built at %v", version, commit[0:8], date)
+	}
 	root.AddCommand(&cobra.Command{
 		Use:   "version",
 		Short: "Print the version of configadm",
