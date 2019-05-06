@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	. "github.com/moshloop/configadm/pkg/types"
-
-	"github.com/onsi/gomega"
 )
 
 func TestPackageRuntimeFlag(t *testing.T) {
@@ -32,11 +30,11 @@ func TestPackageUninstall(t *testing.T) {
 func TestPackageInstall(t *testing.T) {
 	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN).Build()
 	_, commands, _ := cfg.ApplyPhases()
-	g.Expect(commands).To(gomega.ContainSubstring("apt-get install -y"))
-	g.Expect(commands).To(gomega.ContainSubstring("docker-ce"))
-	g.Expect(commands).To(gomega.ContainSubstring("socat"))
-	g.Expect(commands).To(gomega.ContainSubstring("netcat"))
-	g.Expect(commands).NotTo(gomega.ContainSubstring("yum"))
+	g.Expect(commands).To(MatchCommand("apt-get install -y"))
+	g.Expect(commands).To(MatchCommand("docker-ce"))
+	g.Expect(commands).To(MatchCommand("socat"))
+	g.Expect(commands).To(MatchCommand("netcat"))
+	g.Expect(commands).NotTo(MatchCommand("yum"))
 }
 
 func TestPackageMark(t *testing.T) {

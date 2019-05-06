@@ -16,6 +16,7 @@ func (c Command) String() string {
 	return c.Cmd
 }
 
+//UnmarshalYAML decodes comments into tags
 func (c *Command) UnmarshalYAML(node *yaml.Node) error {
 	c.Cmd = node.Value
 	comment := node.LineComment
@@ -33,6 +34,7 @@ func (c *Command) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
+//MarshalYAML ads tags as comments
 func (c Command) MarshalYAML() (interface{}, error) {
 	return &yaml.Node{
 		Kind:        yaml.ScalarNode,
@@ -42,6 +44,7 @@ func (c Command) MarshalYAML() (interface{}, error) {
 	}, nil
 }
 
+//FindCmd returns a list of commands starting with prefix
 func (cfg *Config) FindCmd(prefix string) []*Command {
 	cmds := []*Command{}
 

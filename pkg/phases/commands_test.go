@@ -10,7 +10,7 @@ import (
 func TestCommandRuntimeFlag(t *testing.T) {
 }
 
-func setupCommandFixture(t *testing.T, flag Flag) (string, *gomega.WithT) {
+func setupCommandFixture(t *testing.T, flag Flag) ([]Command, *gomega.WithT) {
 	cfg, g := NewFixture("commands.yml", t).WithFlags(flag).Build()
 	_, commands, _ := cfg.ApplyPhases()
 	return commands, g
@@ -18,16 +18,16 @@ func setupCommandFixture(t *testing.T, flag Flag) (string, *gomega.WithT) {
 
 func TestCommand(t *testing.T) {
 	commands, g := setupCommandFixture(t, DEBIAN)
-	g.Expect(commands).To(gomega.ContainSubstring("echo command"))
+	g.Expect(commands).To(MatchCommand("echo command"))
 }
 
 func TestPreCommand(t *testing.T) {
 	commands, g := setupCommandFixture(t, DEBIAN)
-	g.Expect(commands).To(gomega.ContainSubstring("echo pre"))
+	g.Expect(commands).To(MatchCommand("echo pre"))
 }
 func TestPostCommand(t *testing.T) {
 	commands, g := setupCommandFixture(t, DEBIAN)
-	g.Expect(commands).To(gomega.ContainSubstring("echo post"))
+	g.Expect(commands).To(MatchCommand("echo post"))
 }
 func TestCommandInterpolation(t *testing.T) {
 }

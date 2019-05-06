@@ -18,6 +18,7 @@ func (p Package) String() string {
 	return p.Name
 }
 
+//MarshalYAML ads tags as comments
 func (p Package) MarshalYAML() (interface{}, error) {
 	return &yaml.Node{
 		Kind:        yaml.ScalarNode,
@@ -27,6 +28,7 @@ func (p Package) MarshalYAML() (interface{}, error) {
 	}, nil
 }
 
+//UnmarshalYAML decodes comments into tags and parses modifiers for packages
 func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 	p.Name = node.Value
 	if strings.HasPrefix(node.Value, "!") {
@@ -58,6 +60,7 @@ type PackageRepo struct {
 	Flags  []Flag
 }
 
+//MarshalYAML ads tags as comments
 func (p PackageRepo) MarshalYAML() (interface{}, error) {
 	return &yaml.Node{
 		Kind:        yaml.ScalarNode,

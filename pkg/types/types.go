@@ -11,6 +11,7 @@ var (
 	Configadm = "configadm"
 )
 
+//Port maps src and target ports
 type Port struct {
 	Port   int `json:"port,omitempty"  validate:"min=1,max=65536"`
 	Target int `json:"target,omitempty"  validate:"min=1,max=65536"`

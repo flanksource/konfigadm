@@ -23,13 +23,27 @@ type CommandMatcher struct {
 }
 
 func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err error) {
-	sys, ok := actual.(*Config)
-	if !ok {
-		return false, fmt.Errorf("CommandMatcher matcher expects a SystemConfig")
+	switch v := actual.(type) {
+	case *Config:
+		_, commands, err := v.ApplyPhases()
+		if err != nil {
+			return false, err
+		}
+		for _, cmd := range commands {
+			if strings.Contains(cmd.Cmd, matcher.expected.(string)) {
+				return true, nil
+			}
+		}
+	case []Command:
+		for _, cmd := range v {
+			if strings.Contains(cmd.Cmd, matcher.expected.(string)) {
+				return true, nil
+			}
+		}
+	default:
+		return false, fmt.Errorf("CommandMatcher matcher expects a SystemConfig or []Config")
 	}
-	_, commands, err := sys.ApplyPhases()
-	return strings.Contains(commands, matcher.expected.(string)), nil
-
+	return false, nil
 }
 
 func (matcher *CommandMatcher) FailureMessage(actual interface{}) (message string) {
