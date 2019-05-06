@@ -6,7 +6,60 @@ configadm is a node instance configuration tool focused on bootstrapping nodes f
 
 
 # Design
-![](./docs/configadm.png)
+
+![](./docs/flow.png)
+
+### Apps
+
+Apps provide an abstraction over low-level native and primitive elements, They describe high-level intent for using an application that may require multiple elements to configure.
+
+*e.g. kubernetes app spec*
+```yaml
+kubernetes:
+  version: 1.14.1
+```
+
+### Native
+*e.g. native elements produced by the above kubernetes app*
+```yaml
+packageRepos:
+ - deb https://apt.kubernetes.io/ kubernetes-xenial main #+debian
+ - https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 #+redhat
+gpg:
+ - https://packages.cloud.google.com/apt/doc/apt-key.gpg #+debian
+ - https://packages.cloud.google.com/yum/doc/yum-key.gpg #+redhat
+ - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg #+redhat
+packages:
+ - kubelet=1.14.1
+ - kubeadm=1.14.1
+ - kubectl=1.14.1
+sysctls:
+ vm.swapinness: 1
+```
+
+Native elements are verifiable, i.e. if you specify a container runtime then `configadm` will verify that the runtime has a service enabled and started and that `root` can connect to the daemon and list running containers.
+
+### Primitives
+Primitives are the low-level commands and files that are need to implement native items.
+
+For example a `package: [curl]` native element would create a `apt-get install -y curl` primitive command on debian systems and `yum install -y curl` on redhat systems
+
+
+The relationship between the 3 kinds is similar to Deployment, ReplicaSet and Pod. Apps insert and/or update native elements, native elements are then “compiled” down to primitives.
+
+### Example chain for kubernetes
+
+![](./docs/kubernetes_app.png)
+
+### Merge Behaviour / Composability
+
+Specs can be combined and merged together - e.g. a cloud provider may install PV drivers and a cluster operator may install organization specific motd/issue files.
+
+1. Configuration from files specified later in the chain overwrite previous configurations. (Similar to the ansible [variable precedence](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable) rules)
+1. **Lists**  are appended to the end of the existing lists (Unsupported in ansible)
+1. **Maps** are merged with existing maps (e.g. [hash_behaviour = merge](https://docs.ansible.com/ansible/2.4/intro_configuration.html#hash-behaviour) in ansible)
+
+
 
 ## Phases
 
