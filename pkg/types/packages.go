@@ -18,6 +18,19 @@ func (p Package) String() string {
 	return p.Name
 }
 
+//AddPackage is a helper function to add new packages
+func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
+	pkg := Package{
+		Name: name,
+	}
+	if flag != nil {
+		pkg.Flags = []Flag{*flag}
+	}
+	pkgs := append(*cfg.Packages, pkg)
+	cfg.Packages = &pkgs
+	return cfg
+}
+
 //MarshalYAML ads tags as comments
 func (p Package) MarshalYAML() (interface{}, error) {
 	return &yaml.Node{

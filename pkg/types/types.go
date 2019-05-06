@@ -60,22 +60,6 @@ func (c Container) Name() string {
 	return name
 }
 
-//ContainerRuntime installs a container runtime such as docker or CRI-O
-type ContainerRuntime struct {
-	Type    string `json:"type,omitempty"`
-	Arg     string `json:"arg,omitempty"`
-	Options string `json:"options,omitempty"`
-	Version string `json:"version,omitempty"`
-}
-
-//Kubernetes installs the packages and configures the system for kubernetes, it does not actually bootstrap and configure kuberntes itself
-//Use kubeadm in a `command` to actually configure and start kubernetes
-type KubernetesSpec struct {
-	Version      string `json:"version,omitempty"`
-	DownloadPath string
-	ImagePrefix  string
-}
-
 //Service is a systemd service to be installed and started
 type Service struct {
 	Name        string            `json:"name,omitempty"`
@@ -203,18 +187,6 @@ type Config struct {
 	Context          *SystemContext       `yaml:"-"`
 }
 
-func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
-	pkg := Package{
-		Name: name,
-	}
-	if flag != nil {
-		pkg.Flags = []Flag{*flag}
-	}
-	pkgs := append(*cfg.Packages, pkg)
-	cfg.Packages = &pkgs
-	return cfg
-}
-
 type Applier interface {
 	Apply(ctx SystemContext)
 }
@@ -239,4 +211,8 @@ type Phase interface {
 
 type ProcessFlagsPhase interface {
 	ProcessFlags(cfg *Config, flags ...Flag)
+}
+
+type VerifyPhase interface {
+	Verify(cfg *Config, flags ...Flag)
 }
