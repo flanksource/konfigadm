@@ -14,9 +14,23 @@ var (
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			cfg := GetConfig(cmd)
-			cfg.ApplyPhases()
-			data, _ := yaml.Marshal(cfg)
-			fmt.Println(string(data))
+			fs, commands, _ := cfg.ApplyPhases()
+			primitive, _ := cmd.Flags().GetBool("primitive")
+			if primitive {
+				data, _ := yaml.Marshal(map[string]interface{}{
+					"filesystem": fs,
+					"commands":   commands,
+				})
+				fmt.Println(string(data))
+			} else {
+				data, _ := yaml.Marshal(cfg)
+				fmt.Println(string(data))
+
+			}
 		},
 	}
 )
+
+func init() {
+	Minify.Flags().Bool("primitive", false, "Minify down to primitive level of commands and files only")
+}
