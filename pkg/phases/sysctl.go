@@ -2,6 +2,7 @@ package phases
 
 import (
 	"fmt"
+	"strings"
 
 	. "github.com/moshloop/configadm/pkg/types"
 
@@ -25,4 +26,18 @@ func (p sysctl) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesyst
 		commands = append(commands, Command{Cmd: fmt.Sprintf("sysctl -w %s=%s", k, v)})
 	}
 	return commands, files, nil
+}
+
+func (p sysctl) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+	verify := true
+	for k, v := range cfg.Sysctls {
+		value := SafeRead("/proc/sys" + strings.Replace(k, ".", "/", -1))
+		if value == v {
+			results.Pass("sysctl[%s]: %s", k, v)
+		} else {
+			results.Fail("sysctl[%s]: %s != %s", k, value, v)
+			verify = false
+		}
+	}
+	return verify
 }

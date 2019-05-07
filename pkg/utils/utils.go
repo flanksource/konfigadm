@@ -3,14 +3,49 @@ package utils
 import (
 	"bytes"
 	"compress/gzip"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"reflect"
+
+	"github.com/apex/log"
 )
 
+var (
+	Reset        = "\x1b[0m"
+	Red          = "\x1b[31m"
+	LightRed     = "\x1b[31;1m"
+	Green        = "\x1b[32m"
+	LightGreen   = "\x1b[32;1m"
+	LightBlue    = "\x1b[34;1m"
+	Magenta      = "\x1b[35m"
+	LightMagenta = "\x1b[35;1m"
+	Cyan         = "\x1b[36m"
+	LightCyan    = "\x1b[36;1m"
+	White        = "\x1b[37;1m"
+	Bold         = "\x1b[1m"
+	BoldOff      = "\x1b[22m"
+)
+
+//SafeExec executes the sh script and returns the stdout and stderr, errors will result in a nil return only.
+func SafeExec(sh string) string {
+	cmd := exec.Command("bash", "-c", sh)
+	data, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Debugf("Failed to exec %s, %s\n", sh, err)
+		return ""
+	}
+
+	if !cmd.ProcessState.Success() {
+		log.Debugf("Command did not succeed %s\n", sh)
+		return ""
+	}
+	return string(data)
+
+}
+
+//Exec runs the sh script and forwards stderr/stdout to the console
 func Exec(sh string) error {
 	cmd := exec.Command("bash", "-c", sh)
 	cmd.Stderr = os.Stderr
@@ -18,10 +53,11 @@ func Exec(sh string) error {
 
 	err := cmd.Run()
 	if err != nil {
+		return fmt.Errorf("%s failed with %s", sh, err)
 	}
 
 	if !cmd.ProcessState.Success() {
-		return errors.New("Failed")
+		return fmt.Errorf("%s failed to run", sh)
 	}
 	return nil
 
@@ -131,4 +167,13 @@ func GzipFile(path string) ([]byte, error) {
 
 	result := buf.Bytes()
 	return result, nil
+}
+
+//SafeRead reads a path and returns the text contents or nil,
+func SafeRead(path string) string {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }

@@ -16,6 +16,26 @@ var (
 	Dig = dig.New()
 )
 
+func (sys *Config) Verify(results *VerifyResults) bool {
+	var Phases *[]Phase
+	err := Dig.Invoke(func(_phases *[]Phase) {
+		Phases = _phases
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	verify := true
+	for _, phase := range *Phases {
+		switch v := phase.(type) {
+		case VerifyPhase:
+			log.Tracef("Verifying %s", reflect.TypeOf(phase).Name())
+			verify = verify && v.Verify(sys, results, sys.Context.Flags...)
+		}
+
+	}
+	return verify
+}
+
 func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	var Phases *[]Phase
 	err := Dig.Invoke(func(_phases *[]Phase) {
@@ -27,7 +47,7 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	for _, phase := range *Phases {
 		log.Tracef("Processing flags %s(%s)", reflect.TypeOf(phase).Name(), sys.Context.Flags)
 		switch v := phase.(type) {
-		case AllPhases:
+		case ProcessFlagsPhase:
 			v.ProcessFlags(sys, sys.Context.Flags...)
 		}
 
@@ -53,7 +73,7 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 
 	log.Tracef("Commands before filtering %+v\n", commands)
 
-	//Apply flag fiters on any output commands
+	//Apply tag filters on any output commands
 	commands = FilterFlags(commands, sys.Context.Flags...)
 	log.Tracef("Commands after filtering %+v\n", commands)
 

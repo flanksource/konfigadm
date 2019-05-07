@@ -1,10 +1,12 @@
 package types
 
 import (
+	"fmt"
 	"strings"
 
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	. "github.com/moshloop/configadm/pkg/systemd"
+	"github.com/moshloop/configadm/pkg/utils"
 )
 
 var (
@@ -21,29 +23,44 @@ type Port struct {
 type Container struct {
 	//The name of the service (e.g systemd unit name or deployment name)
 	Service string `json:"service,omitempty"`
-	Image   string `json:"image"`
+
+	Image string `json:"image"`
+
 	//A map of environment variables to pass through
 	Env map[string]string `json:"env,omitempty"`
+
 	//A map of labels to add to the container
 	Labels map[string]string `json:"labels,omitempty"`
+
 	//Additional arguments to the docker run command e.g. -p 8080:8080
 	DockerOpts string `json:"docker_opts,omitempty"`
+
 	//Additional options to the docker client e.g. -H unix:///tmp/var/run/docker.sock
 	DockerClientArgs string `json:"docker_client_args,omitempty"`
+
 	//Additional arguments to the container
-	Args     string   `json:"args,omitempty"`
-	Ports    []Port   `json:"ports,omitempty"`
+	Args string `json:"args,omitempty"`
+
+	Ports []Port `json:"ports,omitempty"`
+
 	Commands []string `json:"commands,omitempty"`
+
 	//Map of files to mount into the container
 	Files map[string]string `json:"files,omitempty"`
+
 	//Map of templates to mount into the container
 	Templates map[string]string `json:"templates,omitempty"`
-	Volumes   []string          `json:"volumes,omitempty"`
+
+	Volumes []string `json:"volumes,omitempty"`
+
 	//CPU limit in cores (Defaults to 1 )
 	CPU int `json:"cpu,omitempty" validate:"min=0,max=32"`
+
 	//	Memory Limit in MB. (Defaults to 1024)
 	Mem int `json:"mem,omitempty" validate:"min=0,max=1048576"`
+
 	//default:	user-bridge	 only
+
 	Network string `json:"network,omitempty"`
 	// default: 1
 	Replicas int `json:"replicas,omitempty"`
@@ -154,6 +171,7 @@ type User struct {
 	SSHRedirectUser bool `yaml:"ssh_redirect_user,omitempty"`
 }
 
+//File is a primitive representing a single file
 type File struct {
 	Content        string
 	ContentFromURL string
@@ -162,12 +180,13 @@ type File struct {
 	Flags          []string
 }
 
+//Filesystem is a primitive for referencing all files
 type Filesystem map[string]File
 
 //Config is the logical model after runtime tags have been applied
 type Config struct {
-	Commands         []Command            `yaml:"commands,omitempty"`
 	PreCommands      []Command            `yaml:"pre_commands,omitempty"`
+	Commands         []Command            `yaml:"commands,omitempty"`
 	PostCommands     []Command            `yaml:"post_commands,omitempty"`
 	Filesystem       Filesystem           `yaml:"filesystem,omitempty"`
 	Files            map[string]string    `yaml:"files,omitempty"`
@@ -190,6 +209,7 @@ type Config struct {
 type Applier interface {
 	Apply(ctx SystemContext)
 }
+
 type SystemContext struct {
 	Vars  map[string]interface{}
 	Flags []Flag
@@ -214,5 +234,30 @@ type ProcessFlagsPhase interface {
 }
 
 type VerifyPhase interface {
-	Verify(cfg *Config, flags ...Flag)
+	Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool
+}
+
+//Results records the results of a test or verification run
+type VerifyResults struct {
+	PassCount int
+	FailCount int
+	SkipCount int
+}
+
+func (c *VerifyResults) Done() {
+	fmt.Printf("%d passed, %d skipped, %d failed\n", c.PassCount, c.SkipCount, c.FailCount)
+}
+
+func (c *VerifyResults) Pass(msg string, args ...interface{}) {
+	c.PassCount++
+	fmt.Printf("%s [pass] %s %s\n", utils.Green, fmt.Sprintf(msg, args...), utils.Reset)
+
+}
+func (c *VerifyResults) Fail(msg string, args ...interface{}) {
+	c.FailCount++
+	fmt.Printf("%s [fail] %s %s\n", utils.Red, fmt.Sprintf(msg, args...), utils.Reset)
+}
+func (c VerifyResults) Skip(msg string, args ...interface{}) {
+	c.SkipCount++
+	fmt.Printf("%s [skip] %s %s\n", utils.LightCyan, fmt.Sprintf(msg, args...), utils.Reset)
 }
