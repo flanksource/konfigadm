@@ -10,7 +10,7 @@ before_install:
   - go mod download
 
 script:
-  - go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic
+  - make
 
 deploy:
   provider: script

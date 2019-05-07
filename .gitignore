@@ -5,3 +5,4 @@ docs/
 dist/
 configadm_osx
 *.tar.gz*
+coverage*
