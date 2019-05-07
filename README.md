@@ -2,12 +2,46 @@
 [![codecov](https://codecov.io/gh/moshloop/configadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/configadm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/configadm)](https://goreportcard.com/report/github.com/moshloop/configadm)
 
+# configadm
+
 configadm is a node instance configuration tool focused on bootstrapping nodes for container based environments
 
+## Usage
 
-# Design
+```
+Usage:
+  configadm [command]
+
+Available Commands:
+  apply       Apply the configuration to the local machine
+  cloud-init  Exports the configuration in cloud-init format
+  help        Help about any command
+  minify      Resolve all lookups and dependencies and export a single config file
+  verify      Verify that the configuration has been applied correctly and is in a healthy state
+  version     Print the version of configadm
+
+Flags:
+  -c, --config strings   Config files in YAML or JSON format
+  -d, --detect           Detect tags to use
+  -h, --help             help for configadm
+  -v, --loglevel count   Increase logging level
+  -t, --tag strings      Runtime tags to use, valid tags:  debian,ubuntu,redhat,rhel,centos,aws,vmware
+  -e, --var strings      Extra Variables to in key=value format
+```
+
+## Design
 
 ![](./docs/flow.png)
+
+### Mental Models
+
+`configadm` intentionally reuses mental models and concepts from kubernetes, golang and ansible these include:
+
+* Kubernetes declarative model for specifying intent
+* Operators for providing higher-order abstractions
+* Go build tags in comments for specifying behavior based on OS, Cloud etc..
+* Ansible's way of defining variables and allowing for merging of multiple variable files.
+
 
 ### Apps
 
@@ -44,14 +78,13 @@ Primitives are the low-level commands and files that are need to implement nativ
 
 For example a `package: [curl]` native element would create a `apt-get install -y curl` primitive command on debian systems and `yum install -y curl` on redhat systems
 
-
 The relationship between the 3 kinds is similar to Deployment, ReplicaSet and Pod. Apps insert and/or update native elements, native elements are then “compiled” down to primitives.
 
 ### Example chain for kubernetes
 
 ![](./docs/kubernetes_app.png)
 
-### Merge Behaviour / Composability
+### Merge Behavior / Composability
 
 Specs can be combined and merged together - e.g. a cloud provider may install PV drivers and a cluster operator may install organization specific motd/issue files.
 
@@ -60,8 +93,22 @@ Specs can be combined and merged together - e.g. a cloud provider may install PV
 1. **Maps** are merged with existing maps (e.g. [hash_behaviour = merge](https://docs.ansible.com/ansible/2.4/intro_configuration.html#hash-behaviour) in ansible)
 
 
+## Apps
 
-## Phases
+### Kubernetes
+
+Specifying kubernetes will do everything required to setup a node as a kubernetes worker or master:
+* Install and mark the specific versions of `kubeadm`, `kubelet`, `kubectl`
+* Install a container runtime if not specified
+* Prepull images required to run kubernetes
+* Set any sysctl values that are required
+
+```yaml
+kubernetes:
+  version: 1.14.1
+```
+
+## Primitives
 
 `configadm` using a chain of phases. phases earlier in the chain can update items later in the chain. e.g. The `CRI` and `Kubernetes` phases can add packages to be installed in the `packages` phase.
 
@@ -71,13 +118,27 @@ Environment variables are saved to `/etc/environment/` and are sourced before an
 environment:
   env1: "val: {{env1}}"
 ```
+
 ### Systctl
 ```yaml
 sysctls:
   net.ipv6.conf.all.disable_ipv6: 1
   net.ipv6.conf.default.disable_ipv6: 1
 ```
+
 ### Container Runtime (CRI)
+
+```yaml
+cri:
+ version: 18.6.0
+ type: docker
+ config:
+   log-driver: json-file
+   log-opts:
+     max-size: 1000m
+     max-file": 3
+```
+
 ### Containers
 ```yaml
 containers:
@@ -88,7 +149,7 @@ containers:
       CONSUL_CLIENT_INTERFACE: "{{consul_bind_interface}}"
       CONSUL_BIND_INTERFACE: "{{consul_bind_interface}}"
 ```
-### Kubernetes
+
 ### Packages
 
 Packages can include modifiers:
@@ -115,12 +176,35 @@ packages:
   - azure-cli #+azure
 ```
 
-### Systemd
+### Services
+
 ### Commands
 
-## Runtime Flags
+Commands are executed at 3 specific points:
 
-Similar to go build flags, runtime flags provide a way of deciding what gets run, the following flags are provided by default:
+`pre_commands`
+Pre-commands are used to prepare the environment for execution, OS detection and setting of runtime flags is done in this phase so that they can be used in all other phases. e.g. set an environment variable based on the output of a command.
+
+`commands`
+Phases can only append to this Commands list.
+
+`pre_commands`
+Post commands run after all the phases have completed and can be used for cleanup functions are for handing off to other systems.
+
+## Natives
+
+
+
+## Runtime Tags
+
+```bash
+configadm minify -c config.yml --tags ubuntu
+# tags are detected by default when using the apply command
+configadm apply -c config
+```
+
+Similar to go build tags, runtime tags provide a way of deciding what gets run, the following tags are provided by default:
+
 
 * `centos`
 * `ubuntu`
@@ -134,76 +218,47 @@ Similar to go build flags, runtime flags provide a way of deciding what gets run
 * `vmware` matched when running on a vSphere Hypervisor
 * `kvm` matched when running on a KVM Hypervisor
 
-Multiple  flags can be specified in which case all flags must match. Flags can be negated using `!`
+Tags can be applied to the following elements:
+* packages
+* packageRepos
+* packageKeys
+* commands, pre_commands, post_commands
 
-For example the Docker CRI is implemented as:
+Multiple tags can be specified in which case all tags must match.
+```yaml
+packages:
+  # only install aws-cli on debian based system running in AWS
+  - aws-cli #+debian +aws
+```
+
+Tags can be negated using `!`
 
 ```yaml
 pre_commands:
+  # attach a rhel subscription, but only if we are not running in AWS
   - subscription manager attach #+rhel !aws
-packages:
-  - docker-ce #!rhel
-  - docker #+rhel
-  - device-mapper-persistent-data #+centos
-  - lvm2  #+centos
-packageKeys:
-  - https://download.docker.com/linux/ubuntu/gpg #+ubuntu
-packageRepos:
-  - https://download.docker.com/linux/centos/docker-ce.repo #+centos
-  - https://download.docker.com/linux/fedora/docker-ce.repo #+fedora
-  - deb https://download.docker.com/linux/ubuntu {{lsb.codename}} stable #+ubuntu
 ```
 
+## Contributing
 
-## Virtual Filesystem
+Make sure both unit and integration tests pass:
 
-Phases do not write directly to the filesystem, only to the virtual filesystem. Phases can also read and update files written by earlier phases.
+```bash
+make
+```
 
-## Commands
+You can run unit tests only via:
 
-Commands are executed at 3 specific points:
+```bash
+make test
+```
 
-**Pre Commands**
-Pre-commands are used to prepare the environment for execution, OS detection and setting of runtime flags is done in this phase so that they can be used in all other phases. e.g. set an environment variable based on the output of a command.
+And only integration tests via:
 
-**Commands**
-Phases can only append to this Commands list.
+```bash
+make integration
+```
 
-**Post Commands**
-Post commands run after all the phases have completed and can be used for cleanup functions are for handing off to other systems.
+## Design
 
-## Apply
-
-One all phases have run the virtual filesystem and command list is used to either create a cloud-init file or ISO. Or applied directly to the system using a shell.
-
-# Design Principles
-
-## Cloud Native
-
-`configadm` has native support for containerized environments and *nothing* else - It is designed to bootstrap immutable container hosts and then handoff to the container(s) and/or orchestrators for everything else.
-
-## Dependency Free
-
-**Runtime Dependencies**
-> `configadm` is built in pure Go and distributed as a statically linked binary.
-
-Ansible is a good example of how bad dynamically linked tools can get - The dependencies for core Ansible is relatively easy to solve using a Python virtualenv, the 1000's of modules that makeup the extended ansible platform depend on hundreds of other packages - These dependencies are at best visible in documentation and error messages, there is no way of knowing what dependencies (nevermind the version) that are required for a given playbook.
-
-**Explicit Execution Dependencies**
-> `configadm` does not support any control flows (besides for runtime tags), the ordering of actions is well defined and cannot be changed.
-
-Ansible provides explicit ordering using control statements such as loops and conditionals,  this explicit ordering is coupled with implicit variable management with a very complex precedence hierarchy and ruleset. Creating a mental model of what a given variable will be is almost impossible. Unit testing this state is impossible.
-
-**Implicit Execution Dependencies**
-Unlike Ansible, CFEngine and Terraform do not have explicit ordering, Some might argue that they don't have ordering altogether - However the use of input variables and classes create implicit ordering with a complex runtime state machine - It is almost impossible to create and execute this state machine mentally making it very difficult to troubleshoot and test.
-
-## Stateless
-> `configadm` uses a virtual filesystem and command set for all higher order functions - this makes it trivial to compose and unit-test features.
-
-While the execution model of Ansible does not have persistent state, it is state driven. Facts discovered at runtime can alter behavior, when used across a cluster of machine the impact of state becomes even more important with intermittent connection issues to cluster members potentially creating conflicting state between runs.
-The use of change tracking also makes it impossible to ascertain whether a given step will execute.
-
-Ansible, CFEngine and Terraform all execute on the underlying components directly, making only integration testing possible (and difficult)
-
-
-
+See [Design Principles](./DESIGN.md)
