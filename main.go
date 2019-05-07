@@ -34,10 +34,11 @@ func main() {
 	}
 
 	root.PersistentFlags().StringSliceP("config", "c", []string{}, "Config files in YAML or JSON format")
-	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Variables")
-	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to set")
-	root.PersistentFlags().CountP("loglevel", "v", "Increase logging level")
-	root.AddCommand(&cmd.CloudInit, &cmd.Minify, &cmd.Apply)
+	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Extra Variables to in key=value format ")
+	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to use, valid tags:  debian,ubuntu,redhat,rhel,centos,aws,vmware")
+	root.PersistentFlags().BoolP("detect", "d", false, "Detect tags to use")
+
+	root.AddCommand(&cmd.CloudInit, &cmd.Minify, &cmd.Apply, &cmd.Verify)
 	if len(commit) > 8 {
 		version = fmt.Sprintf("%v, commit %v, built at %v", version, commit[0:8], date)
 	}
@@ -50,6 +51,7 @@ func main() {
 		},
 	})
 
+	root.PersistentFlags().CountP("loglevel", "v", "Increase logging level")
 	root.SetUsageTemplate(root.UsageTemplate() + fmt.Sprintf("\nversion: %s\n ", version))
 
 	if err := root.Execute(); err != nil {

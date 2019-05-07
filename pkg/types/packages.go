@@ -7,6 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
+//Package includes the package name, modifiers (mark, uninstall) and runtime tags
 type Package struct {
 	Name      string
 	Mark      bool
@@ -67,6 +68,7 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
+//PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
 type PackageRepo struct {
 	URL    string
 	GPGKey string

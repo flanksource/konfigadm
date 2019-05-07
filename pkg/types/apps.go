@@ -8,7 +8,7 @@ type ContainerRuntime struct {
 	Version string `json:"version,omitempty"`
 }
 
-//Kubernetes installs the packages and configures the system for kubernetes, it does not actually bootstrap and configure kuberntes itself
+//KubernetesSpec installs the packages and configures the system for kubernetes, it does not actually bootstrap and configure kubernetes itself
 //Use kubeadm in a `command` to actually configure and start kubernetes
 type KubernetesSpec struct {
 	Version      string `json:"version,omitempty"`

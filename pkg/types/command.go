@@ -7,6 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
+//Command encapsulates a command and the tags for which it is applicable
 type Command struct {
 	Cmd   string
 	Flags []Flag

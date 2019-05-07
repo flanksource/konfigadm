@@ -8,7 +8,7 @@ import (
 var (
 	CloudInit = cobra.Command{
 		Use:   "cloud-init",
-		Short: "Print the version of cloud-config",
+		Short: "Exports the configuration in cloud-init format",
 		Args:  cobra.MinimumNArgs(0),
 
 		Run: func(cmd *cobra.Command, args []string) {
