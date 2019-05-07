@@ -14,7 +14,7 @@ import (
 	"github.com/ory/dockertest"
 )
 
-var binary = "dist/linux_amd64/configadm"
+var binary = "dist/configadm"
 
 // uses a sensible default on windows (tcp/http) and linux/osx (socket)
 var docker, _ = dockertest.NewPool("")
@@ -96,6 +96,6 @@ func TestVersion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%s: %s", err, stdout)
 	}
-	g.Expect(stdout).To(ContainSubstring("built at"))
+	g.Expect(stdout).To(ContainSubstring("built"))
 	g.Expect(strings.Split(stdout, "\n")).To(HaveLen(2))
 }

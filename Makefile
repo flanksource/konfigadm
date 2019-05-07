@@ -7,6 +7,7 @@ test:
 
 .PHONY: integration
 integration:
+	GOOS=linux go build -o dist/configadm -ldflags '-X main.version=built' .
 	go test -v ./test -race -coverprofile=coverage.txt -covermode=atomic
 
 
