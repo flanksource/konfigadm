@@ -166,6 +166,13 @@ func NewConfig(configs ...string) *ConfigBuilder {
 func newConfig(config string) (*Config, error) {
 	c := &Config{}
 	c.Init()
+	if config == "-" {
+		data, _ := ioutil.ReadAll(os.Stdin)
+		if err := yaml.Unmarshal(data, &c); err != nil {
+			return nil, fmt.Errorf("Error reading from stdin: %s", err)
+		}
+		return c, nil
+	}
 	data, err := ioutil.ReadFile(config)
 	if err != nil {
 		return nil, err
