@@ -83,10 +83,10 @@ func (c Container) Name() string {
 
 //Service is a systemd service to be installed and started
 type Service struct {
-	Name        string            `json:"name,omitempty"`
-	ExecStart   string            `json:"exec_start,omitempty"`
-	Environment map[string]string `json:"environment,omitempty"`
-	Extra       SystemD           `json:"extra,omitempty"`
+	Name        string            `yaml:"name,omitempty"`
+	ExecStart   string            `yaml:"exec_start,omitempty"`
+	Environment map[string]string `yaml:"environment,omitempty"`
+	Extra       SystemD           `yaml:"extra,omitempty"`
 	// TODO: capabilities
 
 }
