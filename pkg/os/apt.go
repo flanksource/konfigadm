@@ -54,6 +54,7 @@ func (p AptPackageManager) Update() string {
 }
 
 func (p AptPackageManager) GetInstalledVersion(pkg string) string {
+	pkg = strings.Split(pkg, "=")[0]
 	stdout, ok := utils.SafeExec("dpkg-query -W -f='${db:Status-Status}\t${Version}' " + pkg)
 	if !ok {
 		log.Debugf("Failed installation check for %s -> %s", pkg, stdout)

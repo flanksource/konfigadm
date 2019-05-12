@@ -3,9 +3,6 @@ package_repos:
     gpgKey: https://download.docker.com/linux/ubuntu/gpg
     channel: stable
 packages:
-  - docker-ce #!rhel
-  - "!docker-ce" #+rhel
-  - docker #+rhel
   - device-mapper-persistent-data #+centos
   - lvm2  #+centos
   - socat

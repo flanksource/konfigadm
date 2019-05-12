@@ -1,19 +1,24 @@
 services:
   - docker
 
-language: go
+sudo: required
+env:
+  - GO111MODULE=on IMAGE=jrei/systemd-ubuntu:16.04
+  - GO111MODULE=on IMAGE=jrei/systemd-ubuntu:18.04
+  - GO111MODULE=on IMAGE=jrei/systemd-centos
+  - GO111MODULE=on IMAGE=jrei/systemd-fedora
+  - GO111MODULE=on IMAGE=jrei/systemd-debian
 
+
+language: go
 go:
   - 1.11.x
-
-env:
-  - GO111MODULE=on
 
 before_install:
   - go mod download
 
 script:
-  - make
+  - make all
 
 deploy:
   provider: script

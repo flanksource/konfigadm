@@ -30,8 +30,12 @@ func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 				})
 			}
 			if repo.URL != "" {
+				codename := repo.VersionCodeName
+				if codename == "" {
+					codename = _os.GetVersionCodeName()
+				}
 				commands = append(commands, Command{
-					Cmd:   _os.GetPackageManager().AddRepo(repo.URL, repo.Channel, _os.GetVersionCodeName()),
+					Cmd:   _os.GetPackageManager().AddRepo(repo.URL, repo.Channel, codename),
 					Flags: GetTags(_os),
 				})
 			}

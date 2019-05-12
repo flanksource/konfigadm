@@ -14,10 +14,17 @@ import (
 	"github.com/ory/dockertest"
 )
 
-var binary = "dist/configadm"
-
 // uses a sensible default on windows (tcp/http) and linux/osx (socket)
 var docker, _ = dockertest.NewPool("")
+var cwd string
+var env []string
+var binary string
+
+func init() {
+	cwd, _ = os.Getwd()
+	cwd = filepath.Dir(cwd)
+	binary = cwd + "/dist/configadm"
+}
 
 type Container struct {
 	id        string
@@ -45,10 +52,7 @@ func (c *Container) Exec(args ...string) (string, error) {
 
 //newContainer creates a new systemd based container and returns the container id
 func newContainer() (*Container, error) {
-	env := os.Environ()
-	cwd, _ := os.Getwd()
-	cwd = filepath.Dir(cwd)
-	binary = cwd + "/" + binary
+
 	volumes := []string{
 		fmt.Sprintf("%s:%s", cwd, cwd),
 		"/sys/fs/cgroup:/sys/fs/cgroup",
@@ -57,7 +61,8 @@ func newContainer() (*Container, error) {
 	opts := dockertest.RunOptions{
 		Privileged: true,
 		Env:        env,
-		Repository: "moshloop/docker-ubuntu1804-ansible",
+		Repository: "jrei/systemd-ubuntu",
+		Tag:        "18.04",
 		Entrypoint: []string{"/lib/systemd/systemd"},
 		Mounts:     volumes,
 	}
@@ -98,4 +103,55 @@ func TestVersion(t *testing.T) {
 	}
 	g.Expect(stdout).To(ContainSubstring("built"))
 	g.Expect(strings.Split(stdout, "\n")).To(HaveLen(2))
+}
+
+var fixtures = []struct {
+	in string
+}{
+	{"services.yml"},
+	{"containers.yml"},
+	{"docker.yml"},
+	{"env.yml"},
+	{"files.yml"},
+	{"kubernetes.yml"},
+	{"packages.yml"},
+	{"sysctl.yml"},
+}
+
+type Configadm struct {
+}
+
+func (c Configadm) Verify(config ...string) bool {
+	return false
+}
+
+func (c Configadm) Apply(config ...string) bool {
+	return false
+}
+
+func TestFull(t *testing.T) {
+	for _, f := range fixtures {
+		t.Run(f.in, func(t *testing.T) {
+			g, container := setup(t)
+			defer container.Delete()
+			stdout, err := container.Exec(binary, "verify", "-c", cwd+"/fixtures/"+f.in)
+			if err == nil {
+				t.Errorf("Verify should have failed %s:\n %s\n", f.in, stdout)
+			}
+
+			stdout, err = container.Exec(binary, "apply", "-c", cwd+"/fixtures/"+f.in)
+			if err != nil {
+				t.Errorf("Apply should succeed %s: %s\n", err, stdout)
+			}
+
+			g.Eventually(func() error {
+				stdout, err = container.Exec(binary, "verify", "-c", cwd+"/fixtures/"+f.in)
+				if err != nil {
+					t.Errorf("Verify after apply should succeed %s:\n %s\n", err, stdout)
+				}
+				return err
+			}, 120, 5).Should(BeNil())
+
+		})
+	}
 }
