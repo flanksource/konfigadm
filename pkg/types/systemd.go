@@ -17,7 +17,7 @@ func DefaultSystemdService(name string) SystemD {
 		},
 		Service: SystemdService{
 			Restart:    "on-failure",
-			RestartSec: "60",
+			RestartSec: "10",
 		},
 		Unit: SystemdUnit{
 			Description: name,
