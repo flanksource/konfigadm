@@ -34,7 +34,7 @@ type AptPackageManager struct {
 }
 
 func (p AptPackageManager) Install(pkg ...string) string {
-	return "apt-get install -y " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " ")
+	return "apt-get install -y --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " ")
 }
 
 func (p AptPackageManager) Uninstall(pkg ...string) string {
@@ -89,5 +89,5 @@ apt-get -y autoclean`
 }
 
 func (p AptPackageManager) Setup() string {
-	return "apt-get update;  apt-get install -y --ignore-missing sudo apt-transport-https ca-certificates curl gpg-agent software-properties-common"
+	return "apt-get update;  apt-get install -y --no-install-recommends --ignore-missing sudo apt-transport-https ca-certificates curl gpg-agent software-properties-common"
 }
