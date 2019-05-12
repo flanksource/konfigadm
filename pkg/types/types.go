@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/moshloop/configadm/pkg/os"
+
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
-	. "github.com/moshloop/configadm/pkg/systemd"
 	"github.com/moshloop/configadm/pkg/utils"
 )
 

@@ -1,4 +1,31 @@
-package systemd
+package types
+
+import (
+	. "github.com/moshloop/configadm/pkg/utils"
+)
+
+func (sys SystemD) ToUnitFile() string {
+	return "[Unit]\n" + StructToIni(sys.Unit) + "\n" +
+		"[Service]\n" + StructToIni(sys.Service) + "\n" +
+		"[Install]\n" + StructToIni(sys.Install)
+}
+
+func DefaultSystemdService(name string) SystemD {
+	return SystemD{
+		Install: SystemdInstall{
+			WantedBy: "multi-user.target",
+		},
+		Service: SystemdService{
+			Restart:    "on-failure",
+			RestartSec: "60",
+		},
+		Unit: SystemdUnit{
+			StopWhenUnneeded: true,
+			Description:      name,
+		},
+	}
+
+}
 
 // bool and int fields are modelled using interface{} to distinguish between nil (not provided) and empty values
 // validation tags are used to enforce type
