@@ -155,11 +155,8 @@ func (builder *ConfigBuilder) Build() (*Config, error) {
 	}
 
 	for _, _os := range os.SupportedOperatingSystems {
-		if _os.DetectAtRuntime() {
-			if cfg.Context.OS != nil {
-				cfg.Context.OS = _os
-			}
-			cfg.Context.Flags = append(cfg.Context.Flags, *GetTag(_os.GetTag()))
+		if _os.DetectAtRuntime() && cfg.Context.OS == nil {
+			cfg.Context.OS = _os
 			break
 		}
 
