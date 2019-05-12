@@ -2,7 +2,6 @@ package phases
 
 import (
 	operatingSystem "github.com/moshloop/configadm/pkg/os"
-
 	. "github.com/moshloop/configadm/pkg/types"
 )
 

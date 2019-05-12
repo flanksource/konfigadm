@@ -45,6 +45,7 @@ func (cfg *Config) AddPackageRepo(url string, gpg string, flag *Flag) *Config {
 	return cfg.AppendPackageRepo(pkg, flag)
 }
 
+//AppendPackageRepo appends a new package repository to the list
 func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...*Flag) *Config {
 	for _, flag := range flags {
 		if flag != nil {

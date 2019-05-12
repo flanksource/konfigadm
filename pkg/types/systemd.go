@@ -20,8 +20,7 @@ func DefaultSystemdService(name string) SystemD {
 			RestartSec: "60",
 		},
 		Unit: SystemdUnit{
-			StopWhenUnneeded: true,
-			Description:      name,
+			Description: name,
 		},
 	}
 
