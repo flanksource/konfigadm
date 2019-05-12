@@ -52,7 +52,10 @@ type Container struct {
 	//Map of templates to mount into the container
 	Templates map[string]string `json:"templates,omitempty"`
 
+	//TODO:
 	Volumes []string `json:"volumes,omitempty"`
+
+	//TODO  capabilities:
 
 	//CPU limit in cores (Defaults to 1 )
 	CPU int `json:"cpu,omitempty" validate:"min=0,max=32"`
@@ -61,8 +64,8 @@ type Container struct {
 	Mem int `json:"mem,omitempty" validate:"min=0,max=1048576"`
 
 	//default:	user-bridge	 only
-
 	Network string `json:"network,omitempty"`
+
 	// default: 1
 	Replicas int `json:"replicas,omitempty"`
 }
@@ -84,6 +87,8 @@ type Service struct {
 	ExecStart   string            `json:"exec_start,omitempty"`
 	Environment map[string]string `json:"environment,omitempty"`
 	Extra       SystemD           `json:"extra,omitempty"`
+	// TODO: capabilities
+
 }
 
 //User mirrors the CloudInit User struct.
@@ -176,6 +181,7 @@ type User struct {
 type File struct {
 	Content        string
 	ContentFromURL string
+	Unarchive      bool
 	Permissions    string
 	Owner          string
 	Flags          []string
@@ -184,23 +190,45 @@ type File struct {
 //Filesystem is a primitive for referencing all files
 type Filesystem map[string]File
 
+type Certificate string
+
 //Config is the logical model after runtime tags have been applied
 type Config struct {
-	PreCommands      []Command            `yaml:"pre_commands,omitempty"`
-	Commands         []Command            `yaml:"commands,omitempty"`
-	PostCommands     []Command            `yaml:"post_commands,omitempty"`
-	Filesystem       Filesystem           `yaml:"filesystem,omitempty"`
-	Files            map[string]string    `yaml:"files,omitempty"`
+
+	/** Primitive elements are what all native and operator commands eventually compile down into **/
+
+	PreCommands  []Command  `yaml:"pre_commands,omitempty"`
+	Commands     []Command  `yaml:"commands,omitempty"`
+	PostCommands []Command  `yaml:"post_commands,omitempty"`
+	Filesystem   Filesystem `yaml:"filesystem,omitempty"`
+
+	/** Native elements are "compiled" into primitive items in order to apply them **/
+
+	//Files is a map of destination path to lookup file path
+	// The lookup path is relative to where configadm is run from, not relative to the config file
+	// The content and permissions of the file will be compiled into primitive Filesystem elements, user and group ownership is ignored
+	// Both the destination and lookup path can be expressions
+	Files map[string]string `yaml:"files,omitempty"`
+
+	//Templates is a map of destination path to template lookup path
+	// The lookup path is relative to where configadm is run from, not relative to the config file
+	// Templates are compiled via a Jinja (Ansible-like) rendered into primitive filesystem objects
+	// Both the destination and lookup path can be expressions
 	Templates        map[string]string    `yaml:"templates,omitempty"`
 	Sysctls          map[string]string    `yaml:"sysctls,omitempty"`
 	Packages         *[]Package           `yaml:"packages,omitempty"`
-	PackageRepos     []PackageRepo        `yaml:"package_repos,omitempty"`
+	PackageRepos     *[]PackageRepo       `yaml:"package_repos,omitempty"`
 	Images           []string             `yaml:"images,omitempty"`
 	Containers       []Container          `yaml:"containers,omitempty"`
 	ContainerRuntime *ContainerRuntime    `yaml:"container_runtime,omitempty"`
 	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`
 	Environment      map[string]string    `yaml:"environment,omitempty"`
 	Timezone         string               `yaml:"timezone,omitempty"`
+	NTP              []string             `yaml:"ntp,omitempty"`
+	DNS              []string             `yaml:"dns,omitempty"`
+	Limits           []string             `yaml:"limits,omitempty"`
+	TrustedCA        []Certificate        `yaml:"ca,omitempty"`
+	Partitions       []string             `yaml:"partitions,omitempty"`
 	Extra            *cloudinit.CloudInit `yaml:"extra,omitempty"`
 	Services         map[string]Service   `yaml:"services,omitempty"`
 	Users            []User               `yaml:"users,omitempty"`
@@ -215,6 +243,7 @@ type SystemContext struct {
 	Vars  map[string]interface{}
 	Flags []Flag
 	Name  string
+	OS    os.OS
 }
 
 type Transformer func(cfg *Config, ctx *SystemContext) (commands []Command, files Filesystem, err error)
@@ -246,7 +275,7 @@ type VerifyResults struct {
 }
 
 func (c *VerifyResults) Done() {
-	fmt.Printf("%d passed, %d skipped, %d failed\n", c.PassCount, c.SkipCount, c.FailCount)
+	fmt.Printf("  %d passed, %d skipped, %d failed\n", c.PassCount, c.SkipCount, c.FailCount)
 }
 
 func (c *VerifyResults) Pass(msg string, args ...interface{}) {

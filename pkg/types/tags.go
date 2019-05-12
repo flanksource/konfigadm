@@ -33,6 +33,15 @@ type Flag struct {
 	AlsoMatches []Flag
 }
 
+func GetTag(name string) *Flag {
+	for _, tag := range FLAGS {
+		if strings.ToLower(tag.Name) == strings.ToLower(name) {
+			return &tag
+		}
+	}
+	return nil
+}
+
 func init() {
 	for _, flag := range FLAGS {
 		name := flag.Name
