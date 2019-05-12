@@ -32,11 +32,8 @@ func (sys *Config) Verify(results *VerifyResults) bool {
 		switch v := phase.(type) {
 		case VerifyPhase:
 			log.Tracef("Verifying %s", reflect.TypeOf(phase).Name())
-			_verify := v.Verify(sys, results, sys.Context.Flags...)
-			log.Tracef("%s -> %s", reflect.TypeOf(phase).Name(), _verify)
-			verify = verify && _verify
+			verify = verify && v.Verify(sys, results, sys.Context.Flags...)
 		}
-
 	}
 	return verify
 }
@@ -63,7 +60,7 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 
 	for _, phase := range *Phases {
 		c, f, err := phase.ApplyPhase(sys, sys.Context)
-		log.Tracef("Applied phase %s: %s/%s", reflect.TypeOf(phase).Name(), c, f)
+		log.Tracef("Applied phase %s: %s/%v", reflect.TypeOf(phase).Name(), c, f)
 
 		if err != nil {
 			return nil, []Command{}, err
