@@ -13,7 +13,7 @@ func (init CloudInit) String() string {
 }
 
 func (init *CloudInit) AddCommand(cmd string) *CloudInit {
-	init.Runcmd = append(init.Runcmd, []string{"once-per-instance", cmd})
+	init.Runcmd = append(init.Runcmd, []string{"sh", "-c", cmd})
 	return init
 }
 
