@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 
@@ -29,7 +30,9 @@ func (sys *Config) Verify(results *VerifyResults) bool {
 		switch v := phase.(type) {
 		case VerifyPhase:
 			log.Tracef("Verifying %s", reflect.TypeOf(phase).Name())
-			verify = verify && v.Verify(sys, results, sys.Context.Flags...)
+			_verify := v.Verify(sys, results, sys.Context.Flags...)
+			log.Tracef("%s -> %s", reflect.TypeOf(phase).Name(), _verify)
+			verify = verify && _verify
 		}
 
 	}
@@ -113,6 +116,7 @@ func (sys *Config) Init() {
 	sys.Files = make(map[string]string)
 	sys.Templates = make(map[string]string)
 	sys.Sysctls = make(map[string]string)
+	sys.PackageRepos = &[]PackageRepo{}
 	sys.Packages = &[]Package{}
 	sys.Context = &SystemContext{
 		Name: Configadm,
@@ -214,7 +218,8 @@ func (sys *Config) ImportConfig(c2 Config) {
 
 	sys.Containers = append(sys.Containers, c2.Containers...)
 	sys.Images = append(sys.Images, c2.Images...)
-	sys.PackageRepos = append(sys.PackageRepos, c2.PackageRepos...)
+	pkgRepos := append(*sys.PackageRepos, *c2.PackageRepos...)
+	sys.PackageRepos = &pkgRepos
 	pkgs := append(*sys.Packages, *c2.Packages...)
 	sys.Packages = &pkgs
 	sys.Timezone = c2.Timezone

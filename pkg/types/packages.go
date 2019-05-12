@@ -10,6 +10,7 @@ import (
 //Package includes the package name, modifiers (mark, uninstall) and runtime tags
 type Package struct {
 	Name      string
+	Version   string
 	Mark      bool
 	Uninstall bool
 	Flags     []Flag
@@ -29,6 +30,19 @@ func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
 	}
 	pkgs := append(*cfg.Packages, pkg)
 	cfg.Packages = &pkgs
+	return cfg
+}
+
+//AddPackageRepo is a helper function to add new packages repos
+func (cfg *Config) AddPackageRepo(url string, flag *Flag) *Config {
+	pkg := PackageRepo{
+		URL: url,
+	}
+	if flag != nil {
+		pkg.Flags = []Flag{*flag}
+	}
+	pkgs := append(*cfg.PackageRepos, pkg)
+	cfg.PackageRepos = &pkgs
 	return cfg
 }
 
