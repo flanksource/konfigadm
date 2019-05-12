@@ -30,19 +30,19 @@ var (
 )
 
 //SafeExec executes the sh script and returns the stdout and stderr, errors will result in a nil return only.
-func SafeExec(sh string, args ...interface{}) string {
+func SafeExec(sh string, args ...interface{}) (string, bool) {
 	cmd := exec.Command("bash", "-c", fmt.Sprintf(sh, args...))
 	data, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Debugf("Failed to exec %s, %s\n", sh, err)
-		return ""
+		log.Debugf("Failed to exec %s, %s %s\n", sh, data, err)
+		return "", false
 	}
 
 	if !cmd.ProcessState.Success() {
 		log.Debugf("Command did not succeed %s\n", sh)
-		return ""
+		return "", false
 	}
-	return string(data)
+	return string(data), true
 
 }
 
@@ -78,10 +78,12 @@ func takeSliceArg(arg interface{}) (out []interface{}, ok bool) {
 	return out, true
 }
 
+//IsSlice returns true if the argument is a slice
 func IsSlice(arg interface{}) bool {
 	return reflect.ValueOf(arg).Kind() == reflect.Slice
 }
 
+//ToString takes an object and tries to convert it to a string
 func ToString(i interface{}) string {
 	if slice, ok := takeSliceArg(i); ok {
 		s := ""
@@ -115,8 +117,8 @@ func ToString(i interface{}) string {
 	return ""
 }
 
+//StructToMap takes an object and returns all it's field in a map
 func StructToMap(s interface{}) map[string]interface{} {
-
 	values := make(map[string]interface{})
 	value := reflect.ValueOf(s)
 
@@ -132,6 +134,7 @@ func StructToMap(s interface{}) map[string]interface{} {
 	return values
 }
 
+//StructToIni takes an object and serializes it's fields in INI format
 func StructToIni(s interface{}) string {
 	str := ""
 	for k, v := range StructToMap(s) {
@@ -140,6 +143,7 @@ func StructToIni(s interface{}) string {
 	return str
 }
 
+//MapToIni takes a map and converts it into an INI formatted string
 func MapToIni(Map map[string]string) string {
 	str := ""
 	for k, v := range Map {
@@ -148,6 +152,20 @@ func MapToIni(Map map[string]string) string {
 	return str
 }
 
+//IniToMap takes the path to an INI formatted file and transforms it into a map
+func IniToMap(path string) map[string]string {
+	result := make(map[string]string)
+	ini := SafeRead(path)
+	for _, line := range strings.Split(ini, "\n") {
+		values := strings.Split(line, "=")
+		if len(values) == 2 {
+			result[values[0]] = values[1]
+		}
+	}
+	return result
+}
+
+//GzipFile takes the path to a file and returns a Gzip comppressed byte slic
 func GzipFile(path string) ([]byte, error) {
 	var buf bytes.Buffer
 
