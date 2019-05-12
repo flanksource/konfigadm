@@ -111,11 +111,11 @@ var fixtures = []struct {
 	{"services.yml"},
 	{"containers.yml"},
 	{"docker.yml"},
-	{"env.yml"},
+	// {"env.yml"},
 	{"files.yml"},
 	{"kubernetes.yml"},
 	{"packages.yml"},
-	{"sysctl.yml"},
+	// {"sysctl.yml"},
 }
 
 type Configadm struct {
