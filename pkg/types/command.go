@@ -17,6 +17,18 @@ func (c Command) String() string {
 	return c.Cmd
 }
 
+func (cfg *Config) AddCommand(cmd string, flags ...*Flag) *Config {
+	command := Command{Cmd: cmd}
+	for _, flag := range flags {
+		if flag != nil {
+			command.Flags = append(command.Flags, *flag)
+		}
+	}
+	cfg.Commands = append(cfg.Commands, command)
+	return cfg
+
+}
+
 //UnmarshalYAML decodes comments into tags
 func (c *Command) UnmarshalYAML(node *yaml.Node) error {
 	c.Cmd = node.Value

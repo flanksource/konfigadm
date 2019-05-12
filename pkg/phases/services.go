@@ -29,16 +29,25 @@ func (p services) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 
 func (p services) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
 	verify := true
-	for name, _ := range cfg.Services {
-		stdout, ok := utils.SafeExec("systemctl status %s | grep Active", name)
-		if !ok {
-			results.Fail("%s is not running %s", name, stdout)
-			verify = false
-		} else if strings.Contains(stdout, "active (running)") {
-			results.Pass("%s is  running %s", name, stdout)
-		} else {
-			results.Fail("%s is not running %s", name, stdout)
-		}
+	for name := range cfg.Services {
+		verify = verify && VerifyService(name, results)
+
 	}
 	return verify
+}
+
+//VerifyService checks that the service is enabled and running
+func VerifyService(name string, results *VerifyResults) bool {
+	stdout, ok := utils.SafeExec("systemctl status %s | grep Active", name)
+	stdout = strings.TrimSpace(strings.Split(stdout, "\n")[0])
+	if !ok {
+		results.Fail("%s is %s", name, stdout)
+
+	} else if strings.Contains(stdout, "active (running)") {
+		results.Pass("%s is  %s", name, stdout)
+		return true
+	} else {
+		results.Fail("%s is %s", name, stdout)
+	}
+	return false
 }

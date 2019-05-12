@@ -15,17 +15,42 @@ func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 	var commands []Command
 	files := Filesystem{}
 	for _, c := range sys.Containers {
-		filename := fmt.Sprintf("/etc/systemd/system/%s.service", c.Name())
-		files[filename] = File{
-			Content: toSystemDUnit(c),
+
+		sys.Services[c.Name()] = Service{
+			Name:      c.Name(),
+			ExecStart: exec(c),
+			Extra:     DefaultSystemdService(c.Name()),
 		}
 		if len(c.Env) > 0 {
 			files["/etc/environment."+c.Name()] = File{Content: toEnvironmentFile(c)}
 		}
-		commands = append(commands, Command{Cmd: "systemctl enable " + c.Name()})
-		commands = append(commands, Command{Cmd: "systemctl start " + c.Name()})
+
 	}
 	return commands, files, nil
+}
+
+func (p containers) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+	verify := true
+	for f := range cfg.Files {
+
+		if _, err := os.Stat(f); err != nil {
+			verify = false
+			results.Fail("%s does not exist", f)
+		} else {
+			results.Pass("%s exists", f)
+		}
+	}
+
+	for f := range cfg.Templates {
+		if _, err := os.Stat(f); err != nil {
+			verify = false
+			results.Fail("%s does not exist", f)
+		} else {
+			results.Pass("%s exists", f)
+		}
+	}
+
+	return verify
 }
 
 func toEnvironmentFile(c Container) string {
@@ -36,24 +61,22 @@ func toEnvironmentFile(c Container) string {
 	return s
 }
 
-func toSystemDUnit(c Container) string {
-	svc := DefaultSystemdService(c.Name())
-
-	args := ""
-	args += c.DockerOpts
-	args += fmt.Sprintf(" --env-file /etc/environment.%s", c.Name())
+func exec(c Container) string {
+	exec := c.DockerOpts
+	if len(c.Env) > 0 {
+		exec += fmt.Sprintf(" --env-file /etc/environment.%s", c.Name())
+	}
 	if c.Network != "" {
-		args += " --network " + c.Network
+		exec += " --network " + c.Network
 	}
 
 	for _, v := range c.Volumes {
-		args += fmt.Sprintf(" -v %s", v)
+		exec += fmt.Sprintf(" -v %s", v)
 	}
 
 	for _, p := range c.Ports {
-		args += fmt.Sprintf(" -p %d:%d", p.Port, p.Target)
+		exec += fmt.Sprintf(" -p %d:%d", p.Port, p.Target)
 	}
 
-	svc.Service.ExecStart = fmt.Sprintf("/bin/docker run --rm --name %s %s %s %s", c.Name(), args, c.Image, c.Args)
-	return svc.ToUnitFile()
+	return fmt.Sprintf("/usr/bin/docker run --rm --name %s %s %s %s", c.Name(), exec, c.Image, c.Args)
 }
