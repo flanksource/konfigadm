@@ -2,8 +2,8 @@ package phases
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/moshloop/configadm/pkg/systemd"
 	. "github.com/moshloop/configadm/pkg/types"
 )
 
@@ -37,7 +37,7 @@ func toEnvironmentFile(c Container) string {
 }
 
 func toSystemDUnit(c Container) string {
-	svc := systemd.DefaultSystemdService(c.Name())
+	svc := DefaultSystemdService(c.Name())
 
 	args := ""
 	args += c.DockerOpts
