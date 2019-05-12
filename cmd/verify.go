@@ -4,11 +4,11 @@ import (
 	"os"
 
 	"github.com/moshloop/configadm/pkg/types"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var (
-
 	//Verify command
 	Verify = cobra.Command{
 		Use:   "verify",
@@ -16,7 +16,10 @@ var (
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			cfg := GetConfig(cmd)
-			cfg.ApplyPhases()
+			_, _, err := cfg.ApplyPhases()
+			if err != nil {
+				log.Error(err)
+			}
 			verifier := types.VerifyResults{}
 			if !cfg.Verify(&verifier) {
 				verifier.Done()

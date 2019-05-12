@@ -8,8 +8,9 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"strings"
 
-	"github.com/apex/log"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -29,8 +30,8 @@ var (
 )
 
 //SafeExec executes the sh script and returns the stdout and stderr, errors will result in a nil return only.
-func SafeExec(sh string) string {
-	cmd := exec.Command("bash", "-c", sh)
+func SafeExec(sh string, args ...interface{}) string {
+	cmd := exec.Command("bash", "-c", fmt.Sprintf(sh, args...))
 	data, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Debugf("Failed to exec %s, %s\n", sh, err)
@@ -46,8 +47,8 @@ func SafeExec(sh string) string {
 }
 
 //Exec runs the sh script and forwards stderr/stdout to the console
-func Exec(sh string) error {
-	cmd := exec.Command("bash", "-c", sh)
+func Exec(sh string, args ...interface{}) error {
+	cmd := exec.Command("bash", "-c", fmt.Sprintf(sh, args...))
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
@@ -176,4 +177,20 @@ func SafeRead(path string) string {
 		return ""
 	}
 	return string(data)
+}
+
+//ReplaceAllInSlice runs strings.Replace on all elements in a slice and returns the result
+func ReplaceAllInSlice(a []string, find string, replacement string) (replaced []string) {
+	for _, s := range a {
+		replaced = append(replaced, strings.Replace(s, find, replacement, -1))
+	}
+	return
+}
+
+//SplitAllInSlice runs strings.Split on all elements in a slice and returns the results at the given index
+func SplitAllInSlice(a []string, split string, index int) (replaced []string) {
+	for _, s := range a {
+		replaced = append(replaced, strings.Split(s, split)[index])
+	}
+	return
 }
