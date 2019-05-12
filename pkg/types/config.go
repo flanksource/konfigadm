@@ -3,9 +3,11 @@ package types
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
+	goos "os"
 	"reflect"
 	"strings"
+
+	"github.com/moshloop/configadm/pkg/os"
 
 	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
 	log "github.com/sirupsen/logrus"
@@ -152,6 +154,17 @@ func (builder *ConfigBuilder) Build() (*Config, error) {
 		cfg.ImportConfig(*c)
 	}
 
+	for _, _os := range os.SupportedOperatingSystems {
+		if _os.DetectAtRuntime() {
+			if cfg.Context.OS != nil {
+				cfg.Context.OS = _os
+			}
+			cfg.Context.Flags = append(cfg.Context.Flags, *GetTag(_os.GetTag()))
+			break
+		}
+
+	}
+
 	for _, v := range builder.vars {
 		if strings.Contains(v, "=") {
 			cfg.Context.Vars[strings.Split(v, "=")[0]] = strings.Split(v, "=")[1]
@@ -171,7 +184,7 @@ func newConfig(config string) (*Config, error) {
 	c := &Config{}
 	c.Init()
 	if config == "-" {
-		data, _ := ioutil.ReadAll(os.Stdin)
+		data, _ := ioutil.ReadAll(goos.Stdin)
 		if err := yaml.Unmarshal(data, &c); err != nil {
 			return nil, fmt.Errorf("Error reading from stdin: %s", err)
 		}

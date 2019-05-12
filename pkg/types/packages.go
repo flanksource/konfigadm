@@ -34,14 +34,27 @@ func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
 }
 
 //AddPackageRepo is a helper function to add new packages repos
-func (cfg *Config) AddPackageRepo(url string, flag *Flag) *Config {
+func (cfg *Config) AddPackageRepo(url string, gpg string, flag *Flag) *Config {
 	pkg := PackageRepo{
 		URL: url,
 	}
-	if flag != nil {
-		pkg.Flags = []Flag{*flag}
+
+	if gpg != "" {
+		pkg.GPGKey = gpg
 	}
-	pkgs := append(*cfg.PackageRepos, pkg)
+	return cfg.AppendPackageRepo(pkg, flag)
+}
+
+func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...*Flag) *Config {
+	for _, flag := range flags {
+		if flag != nil {
+			repo.Flags = append(repo.Flags, *flag)
+		}
+	}
+	if repo.Channel == "" {
+		repo.Channel = "main"
+	}
+	pkgs := append(*cfg.PackageRepos, repo)
 	cfg.PackageRepos = &pkgs
 	return cfg
 }
@@ -84,9 +97,10 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 
 //PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
 type PackageRepo struct {
-	URL    string
-	GPGKey string
-	Flags  []Flag
+	URL     string `yaml:"url"`
+	GPGKey  string `yaml:"gpgKey"`
+	Channel string `yaml:"channel"`
+	Flags   []Flag
 }
 
 //MarshalYAML ads tags as comments
