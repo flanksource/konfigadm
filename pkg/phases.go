@@ -11,6 +11,7 @@ func init() {
 		return &[]types.Phase{
 			phases.Context,
 			apps.Kubernetes,
+			apps.CRI,
 			phases.Sysctl,
 			phases.Environment,
 			phases.Containers,
