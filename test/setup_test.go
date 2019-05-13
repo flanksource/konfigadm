@@ -138,19 +138,20 @@ func TestFull(t *testing.T) {
 			if err == nil {
 				t.Errorf("Verify should have failed %s:\n %s\n", f.in, stdout)
 			}
+			os.Stderr.WriteString(stdout)
 
 			stdout, err = container.Exec(binary, "apply", "-c", cwd+"/fixtures/"+f.in)
 			if err != nil {
 				t.Errorf("Apply should succeed %s: %s\n", err, stdout)
 			}
 
-			g.Eventually(func() error {
+			os.Stderr.WriteString(stdout)
+
+			g.Eventually(func() string {
 				stdout, err = container.Exec(binary, "verify", "-c", cwd+"/fixtures/"+f.in)
-				if err != nil {
-					t.Errorf("Verify after apply should succeed %s:\n %s\n", err, stdout)
-				}
-				return err
-			}, 120, 5).Should(BeNil())
+				os.Stderr.WriteString(stdout + "\n")
+				return stdout
+			}, "30s", "3s").Should(ContainSubstring("0 failed"))
 
 		})
 	}
