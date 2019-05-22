@@ -50,6 +50,28 @@ Apps provide an abstraction over low-level native and primitive elements, They d
 
 #### Kubernetes
 
+The kubernetes config element is the primary purpose of `konfigadm`, configuring machines so that they have all pre-requisites met for running `kubeadm`
+
+* Install and mark the specific versions of `kubeadm`, `kubelet`, `kubectl`, `kubernetes-cni`
+* Install a container runtime if not specified
+* Prepull images required to run kubernetes
+* Set any sysctl values that are required
+
+```bash
+konfigadm apply -c k8s.yml`
+```
+
+`k8s.yml`
+```yaml
+kubernetes:
+  version: 1.14.1
+```
+
+The config can also be specified via stdin: `echo "kubernetes: {version: 1.14.1}" | konfigadm minify -c -`
+
+
+```bash
+
 *e.g. kubernetes app spec*
 ```yaml
 kubernetes:
@@ -70,7 +92,10 @@ cri:
 ```
 
 ### Native
-*e.g. native elements produced by the above kubernetes app*
+
+Native elements, are not application specific they include packages, repositories, keys, containers, sysctls and environment variables.
+
+e.g running `echo "kubernetes: {version: 1.14.1}" | konfigadm minify -c -` will result in the application being transformed into native elements.
 ```yaml
 packageRepos:
  - deb https://apt.kubernetes.io/ kubernetes-xenial main #+debian
@@ -108,21 +133,6 @@ Specs can be combined and merged together - e.g. a cloud provider may install PV
 1. **Lists**  are appended to the end of the existing lists (Unsupported in ansible)
 1. **Maps** are merged with existing maps (e.g. [hash_behaviour = merge](https://docs.ansible.com/ansible/2.4/intro_configuration.html#hash-behaviour) in ansible)
 
-
-## Apps
-
-### Kubernetes
-
-Specifying kubernetes will do everything required to setup a node as a kubernetes worker or master:
-* Install and mark the specific versions of `kubeadm`, `kubelet`, `kubectl`
-* Install a container runtime if not specified
-* Prepull images required to run kubernetes
-* Set any sysctl values that are required
-
-```yaml
-kubernetes:
-  version: 1.14.1
-```
 
 ## Primitives
 
@@ -195,8 +205,6 @@ Phases can only append to this Commands list.
 Post commands run after all the phases have completed and can be used for cleanup functions are for handing off to other systems.
 
 ## Natives
-
-
 
 ## Runtime Tags
 
