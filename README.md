@@ -69,10 +69,6 @@ kubernetes:
 
 The config can also be specified via stdin: `echo "kubernetes: {version: 1.14.1}" | konfigadm minify -c -`
 
-
-```bash
-
-*e.g. kubernetes app spec*
 ```yaml
 kubernetes:
   version: 1.14.1
