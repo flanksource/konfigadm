@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/moshloop/configadm/pkg/types"
+	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
 var Containers Phase = containers{}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/moshloop/configadm/pkg/types"
-	"github.com/moshloop/configadm/pkg/utils"
+	. "github.com/moshloop/konfigadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var Services Phase = services{}

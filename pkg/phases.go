@@ -1,9 +1,9 @@
 package pkg
 
 import (
-	"github.com/moshloop/configadm/pkg/apps"
-	"github.com/moshloop/configadm/pkg/phases"
-	"github.com/moshloop/configadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/apps"
+	"github.com/moshloop/konfigadm/pkg/phases"
+	"github.com/moshloop/konfigadm/pkg/types"
 )
 
 func init() {

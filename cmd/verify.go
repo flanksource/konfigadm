@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/moshloop/configadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

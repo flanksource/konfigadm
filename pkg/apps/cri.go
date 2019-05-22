@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moshloop/configadm/pkg/phases"
-	"github.com/moshloop/configadm/pkg/utils"
+	"github.com/moshloop/konfigadm/pkg/phases"
+	"github.com/moshloop/konfigadm/pkg/utils"
 
-	. "github.com/moshloop/configadm/pkg/types"
+	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
 var CRI Phase = cri{}

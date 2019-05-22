@@ -1,7 +1,7 @@
 package types
 
 import (
-	. "github.com/moshloop/configadm/pkg/utils"
+	. "github.com/moshloop/konfigadm/pkg/utils"
 )
 
 func (sys SystemD) ToUnitFile() string {

@@ -1,8 +1,8 @@
 package phases
 
 import (
-	operatingSystem "github.com/moshloop/configadm/pkg/os"
-	. "github.com/moshloop/configadm/pkg/types"
+	operatingSystem "github.com/moshloop/konfigadm/pkg/os"
+	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
 var Packages AllPhases = packages{}

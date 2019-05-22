@@ -1,5 +1,5 @@
 #!/bin/bash
-NAME=configadm
+NAME=konfigadm
 GITHUB_USER=moshloop
 TAG=$(git tag --points-at HEAD )
 

@@ -1,16 +1,16 @@
-[![Build Status](https://travis-ci.org/moshloop/configadm.svg?branch=master)](https://travis-ci.org/moshloop/configadm)
-[![codecov](https://codecov.io/gh/moshloop/configadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/configadm)
-[![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/configadm)](https://goreportcard.com/report/github.com/moshloop/configadm)
+[![Build Status](https://travis-ci.org/moshloop/konfigadm.svg?branch=master)](https://travis-ci.org/moshloop/konfigadm)
+[![codecov](https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/konfigadm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/konfigadm)](https://goreportcard.com/report/github.com/moshloop/konfigadm)
 
-# configadm
+# konfigadm
 
-configadm is a node instance configuration tool focused on bootstrapping nodes for container based environments
+konfigadm is a node instance configuration tool focused on bootstrapping nodes for container based environments
 
 ## Usage
 
 ```
 Usage:
-  configadm [command]
+  konfigadm [command]
 
 Available Commands:
   apply       Apply the configuration to the local machine
@@ -18,12 +18,12 @@ Available Commands:
   help        Help about any command
   minify      Resolve all lookups and dependencies and export a single config file
   verify      Verify that the configuration has been applied correctly and is in a healthy state
-  version     Print the version of configadm
+  version     Print the version of konfigadm
 
 Flags:
   -c, --config strings   Config files in YAML or JSON format
   -d, --detect           Detect tags to use
-  -h, --help             help for configadm
+  -h, --help             help for konfigadm
   -v, --loglevel count   Increase logging level
   -t, --tag strings      Runtime tags to use, valid tags:  debian,ubuntu,redhat,rhel,centos,aws,vmware
   -e, --var strings      Extra Variables to in key=value format
@@ -35,7 +35,7 @@ Flags:
 
 ### Mental Models
 
-`configadm` intentionally reuses mental models and concepts from kubernetes, golang and ansible these include:
+`konfigadm` intentionally reuses mental models and concepts from kubernetes, golang and ansible these include:
 
 * Kubernetes declarative model for specifying intent
 * Operators for providing higher-order abstractions
@@ -47,10 +47,26 @@ Flags:
 
 Apps provide an abstraction over low-level native and primitive elements, They describe high-level intent for using an application that may require multiple elements to configure.
 
+
+#### Kubernetes
+
 *e.g. kubernetes app spec*
 ```yaml
 kubernetes:
   version: 1.14.1
+```
+
+#### Container Runtimes (CRI)
+
+```yaml
+cri:
+ version: 18.6.0
+ type: docker
+ config:
+   log-driver: json-file
+   log-opts:
+     max-size: 1000m
+     max-file": 3
 ```
 
 ### Native
@@ -71,7 +87,7 @@ sysctls:
  vm.swapinness: 1
 ```
 
-Native elements are verifiable, i.e. if you specify a container runtime then `configadm` will verify that the runtime has a service enabled and started and that `root` can connect to the daemon and list running containers.
+Native elements are verifiable, i.e. if you specify a container runtime then `konfigadm` will verify that the runtime has a service enabled and started and that `root` can connect to the daemon and list running containers.
 
 ### Primitives
 Primitives are the low-level commands and files that are need to implement native items.
@@ -110,7 +126,7 @@ kubernetes:
 
 ## Primitives
 
-`configadm` using a chain of phases. phases earlier in the chain can update items later in the chain. e.g. The `CRI` and `Kubernetes` phases can add packages to be installed in the `packages` phase.
+`konfigadm` using a chain of phases. phases earlier in the chain can update items later in the chain. e.g. The `CRI` and `Kubernetes` phases can add packages to be installed in the `packages` phase.
 
 ### Environment
 Environment variables are saved to `/etc/environment/` and are sourced before any commands runs.
@@ -124,19 +140,6 @@ environment:
 sysctls:
   net.ipv6.conf.all.disable_ipv6: 1
   net.ipv6.conf.default.disable_ipv6: 1
-```
-
-### Container Runtime (CRI)
-
-```yaml
-cri:
- version: 18.6.0
- type: docker
- config:
-   log-driver: json-file
-   log-opts:
-     max-size: 1000m
-     max-file": 3
 ```
 
 ### Containers
@@ -198,9 +201,9 @@ Post commands run after all the phases have completed and can be used for cleanu
 ## Runtime Tags
 
 ```bash
-configadm minify -c config.yml --tags ubuntu
+konfigadm minify -c config.yml --tags ubuntu
 # tags are detected by default when using the apply command
-configadm apply -c config
+konfigadm apply -c config
 ```
 
 Similar to go build tags, runtime tags provide a way of deciding what gets run, the following tags are provided by default:

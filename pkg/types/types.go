@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moshloop/configadm/pkg/os"
+	"github.com/moshloop/konfigadm/pkg/os"
 
-	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
-	"github.com/moshloop/configadm/pkg/utils"
+	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var (
-	Configadm = "configadm"
+	konfigadm = "konfigadm"
 )
 
 //Port maps src and target ports
@@ -205,13 +205,13 @@ type Config struct {
 	/** Native elements are "compiled" into primitive items in order to apply them **/
 
 	//Files is a map of destination path to lookup file path
-	// The lookup path is relative to where configadm is run from, not relative to the config file
+	// The lookup path is relative to where konfigadm is run from, not relative to the config file
 	// The content and permissions of the file will be compiled into primitive Filesystem elements, user and group ownership is ignored
 	// Both the destination and lookup path can be expressions
 	Files map[string]string `yaml:"files,omitempty"`
 
 	//Templates is a map of destination path to template lookup path
-	// The lookup path is relative to where configadm is run from, not relative to the config file
+	// The lookup path is relative to where konfigadm is run from, not relative to the config file
 	// Templates are compiled via a Jinja (Ansible-like) rendered into primitive filesystem objects
 	// Both the destination and lookup path can be expressions
 	Templates        map[string]string    `yaml:"templates,omitempty"`

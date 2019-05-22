@@ -23,7 +23,7 @@ var binary string
 func init() {
 	cwd, _ = os.Getwd()
 	cwd = filepath.Dir(cwd)
-	binary = cwd + "/dist/configadm"
+	binary = cwd + "/dist/konfigadm"
 }
 
 type Container struct {
@@ -118,14 +118,14 @@ var fixtures = []struct {
 	// {"sysctl.yml"},
 }
 
-type Configadm struct {
+type konfigadm struct {
 }
 
-func (c Configadm) Verify(config ...string) bool {
+func (c konfigadm) Verify(config ...string) bool {
 	return false
 }
 
-func (c Configadm) Apply(config ...string) bool {
+func (c konfigadm) Apply(config ...string) bool {
 	return false
 }
 

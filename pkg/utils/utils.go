@@ -61,7 +61,6 @@ func Exec(sh string, args ...interface{}) error {
 		return fmt.Errorf("%s failed to run", sh)
 	}
 	return nil
-
 }
 
 func takeSliceArg(arg interface{}) (out []interface{}, ok bool) {

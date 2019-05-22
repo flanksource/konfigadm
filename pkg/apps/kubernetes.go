@@ -1,6 +1,6 @@
 package apps
 
-import . "github.com/moshloop/configadm/pkg/types"
+import . "github.com/moshloop/konfigadm/pkg/types"
 
 var Kubernetes Phase = kubernetes{}
 

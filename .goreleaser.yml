@@ -1,8 +1,6 @@
 release:
   disable: false
   github:
-    owner: moshloop
-    name: configadm
 builds:
     - env:
         - CGO_ENABLED=0
@@ -12,6 +10,19 @@ builds:
        - windows
        - linux
        - darwin
+
+nfpms:
+    -
+      name_template: "{{ .ProjectName }}"
+      replacements:
+        amd64: 64-bit
+        386: 32-bit
+        darwin: macOS
+
+      license: Apache 2.0
+      formats:
+        - deb
+        - rpm
 
 archive:
   replacements:

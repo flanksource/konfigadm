@@ -1,7 +1,7 @@
 package apps
 
 import (
-	. "github.com/moshloop/configadm/pkg/types"
+	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
 var CNI Phase = cni{}

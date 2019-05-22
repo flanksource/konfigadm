@@ -1,4 +1,4 @@
-module github.com/moshloop/configadm
+module github.com/moshloop/konfigadm
 
 require (
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
@@ -10,6 +10,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/flosch/pongo2 v0.0.0-20181225140029-79872a7b2769
+	github.com/ghodss/yaml v1.0.0
 	github.com/goreleaser/goreleaser v0.106.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/juju/errors v0.0.0-20190207033735-e65537c515d7 // indirect

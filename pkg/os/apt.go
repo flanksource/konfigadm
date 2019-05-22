@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moshloop/configadm/pkg/utils"
+	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 

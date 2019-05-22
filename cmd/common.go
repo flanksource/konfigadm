@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	_ "github.com/moshloop/configadm/pkg"
-	"github.com/moshloop/configadm/pkg/os"
-	"github.com/moshloop/configadm/pkg/types"
+	_ "github.com/moshloop/konfigadm/pkg"
+	"github.com/moshloop/konfigadm/pkg/os"
+	"github.com/moshloop/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

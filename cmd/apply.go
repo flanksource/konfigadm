@@ -3,8 +3,8 @@ package cmd
 import (
 	"io/ioutil"
 
-	_ "github.com/moshloop/configadm/pkg"
-	"github.com/moshloop/configadm/pkg/utils"
+	_ "github.com/moshloop/konfigadm/pkg"
+	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

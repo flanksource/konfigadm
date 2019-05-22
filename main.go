@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/moshloop/configadm/cmd"
+	"github.com/moshloop/konfigadm/cmd"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -17,7 +17,7 @@ var (
 
 func main() {
 	var root = &cobra.Command{
-		Use: "configadm",
+		Use: "konfigadm",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			level, _ := cmd.Flags().GetCount("loglevel")
 			switch {
@@ -44,7 +44,7 @@ func main() {
 	}
 	root.AddCommand(&cobra.Command{
 		Use:   "version",
-		Short: "Print the version of configadm",
+		Short: "Print the version of konfigadm",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(version)

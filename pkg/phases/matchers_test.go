@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/moshloop/configadm/pkg/types"
+	. "github.com/moshloop/konfigadm/pkg/types"
 
 	"github.com/onsi/gomega/types"
 )

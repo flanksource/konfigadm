@@ -3,7 +3,7 @@ all: test integration
 
 .PHONY: linux
 linux:
-	GOOS=linux go build -o dist/configadm -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' .
+	GOOS=linux go build -o dist/konfigadm -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' .
 
 .PHONY: test
 test:

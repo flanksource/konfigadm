@@ -3,7 +3,7 @@ package os
 import (
 	"strings"
 
-	"github.com/moshloop/configadm/pkg/utils"
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var (

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	_ "github.com/moshloop/configadm/pkg"
+	_ "github.com/moshloop/konfigadm/pkg"
 	"github.com/spf13/cobra"
 )
 

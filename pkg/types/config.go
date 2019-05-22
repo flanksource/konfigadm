@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/moshloop/configadm/pkg/os"
+	"github.com/moshloop/konfigadm/pkg/os"
 
-	cloudinit "github.com/moshloop/configadm/pkg/cloud-init"
+	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
 	yaml "gopkg.in/yaml.v3"
@@ -94,8 +94,8 @@ func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	for path, content := range files {
 		cloud.AddFile(path, content.Content)
 	}
-	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", Configadm), ToScript(commands))
-	cloud.AddCommand(fmt.Sprintf("/usr/bin/%s.sh", Configadm))
+	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", konfigadm), ToScript(commands))
+	cloud.AddCommand(fmt.Sprintf("/usr/bin/%s.sh", konfigadm))
 	return *cloud
 }
 
@@ -118,7 +118,7 @@ func (sys *Config) Init() {
 	sys.PackageRepos = &[]PackageRepo{}
 	sys.Packages = &[]Package{}
 	sys.Context = &SystemContext{
-		Name: Configadm,
+		Name: konfigadm,
 		Vars: make(map[string]interface{}),
 	}
 }

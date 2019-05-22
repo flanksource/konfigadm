@@ -1,8 +1,8 @@
 package phases
 
 import (
-	"github.com/moshloop/configadm/pkg/os"
-	"github.com/moshloop/configadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/os"
+	"github.com/moshloop/konfigadm/pkg/types"
 )
 
 func GetTags(os os.OS) []types.Flag {
