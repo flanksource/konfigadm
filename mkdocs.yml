@@ -1,0 +1,27 @@
+repo_url: https://github.com/moshloop/konfigadm/
+repo_name: Konfigadm
+site_name: Konfigadm
+theme: material
+markdown_extensions:
+  - admonition
+  - fenced_code
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - codehilite:
+      linenums: true
+nav:
+  - Concepts: ./concepts.md
+  - Tags: ./tags.md
+  - Apps:
+    - Containers: ./containers.md
+    - CRI: ./cri.md
+    - Kubernetes: ./k8s.md
+  - Native:
+    - Packages: ./packages.md
+    - Files: ./files.md
+    - Templates: ./templates.md
+    - Sysctl: ./sysctl.md
+    - Environment: ./environment.md
+  - Primitives:
+    - Commands: ./commands.md
+    - Files: ./files.md
