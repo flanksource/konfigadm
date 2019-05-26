@@ -12,7 +12,7 @@ go:
 
 before_install:
   - go mod download
-  - sudo pip install mkdocs mkdocs-material pymdown-extensions Pygments
+  - sudo pip install mkdocs==1.0.4 mkdocs-material pymdown-extensions Pygments
 
 script:
   - make all
