@@ -4,8 +4,8 @@
   container=$(docker create -v $CWD_VOL:$PWD alpine /bin/sleep 30)
   cleanup() {
     echo "Cleaning up"
-    docker volume rm $CWD_VOL
     docker rm --force $container
+    docker volume rm $CWD_VOL
   }
   docker cp $PWD $container:/$(dirname $PWD)
   trap cleanup EXIT
