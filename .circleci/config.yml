@@ -23,4 +23,6 @@ workflows:
   build:
     jobs:
       - build
-      - docs
+      - docs:
+          context: Github
+
