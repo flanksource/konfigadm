@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/moshloop/konfigadm.svg?branch=master)](https://travis-ci.org/moshloop/konfigadm)
+[![CircleCI](https://circleci.com/gh/moshloop/konfigadm.svg?style=svg)](https://circleci.com/gh/moshloop/konfigadm)
 [![codecov](https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/konfigadm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/konfigadm)](https://goreportcard.com/report/github.com/moshloop/konfigadm)
 
@@ -58,7 +58,7 @@ The kubernetes config element is the primary purpose of `konfigadm`, configuring
 * Set any sysctl values that are required
 
 ```bash
-konfigadm apply -c k8s.yml`
+konfigadm apply -c k8s.yml
 ```
 
 `k8s.yml`
