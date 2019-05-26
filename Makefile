@@ -15,7 +15,6 @@ integration: linux
 
 .PHONY: docs
 docs:
-	pip install mkdocs mkdocs-material pymdown-extensions Pygments
 	git remote add docs "https://$(GH_TOKEN)@github.com/moshloop/konfigadm.git"
 	git fetch docs && git fetch docs gh-pages:gh-pages
 	mkdocs gh-deploy -v --remote-name docs
