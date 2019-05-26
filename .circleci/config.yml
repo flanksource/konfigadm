@@ -15,7 +15,7 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
-      - run: pip install mkdocs mkdocs-material pymdown-extensions Pygments
+      - run: sudo pip install mkdocs mkdocs-material pymdown-extensions Pygments
       - run: make docs
 workflows:
   version: 2
