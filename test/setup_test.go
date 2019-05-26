@@ -16,6 +16,10 @@ import (
 
 // uses a sensible default on windows (tcp/http) and linux/osx (socket)
 var docker, _ = dockertest.NewPool("")
+
+//cwdVol contains the id of a volume in which the current working directory has been copied into
+// this is required due to -v $PWD:$PWD not working on circleci
+var cwdVol string
 var cwd string
 var env []string
 var binary string
@@ -23,6 +27,9 @@ var binary string
 func init() {
 	cwd, _ = os.Getwd()
 	cwd = filepath.Dir(cwd)
+	cwdVol = os.Getenv("CWD_VOL")
+	os.Stderr.WriteString(fmt.Sprintf("env: %+v", os.Environ()))
+	os.Stderr.WriteString("CWD:" + cwdVol + ":" + os.ExpandEnv("$CWD_VOL") + "\n")
 	binary = cwd + "/dist/konfigadm"
 }
 
@@ -54,7 +61,7 @@ func (c *Container) Exec(args ...string) (string, error) {
 func newContainer() (*Container, error) {
 
 	volumes := []string{
-		fmt.Sprintf("%s:%s", cwd, cwd),
+		fmt.Sprintf("%s:%s", cwdVol, cwd),
 		"/sys/fs/cgroup:/sys/fs/cgroup",
 	}
 
