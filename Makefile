@@ -10,7 +10,7 @@ test:
 	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic
 
 .PHONY: integration
-integration:
+integration: linux
 		./scripts/e2e.sh
 
 .PHONY: docs

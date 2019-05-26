@@ -28,8 +28,6 @@ func init() {
 	cwd, _ = os.Getwd()
 	cwd = filepath.Dir(cwd)
 	cwdVol = os.Getenv("CWD_VOL")
-	os.Stderr.WriteString(fmt.Sprintf("env: %+v", os.Environ()))
-	os.Stderr.WriteString("CWD:" + cwdVol + ":" + os.ExpandEnv("$CWD_VOL") + "\n")
 	binary = cwd + "/dist/konfigadm"
 }
 
