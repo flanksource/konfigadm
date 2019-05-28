@@ -11,7 +11,7 @@ test: &test
     - setup_remote_docker
     - checkout
     - run: go mod download
-    - run: IMAGE=jrei/systemd-$CIRCLE_JOB make test integration
+    - run: IMAGE="jrei/systemd-$CIRCLE_JOB" make test integration
 jobs:
   "ubuntu:1604":
       <<: *test
