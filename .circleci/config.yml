@@ -47,8 +47,6 @@ workflows:
       - "fedora:latest"
       - publish-github-release:
           context: Github
-          requires:
-            - build
           filters:
             branches:
               ignore: /.*/
