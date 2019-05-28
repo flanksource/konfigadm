@@ -24,3 +24,20 @@ kubernetes:
 
 The config can also be specified via stdin: `echo "kubernetes: {version: 1.14.1}" | konfigadm minify -c -`
 
+Specifying a kubernetes app is equivalent to:
+
+```yaml
+packageRepos:
+ - deb https://apt.kubernetes.io/ kubernetes-xenial main #+debian
+ - https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 #+redhat
+gpg:
+ - https://packages.cloud.google.com/apt/doc/apt-key.gpg #+debian
+ - https://packages.cloud.google.com/yum/doc/yum-key.gpg #+redhat
+ - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg #+redhat
+packages:
+ - kubelet=1.14.1
+ - kubeadm=1.14.1
+ - kubectl=1.14.1
+sysctls:
+ vm.swapinness: 1
+```

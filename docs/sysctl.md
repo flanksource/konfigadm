@@ -1,4 +1,5 @@
-### Systctl
+# Systctl
+
 ```yaml
 sysctls:
   net.ipv6.conf.all.disable_ipv6: 1

@@ -116,7 +116,7 @@ var fixtures = []struct {
 	{"services.yml"},
 	{"containers.yml"},
 	{"docker.yml"},
-	// {"env.yml"},
+	{"ansible.yml"},
 	{"files.yml"},
 	{"kubernetes.yml"},
 	{"packages.yml"},

@@ -1,0 +1,17 @@
+packages:
+  - ansible
+files:
+  /root/playbook.yml: |
+    ---
+    - name: This is a hello-world example
+      hosts: all
+      connection: local
+      tasks:
+        - name: Create a file called '/tmp/testfile.txt'
+          copy:
+            content: hello world
+            dest: /tmp/testfile.txt
+commands:
+  - ansible-playbook -i 'localhost, ' /root/playbook.yml #ubuntu
+  - #make konfigadm fail if the file has not been created correctly
+  - "[[ \"$(cat /tmp/testfile.txt)\" == \"hello world\" ]]"
