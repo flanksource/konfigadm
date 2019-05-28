@@ -179,12 +179,12 @@ type User struct {
 
 //File is a primitive representing a single file
 type File struct {
-	Content        string
-	ContentFromURL string
-	Unarchive      bool
-	Permissions    string
-	Owner          string
-	Flags          []string
+	Content        string   `yaml:"content,omitempty"`
+	ContentFromURL string   `yaml:"content_from_url,omitempty"`
+	Unarchive      bool     `yaml:"unarchive,omitempty"`
+	Permissions    string   `yaml:"permissions,omitempty"`
+	Owner          string   `yaml:"owner,omitempty"`
+	Flags          []string `yaml:"flags,omitempty"`
 }
 
 //Filesystem is a primitive for referencing all files

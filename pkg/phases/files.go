@@ -14,7 +14,10 @@ type filesPhase struct{}
 
 func (p filesPhase) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
-	files := Filesystem{}
+	files := make(map[string]File)
+	for k, v := range sys.Filesystem {
+		files[k] = v
+	}
 
 	for k, v := range sys.Files {
 		files[k] = File{Content: Lookup(v)}

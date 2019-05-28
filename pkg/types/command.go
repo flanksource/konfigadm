@@ -1,9 +1,9 @@
 package types
 
 import (
-	"fmt"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -26,7 +26,6 @@ func (cfg *Config) AddCommand(cmd string, flags ...*Flag) *Config {
 	}
 	cfg.Commands = append(cfg.Commands, command)
 	return cfg
-
 }
 
 //UnmarshalYAML decodes comments into tags
@@ -41,7 +40,8 @@ func (c *Command) UnmarshalYAML(node *yaml.Node) error {
 		if FLAG, ok := FLAG_MAP[flag]; ok {
 			c.Flags = append(c.Flags, FLAG)
 		} else {
-			return fmt.Errorf("Unknown flag: %s", flag)
+			log.Warnf("Ignoring flags: %s on line: %s\n", comment, node.Value)
+			return nil
 		}
 	}
 	return nil
