@@ -11,7 +11,7 @@ test:
 
 .PHONY: integration
 integration: linux
-		./scripts/e2e.sh
+		./scripts/e2e.sh $(test)
 
 .PHONY: docs
 docs:
