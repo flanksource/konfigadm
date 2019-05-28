@@ -22,11 +22,13 @@ var docker, _ = dockertest.NewPool("")
 var cwdVol string
 var cwd string
 var env []string
+var image string
 var binary string
 
 func init() {
 	cwd, _ = os.Getwd()
 	cwd = filepath.Dir(cwd)
+	image = os.Getenv("IMAGE")
 	cwdVol = os.Getenv("CWD_VOL")
 	binary = cwd + "/dist/konfigadm"
 }
@@ -63,11 +65,14 @@ func newContainer() (*Container, error) {
 		"/sys/fs/cgroup:/sys/fs/cgroup",
 	}
 
+	if image == "" {
+		image = "jrei/systemd-ubuntu:18.04"
+	}
 	opts := dockertest.RunOptions{
 		Privileged: true,
 		Env:        env,
-		Repository: "jrei/systemd-ubuntu",
-		Tag:        "18.04",
+		Repository: strings.Split(image, ":")[0],
+		Tag:        strings.Split(image, ":")[1],
 		Entrypoint: []string{"/lib/systemd/systemd"},
 		Mounts:     volumes,
 	}
@@ -144,7 +149,8 @@ func TestFull(t *testing.T) {
 				t.Errorf("Verify should have failed %s:\n %s\n", f.in, stdout)
 			}
 			os.Stderr.WriteString(stdout)
-
+			stdout, err = container.Exec("cat", "/etc/os-release")
+			os.Stderr.WriteString(stdout)
 			stdout, err = container.Exec(binary, "apply", "-c", cwd+"/fixtures/"+f.in)
 			if err != nil {
 				t.Errorf("Apply should succeed %s: %s\n", err, stdout)
