@@ -5,14 +5,24 @@ go: &go
   docker:
     - image: circleci/golang:1.11
   working_directory: /go/src/github.com/moshloop/konfigadm
+test: &test
+  <<: *go
+  steps:
+    - setup_remote_docker
+    - checkout
+    - run: go mod download
+    - run: IMAGE=jrei/systemd-$CIRCLE_JOB make test integration
 jobs:
-  build:
-    <<: *go
-    steps:
-      - setup_remote_docker
-      - checkout
-      - run: go mod download
-      - run: make test integration
+  "ubuntu:1604":
+      <<: *test
+  "ubuntu1:804":
+      <<: *test
+  "debian:9":
+      <<: *test
+  "centos:7":
+      <<: *test
+  "fedora:latest":
+      <<: *test
   publish-github-release:
       <<: *go
       steps:
@@ -30,10 +40,11 @@ workflows:
   version: 2
   build:
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore: "gh-pages"
+      - "ubuntu:1604"
+      - "ubuntu1:804"
+      - "debian:9"
+      - "centos:7"
+      - "fedora:latest"
       - publish-github-release:
           context: Github
           requires:
@@ -44,8 +55,5 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d+$/
       - docs:
-          filters:
-            branches:
-              ignore: "gh-pages"
           context: Github
 
