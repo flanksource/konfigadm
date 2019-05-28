@@ -12,6 +12,7 @@ markdown_extensions:
 nav:
   - Concepts: ./concepts.md
   - Tags: ./tags.md
+  - Integration: ./integration.md
   - Apps:
     - Containers: ./containers.md
     - CRI: ./cri.md
@@ -24,4 +25,4 @@ nav:
     - Environment: ./environment.md
   - Primitives:
     - Commands: ./commands.md
-    - Files: ./files.md
+    - Files: ./native_files.md
