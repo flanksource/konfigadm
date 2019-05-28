@@ -15,7 +15,7 @@ test: &test
 jobs:
   "ubuntu:1604":
       <<: *test
-  "ubuntu1:804":
+  "ubuntu:804":
       <<: *test
   "debian:9":
       <<: *test
