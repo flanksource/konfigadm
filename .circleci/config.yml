@@ -13,9 +13,9 @@ test: &test
     - run: go mod download
     - run: IMAGE="jrei/systemd-$CIRCLE_JOB" make test integration
 jobs:
-  "ubuntu:1604":
+  "ubuntu:16.04":
       <<: *test
-  "ubuntu:1804":
+  "ubuntu:18.04":
       <<: *test
   "debian:9":
       <<: *test
@@ -40,8 +40,8 @@ workflows:
   version: 2
   build:
     jobs:
-      - "ubuntu:1604"
-      - "ubuntu1:804"
+      - "ubuntu:16.04"
+      - "ubuntu:18.04"
       - "debian:9"
       - "centos:7"
       - "fedora:latest"
