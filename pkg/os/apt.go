@@ -89,5 +89,5 @@ apt-get -y autoclean`
 }
 
 func (p AptPackageManager) Setup() string {
-	return "apt-get update;  apt-get install -y --no-install-recommends --ignore-missing sudo apt-transport-https ca-certificates curl gpg-agent software-properties-common"
+	return "apt-get update;  apt-get install -y --no-install-recommends --ignore-missing sudo apt-transport-https ca-certificates curl gnupg2 software-properties-common"
 }

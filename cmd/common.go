@@ -24,8 +24,10 @@ func GetConfig(cmd *cobra.Command) *types.Config {
 	if ok, _ := cmd.Flags().GetBool("detect-tags"); ok {
 		for _, _os := range os.SupportedOperatingSystems {
 			if _os.DetectAtRuntime() {
-				log.Infof("Detected %s\n", _os.GetTag())
-				flags = append(flags, types.FLAG_MAP[_os.GetTag()])
+				log.Infof("Detected %s\n", _os.GetTags())
+				for _, tag := range _os.GetTags() {
+					flags = append(flags, types.FLAG_MAP[tag])
+				}
 			}
 		}
 	}
@@ -40,6 +42,8 @@ func GetConfig(cmd *cobra.Command) *types.Config {
 		}
 
 	}
+
+	log.Debugf("Using tags: %s\n", flags)
 	if err != nil {
 		log.Fatalf("%s", err)
 	}

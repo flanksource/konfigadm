@@ -99,18 +99,8 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 //PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
 type PackageRepo struct {
 	URL             string `yaml:"url"`
-	GPGKey          string `yaml:"gpgKey"`
-	Channel         string `yaml:"channel"`
-	VersionCodeName string `yaml:"versionCodeName"`
-	Flags           []Flag
-}
-
-//MarshalYAML ads tags as comments
-func (p PackageRepo) MarshalYAML() (interface{}, error) {
-	return &yaml.Node{
-		Kind:        yaml.ScalarNode,
-		Tag:         "!!str",
-		LineComment: Marshall(p.Flags),
-		Value:       p.URL,
-	}, nil
+	GPGKey          string `yaml:"gpgKey,omitempty"`
+	Channel         string `yaml:"channel,omitempty"`
+	VersionCodeName string `yaml:"versionCodeName,omitempty"`
+	Flags           []Flag `yaml:"tags,omitempty"`
 }

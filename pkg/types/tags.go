@@ -3,23 +3,26 @@ package types
 import (
 	"fmt"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
+	yaml "gopkg.in/yaml.v3"
 )
 
 var (
 	flagProcessors   = make([]FlagProcessor, 0)
-	DEBIAN           = Flag{Name: "debian", AlsoMatches: []Flag{UBUNTU}}
-	REDHAT           = Flag{Name: "redhat", AlsoMatches: []Flag{RHEL, CENTOS, AMAZON_LINUX}}
-	AMAZON_LINUX     = Flag{Name: "amazonLinux"}
-	RHEL             = Flag{Name: "rhel"}
-	CENTOS           = Flag{Name: "centos"}
-	UBUNTU           = Flag{Name: "ubuntu"}
+	DEBIAN           = Flag{Name: "debian"}
+	REDHAT           = Flag{Name: "redhat"}
+	AMAZON_LINUX     = Flag{Name: "amazonLinux", AlsoMatches: []Flag{REDHAT}}
+	RHEL             = Flag{Name: "rhel", AlsoMatches: []Flag{REDHAT}}
+	CENTOS           = Flag{Name: "centos", AlsoMatches: []Flag{REDHAT}}
+	UBUNTU           = Flag{Name: "ubuntu", AlsoMatches: []Flag{DEBIAN}}
 	AWS              = Flag{Name: "aws"}
 	VMWARE           = Flag{Name: "vmware"}
-	NOT_DEBIAN       = Flag{Name: "!debian", Negates: []Flag{DEBIAN, UBUNTU}}
-	NOT_REDHAT       = Flag{Name: "!redhat", Negates: []Flag{REDHAT, CENTOS, AMAZON_LINUX}}
+	NOT_DEBIAN       = Flag{Name: "!debian", Negates: []Flag{DEBIAN}}
+	NOT_REDHAT       = Flag{Name: "!redhat", Negates: []Flag{REDHAT}}
 	NOT_CENTOS       = Flag{Name: "!centos", Negates: []Flag{CENTOS}}
-	NOT_RHEL         = Flag{Name: "!rhel", Negates: []Flag{RHEL, REDHAT}}
-	NOT_UBUNTU       = Flag{Name: "!ubuntu", Negates: []Flag{DEBIAN}}
+	NOT_RHEL         = Flag{Name: "!rhel", Negates: []Flag{RHEL}}
+	NOT_UBUNTU       = Flag{Name: "!ubuntu", Negates: []Flag{UBUNTU}}
 	NOT_AWS          = Flag{Name: "!aws", Negates: []Flag{AWS}}
 	NOT_VMWARE       = Flag{Name: "!vmware", Negates: []Flag{VMWARE}}
 	NOT_AMAZON_LINUX = Flag{Name: "!amazonLinux", Negates: []Flag{AMAZON_LINUX}}
@@ -80,6 +83,9 @@ func (f *Flag) Matches(other Flag) bool {
 
 //MatchAll returns true if all constraints match at least one flag AND none of the constraints negates any flag
 func MatchAll(flags []Flag, constraints []Flag) bool {
+	if len(constraints) == 0 {
+		return true
+	}
 outer:
 	for _, constraint := range constraints {
 		for _, flag := range flags {
@@ -87,6 +93,7 @@ outer:
 				continue outer
 			}
 		}
+		log.Debugf("%s don't match any constraints %s\n", flags, constraints)
 		return false
 	}
 	return true
@@ -103,12 +110,29 @@ func Marshall(flags []Flag) string {
 	return strings.TrimSpace("#" + s)
 }
 
+//MarshalYAML ads tags as comments
+func (t Flag) MarshalYAML() (interface{}, error) {
+	return t.Name, nil
+}
+
+//UnmarshalYAML decodes comments into tags and parses modifiers for packages
+func (t *Flag) UnmarshalYAML(node *yaml.Node) error {
+	tag := GetTag(node.Value)
+	t.Name = tag.Name
+	t.Negates = tag.Negates
+	log.Infof("Unmarshal %s into %s", node.Value, tag)
+	return nil
+}
+
 func FilterFlags(commands []Command, flags ...Flag) []Command {
 	minified := []Command{}
 	for _, cmd := range commands {
 		if MatchAll(flags, cmd.Flags) {
 			minified = append(minified, cmd)
+		} else {
+			log.Debugf("%s with tags %s does not match any constrains %s\n", cmd, cmd.Flags, flags)
 		}
 	}
+
 	return minified
 }

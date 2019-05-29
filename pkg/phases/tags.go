@@ -6,5 +6,9 @@ import (
 )
 
 func GetTags(os os.OS) []types.Flag {
-	return []types.Flag{*types.GetTag(os.GetTag())}
+	tags := []types.Flag{}
+	for _, tag := range os.GetTags() {
+		tags = append(tags, *types.GetTag(tag))
+	}
+	return tags
 }

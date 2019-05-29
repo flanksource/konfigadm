@@ -9,9 +9,9 @@ type OS interface {
 	//GetPackageManager returns the packagemanager used by the OS
 	GetPackageManager() PackageManager
 
-	//GetTag returns the primary tag associated with the OS
+	//GetTags returns all the tags to which this OS applies
 	/*TODO GetTag doesn't return a Tag directly as it would create an import cycle**/
-	GetTag() string
+	GetTags() []string
 
 	//DetectAtRuntime will detect if it is compatible with the current running OS
 	DetectAtRuntime() bool

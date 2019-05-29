@@ -1,11 +1,14 @@
 package_repos:
-  - url: https://download.docker.com/linux/ubuntu
+  - url: https://download.docker.com/linux/ubuntu #ubuntu
     gpgKey: https://download.docker.com/linux/ubuntu/gpg
     channel: stable
+    tags:
+      - "ubuntu"
 packages:
   - device-mapper-persistent-data #+centos
   - lvm2  #+centos
   - socat
   - tar
-  - netcat-openbsd #+debian
+  - nano #ubuntu
+
   - nmap-netcat #+redhat

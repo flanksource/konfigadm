@@ -94,6 +94,14 @@ func (p packages) ProcessFlags(sys *Config, flags ...Flag) {
 		}
 	}
 	sys.Packages = &minified
+
+	minifiedRepos := []PackageRepo{}
+	for _, repo := range *sys.PackageRepos {
+		if MatchAll(flags, repo.Flags) {
+			minifiedRepos = append(minifiedRepos, repo)
+		}
+	}
+	sys.PackageRepos = &minifiedRepos
 }
 
 func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
