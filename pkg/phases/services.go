@@ -20,6 +20,9 @@ func (p services) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 		filename := fmt.Sprintf("/etc/systemd/system/%s.service", name)
 		svc.Extra.Service.ExecStart = svc.ExecStart
 		svc.Extra.Unit.Description = name
+		if svc.Extra.Install.WantedBy == "" && svc.Extra.Install.RequiredBy == "" {
+			svc.Extra.Install.WantedBy = "multi-user.target"
+		}
 		files[filename] = File{Content: svc.Extra.ToUnitFile()}
 		commands = append(commands, Command{Cmd: "systemctl enable " + name})
 		commands = append(commands, Command{Cmd: "systemctl start " + name})

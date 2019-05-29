@@ -21,7 +21,7 @@ func (r redhat) GetPackageManager() PackageManager {
 }
 
 func (r redhat) GetTags() []string {
-	return []string{"redhat"}
+	return []string{"redhat", "redhat-like"}
 }
 
 func (r redhat) DetectAtRuntime() bool {
@@ -40,7 +40,7 @@ func (c centos) GetPackageManager() PackageManager {
 }
 
 func (c centos) GetTags() []string {
-	return []string{"centos", "redhat"}
+	return []string{"centos", "redhat-like"}
 }
 
 func (c centos) DetectAtRuntime() bool {
@@ -59,7 +59,7 @@ func (r rhel) GetPackageManager() PackageManager {
 }
 
 func (r rhel) GetTags() []string {
-	return []string{"rhel", "redhat"}
+	return []string{"rhel", "redhat-like"}
 }
 
 func (r rhel) DetectAtRuntime() bool {
@@ -78,7 +78,7 @@ func (a amazonLinux) GetPackageManager() PackageManager {
 }
 
 func (a amazonLinux) GetTags() []string {
-	return []string{"amazonLinux", "redhat"}
+	return []string{"amazonLinux", "redhat-like"}
 }
 
 func (a amazonLinux) DetectAtRuntime() bool {

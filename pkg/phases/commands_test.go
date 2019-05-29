@@ -7,6 +7,10 @@ import (
 	"github.com/onsi/gomega"
 )
 
+func init() {
+	// log.SetLevel(log.TraceLevel)
+}
+
 func TestCommandRuntimeFlag(t *testing.T) {
 }
 

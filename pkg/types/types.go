@@ -81,15 +81,6 @@ func (c Container) Name() string {
 	return name
 }
 
-//Service is a systemd service to be installed and started
-type Service struct {
-	Name        string            `yaml:"name,omitempty"`
-	ExecStart   string            `yaml:"exec_start,omitempty"`
-	Environment map[string]string `yaml:"environment,omitempty"`
-	Extra       SystemD           `yaml:"extra,omitempty"`
-	// TODO: capabilities
-
-}
 
 //User mirrors the CloudInit User struct.
 type User struct {

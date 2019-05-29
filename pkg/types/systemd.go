@@ -4,6 +4,15 @@ import (
 	. "github.com/moshloop/konfigadm/pkg/utils"
 )
 
+//Service is a systemd service to be installed and started
+type Service struct {
+	Name        string            `yaml:"name,omitempty"`
+	ExecStart   string            `yaml:"exec_start,omitempty"`
+	Environment map[string]string `yaml:"environment,omitempty"`
+	Extra       SystemD           `yaml:"extra,omitempty"`
+	// TODO: capabilities
+}
+
 func (sys SystemD) ToUnitFile() string {
 	return "[Unit]\n" + StructToIni(sys.Unit) + "\n" +
 		"[Service]\n" + StructToIni(sys.Service) + "\n" +

@@ -7,8 +7,12 @@ import (
 
 func GetTags(os os.OS) []types.Flag {
 	tags := []types.Flag{}
-	for _, tag := range os.GetTags() {
-		tags = append(tags, *types.GetTag(tag))
+	for _, name := range os.GetTags() {
+		tag := types.GetTag(name)
+		if tag == nil {
+			panic("Unknown tag: " + name)
+		}
+		tags = append(tags, *tag)
 	}
 	return tags
 }

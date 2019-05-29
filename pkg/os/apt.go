@@ -82,12 +82,11 @@ func (p AptPackageManager) AddRepo(url string, channel string, versionCodeName s
 }
 
 func (p AptPackageManager) CleanupCaches() string {
-	return `
-	apt-get -y autoremove --purge
+	return `apt-get -y autoremove --purge
 apt-get -y clean
 apt-get -y autoclean`
 }
 
 func (p AptPackageManager) Setup() string {
-	return "apt-get update;  apt-get install -y --no-install-recommends --ignore-missing sudo apt-transport-https ca-certificates curl gnupg2 software-properties-common"
+	return "[[ $(which add-apt-repository 2> /dev/null) && $(which curl 2> /dev/null) && $(which sudo 2> /dev/null) ]] || (apt-get update;  apt-get install -y --no-install-recommends --ignore-missing sudo apt-transport-https ca-certificates curl gnupg2 software-properties-common)"
 }

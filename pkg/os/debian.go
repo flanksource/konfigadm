@@ -34,7 +34,7 @@ func (u ubuntu) GetPackageManager() PackageManager {
 }
 
 func (u ubuntu) GetTags() []string {
-	return []string{"ubuntu", "debian"}
+	return []string{"ubuntu", "debian-like"}
 }
 
 func (u ubuntu) DetectAtRuntime() bool {
@@ -53,7 +53,7 @@ func (d debian) GetPackageManager() PackageManager {
 }
 
 func (d debian) GetTags() []string {
-	return []string{"debian"}
+	return []string{"debian", "debian-like"}
 }
 
 func (d debian) DetectAtRuntime() bool {

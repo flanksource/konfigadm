@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/spf13/cobra"
 	yaml "gopkg.in/yaml.v3"
 )
@@ -14,7 +16,10 @@ var (
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			cfg := GetConfig(cmd)
-			fs, commands, _ := cfg.ApplyPhases()
+			fs, commands, err := cfg.ApplyPhases()
+			if err != nil {
+				log.Fatalf("Error applying phases %s\n", err)
+			}
 			primitive, _ := cmd.Flags().GetBool("primitive")
 			if primitive {
 				data, _ := yaml.Marshal(map[string]interface{}{

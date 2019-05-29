@@ -6,19 +6,23 @@ import (
 	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
+func init() {
+	// log.SetLevel(log.TraceLevel)
+}
+
 func TestPackageRuntimeFlag(t *testing.T) {
 
 }
 
 func TestPackageDebian(t *testing.T) {
-	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN).Build()
+	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN, DEBIAN_LIKE).Build()
 	g.Expect(cfg).To(ContainPackage("netcat-openbsd"))
 	g.Expect(cfg).NotTo(ContainPackage("nmap-netcat"))
 
 }
 
 func TestPackageRedhat(t *testing.T) {
-	cfg, g := NewFixture("packages.yml", t).WithFlags(REDHAT).Build()
+	cfg, g := NewFixture("packages.yml", t).WithFlags(REDHAT, REDHAT_LIKE).Build()
 	g.Expect(cfg).NotTo(ContainPackage("netcat-openbsd"))
 	g.Expect(cfg).To(ContainPackage("nmap-netcat"))
 }
@@ -28,7 +32,7 @@ func TestPackageUninstall(t *testing.T) {
 }
 
 func TestPackageInstall(t *testing.T) {
-	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN).Build()
+	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN_LIKE).Build()
 	_, commands, _ := cfg.ApplyPhases()
 	g.Expect(commands).To(MatchCommand("apt-get install -y"))
 	g.Expect(commands).To(MatchCommand("socat"))

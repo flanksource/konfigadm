@@ -1,5 +1,9 @@
 package os
 
+import (
+	"strings"
+)
+
 //OS provides an abstraction over different operating systems
 type OS interface {
 
@@ -33,6 +37,17 @@ var SupportedOperatingSystems = OperatingSystemList{
 var BaseOperatingSystems = OperatingSystemList{
 	Debian,
 	Redhat,
+}
+
+func GetOSForTag(name string) *OS {
+	for _, os := range SupportedOperatingSystems {
+		for _, tag := range os.GetTags() {
+			if strings.EqualFold(tag, name) {
+				return &os
+			}
+		}
+	}
+	return nil
 }
 
 //Detect returns a list of all compatible operating systems at runtime

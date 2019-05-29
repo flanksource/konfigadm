@@ -34,7 +34,7 @@ func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
 }
 
 //AddPackageRepo is a helper function to add new packages repos
-func (cfg *Config) AddPackageRepo(url string, gpg string, flag *Flag) *Config {
+func (cfg *Config) AddPackageRepo(url string, gpg string, flag Flag) *Config {
 	pkg := PackageRepo{
 		URL: url,
 	}
@@ -46,11 +46,9 @@ func (cfg *Config) AddPackageRepo(url string, gpg string, flag *Flag) *Config {
 }
 
 //AppendPackageRepo appends a new package repository to the list
-func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...*Flag) *Config {
+func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...Flag) *Config {
 	for _, flag := range flags {
-		if flag != nil {
-			repo.Flags = append(repo.Flags, *flag)
-		}
+		repo.Flags = append(repo.Flags, flag)
 	}
 	if repo.Channel == "" {
 		repo.Channel = "main"
@@ -60,7 +58,7 @@ func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...*Flag) *Config {
 	return cfg
 }
 
-//MarshalYAML ads tags as comments
+//MarshalYAML adds tags as comments
 func (p Package) MarshalYAML() (interface{}, error) {
 	return &yaml.Node{
 		Kind:        yaml.ScalarNode,
