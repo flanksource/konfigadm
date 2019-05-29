@@ -12,6 +12,6 @@ files:
             content: hello world
             dest: /tmp/testfile.txt
 commands:
-  - ansible-playbook -i 'localhost, ' /root/playbook.yml #ubuntu
+  - ansible-playbook -i 'localhost, ' /root/playbook.yml
   - #make konfigadm fail if the file has not been created correctly
   - "[[ \"$(cat /tmp/testfile.txt)\" == \"hello world\" ]]"
