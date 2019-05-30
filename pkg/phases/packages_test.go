@@ -24,7 +24,7 @@ func TestPackageDebian(t *testing.T) {
 func TestPackageRedhat(t *testing.T) {
 	cfg, g := NewFixture("packages.yml", t).WithFlags(REDHAT, REDHAT_LIKE).Build()
 	g.Expect(cfg).NotTo(ContainPackage("netcat-openbsd"))
-	g.Expect(cfg).To(ContainPackage("nmap-netcat"))
+	g.Expect(cfg).To(ContainPackage("nmap-ncat"))
 }
 
 func TestPackageUninstall(t *testing.T) {
