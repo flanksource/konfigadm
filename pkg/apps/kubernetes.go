@@ -22,9 +22,13 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 			GPGKey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg",
 		}, REDHAT)
 
-	sys.AddPackage("kubelet=="+sys.Kubernetes.Version+"-00", nil).
-		AddPackage("kubeadm=="+sys.Kubernetes.Version+"-00", nil).
-		AddPackage("kubectl=="+sys.Kubernetes.Version+"-00", nil)
+	sys.AddPackage("kubelet-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
+		AddPackage("kubeadm-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
+		AddPackage("kubectl-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE)
+
+	sys.AddPackage("kubelet=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
+		AddPackage("kubeadm=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
+		AddPackage("kubectl=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE)
 
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
 	// sys.Sysctls["vm.swappiness"] = "0"

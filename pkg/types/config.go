@@ -74,11 +74,13 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	commands = append(commands, sys.PostCommands...)
 
 	log.Tracef("Commands before filtering %+v\n", commands)
-
 	//Apply tag filters on any output commands
 	commands = FilterFlags(commands, sys.Context.Flags...)
 	log.Tracef("Commands after filtering %+v\n", commands)
 
+	log.Tracef("Files before filtering: %s\n", files)
+	files = FilterFilesystemByFlags(files, sys.Context.Flags...)
+	log.Tracef("Files after filtering: %s\n", files)
 	return files, commands, nil
 }
 

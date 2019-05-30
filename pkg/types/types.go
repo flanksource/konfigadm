@@ -175,7 +175,7 @@ type File struct {
 	Unarchive      bool     `yaml:"unarchive,omitempty"`
 	Permissions    string   `yaml:"permissions,omitempty"`
 	Owner          string   `yaml:"owner,omitempty"`
-	Flags          []string `yaml:"flags,omitempty"`
+	Flags          []Flag `yaml:"tags,omitempty"`
 }
 
 //Filesystem is a primitive for referencing all files

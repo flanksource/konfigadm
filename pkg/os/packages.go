@@ -8,8 +8,7 @@ type PackageManager interface {
 	Install(pkg ...string) string
 	Uninstall(pkg ...string) string
 	Mark(pkg ...string) string
-	AddKey(url string) string
-	AddRepo(url string, channel string, versionCodeName string) string
+	AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) string
 	GetInstalledVersion(pkg string) string
 	CleanupCaches() string
 	Update() string

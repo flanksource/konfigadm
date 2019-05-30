@@ -160,3 +160,18 @@ func FilterFlags(commands []Command, flags ...Flag) []Command {
 	}
 	return minified
 }
+
+func FilterFilesystemByFlags(files Filesystem, flags ...Flag) Filesystem {
+	var filtered = make(Filesystem)
+	for path, file := range files {
+		if NegatesAny(flags, file.Flags) {
+			continue
+		}
+		if len(file.Flags) == 0 || MatchesAny(flags, file.Flags) {
+			filtered[path] = file
+		} else {
+			log.Debugf("%s with tags %s does not match any constraints %s\n", path, file.Flags, flags)
+		}
+	}
+	return filtered
+}

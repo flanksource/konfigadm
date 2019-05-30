@@ -11,4 +11,4 @@ packages:
   - tar
   - nano #ubuntu
   - netcat-openbsd #+debian-like
-  - nmap-netcat #+redhat-like
+  - nmap-ncat #+redhat-like

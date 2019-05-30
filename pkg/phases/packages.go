@@ -2,6 +2,8 @@ package phases
 
 import (
 	"fmt"
+	"net/url"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 
@@ -36,18 +38,22 @@ func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 					Flags: GetTags(_os),
 				})
 			}
-			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().AddKey(repo.GPGKey),
-				Flags: repo.Flags,
-			})
+			// commands = append(commands, Command{
+			// 	Cmd:   _os.GetPackageManager().AddKey(repo.GPGKey),
+			// 	Flags: repo.Flags,
+			// })
 		}
 		if repo.URL != "" {
 			codename := repo.VersionCodeName
 			if codename == "" {
 				codename = "$(lsb_release -cs)"
 			}
+			if repo.Name == "" {
+				uri, _ := url.Parse(repo.URL)
+				repo.Name = filepath.Base(uri.Path)
+			}
 			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().AddRepo(repo.URL, repo.Channel, codename),
+				Cmd:   _os.GetPackageManager().AddRepo(repo.URL, repo.Channel, codename, repo.Name, repo.GPGKey),
 				Flags: repo.Flags,
 			})
 		}

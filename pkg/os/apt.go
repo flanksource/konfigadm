@@ -70,15 +70,17 @@ func (p AptPackageManager) GetInstalledVersion(pkg string) string {
 	return version
 }
 
-func (p AptPackageManager) AddKey(url string) string {
-	return fmt.Sprintf("curl -fsSKL %s | sudo apt-key add -", url)
-}
-
-func (p AptPackageManager) AddRepo(url string, channel string, versionCodeName string) string {
+func (p AptPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) string {
 	if channel == "" {
 		channel = "main"
 	}
-	return fmt.Sprintf("add-apt-repository \"deb [arch=amd64] %s %s %s\"", url, versionCodeName, channel)
+
+	cmd := ""
+	if gpgKey != "" {
+		cmd = fmt.Sprintf("curl -fsSKL %s | sudo apt-key add - && ", url)
+	}
+
+	return cmd + fmt.Sprintf("add-apt-repository \"deb [arch=amd64] %s %s %s\"", url, versionCodeName, channel)
 }
 
 func (p AptPackageManager) CleanupCaches() string {

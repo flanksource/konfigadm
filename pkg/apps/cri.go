@@ -63,7 +63,15 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 		Channel: "stable",
 	}, DEBIAN)
 
+	sys.AppendPackageRepo(PackageRepo{
+		Name:   "docker-ce",
+		URL:    "https://download.docker.com/linux/centos/7/x86_64/stable",
+		GPGKey: "https://download.docker.com/linux/centos/gpg",
+	}, REDHAT_LIKE)
+
+	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
+
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
-	sys.AddCommand("systemctl enable docker && systemctl start docker", &DEBIAN_LIKE)
+	sys.AddCommand("systemctl enable docker && systemctl start docker")
 	return []Command{}, Filesystem{}, nil
 }

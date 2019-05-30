@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"io/ioutil"
+	"os"
+	"strconv"
 
 	_ "github.com/moshloop/konfigadm/pkg"
 	"github.com/moshloop/konfigadm/pkg/utils"
@@ -25,7 +27,11 @@ var (
 
 			for path, file := range files {
 				log.Infof("Writing %s\n", path)
-				ioutil.WriteFile(path, []byte(file.Content), 0644)
+				perms, _ := strconv.Atoi(file.Permissions)
+				if perms == 0 {
+					perms = 0644
+				}
+				ioutil.WriteFile(path, []byte(file.Content), os.FileMode(perms))
 			}
 
 			for _, cmd := range commands {

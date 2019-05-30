@@ -96,6 +96,7 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 
 //PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
 type PackageRepo struct {
+	Name            string `yaml:"name"`
 	URL             string `yaml:"url"`
 	GPGKey          string `yaml:"gpgKey,omitempty"`
 	Channel         string `yaml:"channel,omitempty"`
