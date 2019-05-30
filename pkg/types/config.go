@@ -78,10 +78,18 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	commands = FilterFlags(commands, sys.Context.Flags...)
 	log.Tracef("Commands after filtering %+v\n", commands)
 
-	log.Tracef("Files before filtering: %s\n", files)
+	log.Tracef("Files before filtering: %s\n", GetKeys(files))
 	files = FilterFilesystemByFlags(files, sys.Context.Flags...)
-	log.Tracef("Files after filtering: %s\n", files)
+	log.Tracef("Files after filtering: %s\n", GetKeys(files))
 	return files, commands, nil
+}
+
+func GetKeys(m map[string]File) []string {
+	keys := []string{}
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
 }
 
 //ToCloudInit will apply all phases and produce a CloudInit object from the results
