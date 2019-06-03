@@ -59,7 +59,7 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 	}
 
 	if versionCodeName == "" {
-		cmds = cmds.AddDependency("which lsb_release 2>&1 > /dev/null || apt-get install -y lsb_release")
+		cmds = cmds.AddDependency("which lsb_release 2>&1 > /dev/null || apt-get install -y lsb-release")
 		versionCodeName = "$(lsb_release -cs)"
 	}
 	if name == "" {

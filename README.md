@@ -2,6 +2,7 @@
 [![codecov](https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/konfigadm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/konfigadm)](https://goreportcard.com/report/github.com/moshloop/konfigadm)
 
+[docs](www.moshloop.com/konfigadm)
 # konfigadm
 
 konfigadm is a node instance configuration tool focused on bootstrapping nodes for container based environments
@@ -29,222 +30,29 @@ Flags:
   -e, --var strings      Extra Variables to in key=value format
 ```
 
-## Design
 
-![](./docs/flow.png)
+## Testing
 
-### Mental Models
-
-`konfigadm` intentionally reuses mental models and concepts from kubernetes, golang and ansible these include:
-
-* Kubernetes declarative model for specifying intent
-* Operators for providing higher-order abstractions
-* Go build tags in comments for specifying behavior based on OS, Cloud etc..
-* Ansible's way of defining variables and allowing for merging of multiple variable files.
+* jrei/systemd-ubuntu:16.04
+* jrei/systemd-ubuntu:18.04
+* jrei/systemd-debian:9
+* jrei/systemd-debian:latest
+* jrei/systemd-centos:7
+* jrei/systemd-fedora:latest
 
 
-### Apps
-
-Apps provide an abstraction over low-level native and primitive elements, They describe high-level intent for using an application that may require multiple elements to configure.
+## Features
 
 
-#### Kubernetes
+* Dependency free and easily embeddable into an image builder.
+* Has built-in higher-order abstractions for kubernetes, containers, cri, cni, etc.
+* Declarative, The order of operations cannot be changed, there are no implicit or explicit dependencies between items, no conditionals (besides for os/cloud tags) or control flows
+* Typed, can validate the configuration(e.g. docker image name is valid, systemd.unit file only includes valid keys, and the values are typed correctly)
+* Supports multiple operating systems and package managers.
+* Abstractions and many of the built-in elements are easily unit-testable due to the use of virtual filesystem and command execution list.
+* Automatic testing based on the declarations (If I have declared a service, I can automatically test if that service is running and health (or crash-looping), If I declare a container runtime, ensure that I can connect to it via it’s client )
+* Generate cloud-init or shell scripts to be used by other systems
 
-The kubernetes config element is the primary purpose of `konfigadm`, configuring machines so that they have all pre-requisites met for running `kubeadm`
-
-* Install and mark the specific versions of `kubeadm`, `kubelet`, `kubectl`, `kubernetes-cni`
-* Install a container runtime if not specified
-* Prepull images required to run kubernetes
-* Set any sysctl values that are required
-
-```bash
-konfigadm apply -c k8s.yml
-```
-
-`k8s.yml`
-```yaml
-kubernetes:
-  version: 1.14.1
-```
-
-The config can also be specified via stdin: `echo "kubernetes: {version: 1.14.1}" | konfigadm minify -c -`
-
-```yaml
-kubernetes:
-  version: 1.14.1
-```
-
-#### Container Runtimes (CRI)
-
-```yaml
-cri:
- version: 18.6.0
- type: docker
- config:
-   log-driver: json-file
-   log-opts:
-     max-size: 1000m
-     max-file": 3
-```
-
-### Native
-
-Native elements, are not application specific they include packages, repositories, keys, containers, sysctls and environment variables.
-
-e.g running `echo "kubernetes: {version: 1.14.1}" | konfigadm minify -c -` will result in the application being transformed into native elements.
-```yaml
-packageRepos:
- - deb https://apt.kubernetes.io/ kubernetes-xenial main #+debian
- - https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 #+redhat
-gpg:
- - https://packages.cloud.google.com/apt/doc/apt-key.gpg #+debian
- - https://packages.cloud.google.com/yum/doc/yum-key.gpg #+redhat
- - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg #+redhat
-packages:
- - kubelet=1.14.1
- - kubeadm=1.14.1
- - kubectl=1.14.1
-sysctls:
- vm.swapinness: 1
-```
-
-Native elements are verifiable, i.e. if you specify a container runtime then `konfigadm` will verify that the runtime has a service enabled and started and that `root` can connect to the daemon and list running containers.
-
-### Primitives
-Primitives are the low-level commands and files that are need to implement native items.
-
-For example a `package: [curl]` native element would create a `apt-get install -y curl` primitive command on debian systems and `yum install -y curl` on redhat systems
-
-The relationship between the 3 kinds is similar to Deployment, ReplicaSet and Pod. Apps insert and/or update native elements, native elements are then “compiled” down to primitives.
-
-### Example chain for kubernetes
-
-![](./docs/kubernetes_app.png)
-
-### Merge Behavior / Composability
-
-Specs can be combined and merged together - e.g. a cloud provider may install PV drivers and a cluster operator may install organization specific motd/issue files.
-
-1. Configuration from files specified later in the chain overwrite previous configurations. (Similar to the ansible [variable precedence](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable) rules)
-1. **Lists**  are appended to the end of the existing lists (Unsupported in ansible)
-1. **Maps** are merged with existing maps (e.g. [hash_behaviour = merge](https://docs.ansible.com/ansible/2.4/intro_configuration.html#hash-behaviour) in ansible)
-
-
-## Primitives
-
-`konfigadm` using a chain of phases. phases earlier in the chain can update items later in the chain. e.g. The `CRI` and `Kubernetes` phases can add packages to be installed in the `packages` phase.
-
-### Environment
-Environment variables are saved to `/etc/environment/` and are sourced before any commands runs.
-```yaml
-environment:
-  env1: "val: {{env1}}"
-```
-
-### Systctl
-```yaml
-sysctls:
-  net.ipv6.conf.all.disable_ipv6: 1
-  net.ipv6.conf.default.disable_ipv6: 1
-```
-
-### Containers
-```yaml
-containers:
-  - image: "docker.io/consul:1.3.1"
-    args: agent -ui -bootstrap -server
-    docker_args: --net=host {% if not private_dns | is_empty %}--dns={{private_dns}}{% endif %}
-    env:
-      CONSUL_CLIENT_INTERFACE: "{{consul_bind_interface}}"
-      CONSUL_BIND_INTERFACE: "{{consul_bind_interface}}"
-```
-
-### Packages
-
-Packages can include modifiers:
-* `-` - Package should be removed if installed
-* `+` - Package should be update to the latest
-* `=` - Package should me marked to prevent future automatic updates
-
-```yaml
-packages:
-  - socat
-  - -docker-common
-  - -docker
-  - =docker-ce==18.06
-```
-
-Packages can also leverage runtime flags:
-
-```yaml
-packages:
-  - netcat #+debian
-  - nmap-ncat #+redhat
-  - open-vm-tools #+vmware
-  - aws-cli #+aws
-  - azure-cli #+azure
-```
-
-### Services
-
-### Commands
-
-Commands are executed at 3 specific points:
-
-`pre_commands`
-Pre-commands are used to prepare the environment for execution, OS detection and setting of runtime flags is done in this phase so that they can be used in all other phases. e.g. set an environment variable based on the output of a command.
-
-`commands`
-Phases can only append to this Commands list.
-
-`pre_commands`
-Post commands run after all the phases have completed and can be used for cleanup functions are for handing off to other systems.
-
-## Natives
-
-## Runtime Tags
-
-```bash
-konfigadm minify -c config.yml --tags ubuntu
-# tags are detected by default when using the apply command
-konfigadm apply -c config
-```
-
-Similar to go build tags, runtime tags provide a way of deciding what gets run, the following tags are provided by default:
-
-
-* `centos`
-* `ubuntu`
-* `fedora`
-* `debian` matched for all debian based distros (ubuntu)
-* `rhel`
-* `redhat` matched for all redhat based distros (centos, fedora, rhel, amazon linux)
-* `amazonLinux`
-* `aws` matched when running inside Amazon Web Services
-* `azure` matched when running inside Azure
-* `vmware` matched when running on a vSphere Hypervisor
-* `kvm` matched when running on a KVM Hypervisor
-
-Tags can be applied to the following elements:
-* packages
-* packageRepos
-* packageKeys
-* commands, pre_commands, post_commands
-
-Multiple tags can be specified in which case all tags must match.
-```yaml
-packages:
-  # only install aws-cli on debian based system running in AWS
-  - aws-cli #+debian +aws
-```
-
-Tags can be negated using `!`
-
-```yaml
-pre_commands:
-  # attach a rhel subscription, but only if we are not running in AWS
-  - subscription manager attach #+rhel !aws
-```
 
 ## Contributing
 
@@ -265,7 +73,3 @@ And only integration tests via:
 ```bash
 make integration
 ```
-
-## Design
-
-See [Design Principles](./DESIGN.md)

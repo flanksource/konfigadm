@@ -50,7 +50,6 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 		case ProcessFlagsPhase:
 			v.ProcessFlags(sys, sys.Context.Flags...)
 		}
-
 	}
 
 	files := Filesystem{}

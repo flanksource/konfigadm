@@ -56,8 +56,15 @@ func getKeyFromTags(tags ...Flag) string {
 }
 
 func addPackageCommands(sys *Config, commands *Commands) {
+	// package installation can have 2 scenarios:
+	// 1) tags specified and we know the package manager
+	// 2) tags not specified, so we need to add tagged commands for each base operating system
+
+	// track operations by tag group
+	// TODO merge compatible tags, e.g. ubuntu and debian-like tags can be included in the same command
 	var managers = make(map[string]packageOperations)
 
+	// handle case 1) tags specified
 	for _, p := range *sys.Packages {
 		if len(p.Flags) == 0 {
 			continue
@@ -76,6 +83,7 @@ func addPackageCommands(sys *Config, commands *Commands) {
 		managers[getKeyFromTags(p.Flags...)] = ops
 	}
 
+	// handle case 2) tags not specified
 	for _, os := range BaseOperatingSystems {
 		for _, p := range *sys.Packages {
 			if len(p.Flags) > 0 {
@@ -96,6 +104,7 @@ func addPackageCommands(sys *Config, commands *Commands) {
 		}
 	}
 
+	// iterate over all tag/op combinations and emit commands
 	for _, ops := range managers {
 		os, _ := GetOSForTag(ops.tags...)
 		commands.Append(os.GetPackageManager().Update().WithTags(ops.tags...))
