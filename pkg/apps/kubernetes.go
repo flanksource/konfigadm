@@ -13,14 +13,16 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 
 	sys.
 		AppendPackageRepo(PackageRepo{
+			Name:            "kubernetes",
 			URL:             "https://apt.kubernetes.io/",
 			VersionCodeName: "kubernetes-xenial",
 			GPGKey:          "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
 		}, DEBIAN_LIKE).
 		AppendPackageRepo(PackageRepo{
+			Name:   "kubernetes",
 			URL:    "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64",
 			GPGKey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg",
-		}, REDHAT)
+		}, REDHAT_LIKE)
 
 	sys.AddPackage("kubelet-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
 		AddPackage("kubeadm-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
