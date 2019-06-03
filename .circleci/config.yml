@@ -25,7 +25,7 @@ jobs:
       <<: *test
   "fedora:latest":
       <<: *test
-  publish-github-release:
+  release:
       <<: *go
       steps:
         - checkout
@@ -47,13 +47,13 @@ workflows:
       - "debian:9"
       - "centos:7"
       - "fedora:latest"
-      - publish-github-release:
+      - release:
           context: Github
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^\d+\.\d+\.\d+$/
+              only: /.*/
       - docs:
           context: Github
 
