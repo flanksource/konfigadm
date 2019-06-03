@@ -22,11 +22,20 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 			Name:   "kubernetes",
 			URL:    "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64",
 			GPGKey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg",
-		}, REDHAT_LIKE)
+		}, REDHAT_LIKE).
+		AppendPackageRepo(PackageRepo{
+			Name:   "kubernetes",
+			URL:    "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64",
+			GPGKey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg",
+		}, FEDORA)
 
 	sys.AddPackage("kubelet-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
 		AddPackage("kubeadm-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
 		AddPackage("kubectl-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE)
+
+	sys.AddPackage("kubelet-"+sys.Kubernetes.Version+"-0", &FEDORA).
+		AddPackage("kubeadm-"+sys.Kubernetes.Version+"-0", &FEDORA).
+		AddPackage("kubectl-"+sys.Kubernetes.Version+"-0", &FEDORA)
 
 	sys.AddPackage("kubelet=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
 		AddPackage("kubeadm=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
