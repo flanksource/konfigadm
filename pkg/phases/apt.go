@@ -75,6 +75,8 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 		AddDependency("which curl 2>&1 > /dev/null || apt-get install -y curl")
 
 	if gpgKey != "" {
+		cmds = cmds.
+			AddDependency("which gpg2 2>&1 > /dev/null || apt-get install -y gnupg2")
 		cmds = cmds.Add(fmt.Sprintf("curl -skL %s | sudo apt-key add -", gpgKey))
 	}
 
