@@ -13,6 +13,7 @@ var (
 	DEBIAN           = Flag{Name: "debian"}
 	DEBIAN_LIKE      = Flag{Name: "debian-like"}
 	REDHAT           = Flag{Name: "redhat"}
+	FEDORA           = Flag{Name: "fedora"}
 	REDHAT_LIKE      = Flag{Name: "redhat-like"}
 	AMAZON_LINUX     = Flag{Name: "amazonLinux"}
 	RHEL             = Flag{Name: "rhel"}
@@ -20,6 +21,7 @@ var (
 	UBUNTU           = Flag{Name: "ubuntu"}
 	AWS              = Flag{Name: "aws"}
 	VMWARE           = Flag{Name: "vmware"}
+	NOT_FEDORA       = Flag{Name: "!fedora", Negates: []Flag{FEDORA}}
 	NOT_DEBIAN       = Flag{Name: "!debian", Negates: []Flag{DEBIAN}}
 	NOT_REDHAT       = Flag{Name: "!redhat", Negates: []Flag{REDHAT}}
 	NOT_DEBIAN_LIKE  = Flag{Name: "!debian", Negates: []Flag{DEBIAN_LIKE}}
@@ -31,7 +33,7 @@ var (
 	NOT_VMWARE       = Flag{Name: "!vmware", Negates: []Flag{VMWARE}}
 	NOT_AMAZON_LINUX = Flag{Name: "!amazonLinux", Negates: []Flag{AMAZON_LINUX}}
 	FLAG_MAP         = make(map[string]Flag)
-	FLAGS            = []Flag{DEBIAN, DEBIAN_LIKE, REDHAT, REDHAT_LIKE, AMAZON_LINUX, CENTOS, RHEL, UBUNTU, AWS, VMWARE, NOT_DEBIAN_LIKE, NOT_REDHAT_LIKE, NOT_DEBIAN, NOT_REDHAT, NOT_CENTOS, NOT_RHEL, NOT_UBUNTU, NOT_AWS, NOT_VMWARE, NOT_AMAZON_LINUX}
+	FLAGS            = []Flag{DEBIAN, DEBIAN_LIKE, REDHAT, FEDORA, REDHAT_LIKE, AMAZON_LINUX, CENTOS, RHEL, UBUNTU, AWS, VMWARE, NOT_FEDORA, NOT_DEBIAN_LIKE, NOT_REDHAT_LIKE, NOT_DEBIAN, NOT_REDHAT, NOT_CENTOS, NOT_RHEL, NOT_UBUNTU, NOT_AWS, NOT_VMWARE, NOT_AMAZON_LINUX}
 )
 
 type Flag struct {
@@ -98,6 +100,9 @@ outer:
 }
 
 func MatchesAny(flags []Flag, constraints []Flag) bool {
+	if len(constraints) == 0 {
+		return true
+	}
 	for _, constraint := range constraints {
 		for _, flag := range flags {
 			if constraint.Matches(flag) {

@@ -70,8 +70,14 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 		GPGKey: "https://download.docker.com/linux/centos/gpg",
 	}, REDHAT_LIKE)
 
-	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
+	sys.AppendPackageRepo(PackageRepo{
+		Name:   "docker-ce",
+		URL:    "https://download.docker.com/linux/fedora/\\$releasever/\\$basearch/stable",
+		GPGKey: "https://download.docker.com/linux/fedora/gpg",
+	}, FEDORA)
 
+	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
+	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("systemctl enable docker && systemctl start docker")
 	return []Command{}, Filesystem{}, nil

@@ -32,12 +32,14 @@ var SupportedOperatingSystems = OperatingSystemList{
 	RedhatEnterprise,
 	Centos,
 	AmazonLinux,
+	Fedora,
 }
 
 //BaseOperatingSystems is the list of base distributions that are supported, which is currently only debian and redhat
 var BaseOperatingSystems = OperatingSystemList{
 	Debian,
 	Redhat,
+	Fedora,
 }
 
 func GetOSForTag(tags ...Flag) (OS, error) {

@@ -10,6 +10,7 @@ import (
 var (
 	Redhat           = redhat{}
 	Centos           = centos{}
+	Fedora           = fedora{}
 	RedhatEnterprise = rhel{}
 	AmazonLinux      = amazonLinux{}
 )
@@ -30,6 +31,25 @@ func (r redhat) DetectAtRuntime() bool {
 }
 
 func (r redhat) GetVersionCodeName() string {
+	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
+}
+
+type fedora struct {
+}
+
+func (r fedora) GetPackageManager() PackageManager {
+	return DnfPackageManager{}
+}
+
+func (r fedora) GetTags() []Flag {
+	return []Flag{FEDORA}
+}
+
+func (r fedora) DetectAtRuntime() bool {
+	return strings.Contains(utils.SafeRead("/etc/os-release"), "fedora")
+}
+
+func (r fedora) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
 }
 
