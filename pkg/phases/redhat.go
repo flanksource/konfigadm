@@ -46,7 +46,7 @@ func (r fedora) GetTags() []Flag {
 }
 
 func (r fedora) DetectAtRuntime() bool {
-	return strings.Contains(utils.SafeRead("/etc/os-release"), "fedora")
+	return strings.Contains(utils.SafeRead("/etc/os-release"), "fedoraproject")
 }
 
 func (r fedora) GetVersionCodeName() string {
