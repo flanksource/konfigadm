@@ -1,6 +1,6 @@
 packages:
   - netcat-openbsd #+debian-like
-  - nmap-netcat #+redhat-like
+  - nmap-ncat #+redhat-like
 services:
   service1:
       name: service2
