@@ -12,7 +12,7 @@ linux:
 test: deps
 	mkdir -p test-output
 	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic | tee unit.out
-	cat unit.out | go2xunit -output test-output/unit.xml
+	cat unit.out | go2xunit --fail -output test-output/unit.xml
 	rm unit.out
 
 .PHONY: integration

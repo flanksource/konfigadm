@@ -15,5 +15,5 @@ docker cp $PWD $container:/$(dirname $PWD)
 trap cleanup EXIT
 mkdir -p test-output
 go test -v ./test -race -coverprofile=integ.txt -covermode=atomic $args | tee e2e.out
-cat e2e.out | go2xunit -output test-output/$(date +%Y%m%d%M%H%M%S).xml
-rm e2e.out
+set -euxo pipefail
+cat e2e.out | go2xunit --fail -output test-output/$(date +%Y%m%d%M%H%M%S).xml
