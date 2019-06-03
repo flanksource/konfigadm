@@ -1,12 +1,15 @@
 all: test docs integration
 
+.PHONY: deps
+deps:
+	GO111MODULE=off which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
 
 .PHONY: linux
 linux:
 	GOOS=linux go build -o dist/konfigadm -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' .
 
 .PHONY: test
-test:
+test: deps
 	mkdir -p test-output
 	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic | tee unit.out
 	cat unit.out | go2xunit -output test-output/unit.xml
@@ -21,30 +24,30 @@ e2e: linux
 		./scripts/e2e.sh $(test)
 
 .PHONY: e2e-all
-e2e-all: linux debian ubuntu ubuntu16 fedora centos
+e2e-all: deps linux debian ubuntu ubuntu16 fedora centos
 
 .PHONY: debian9
-debian9:
+debian9: deps
 		IMAGE=jrei/systemd-debian:9 ./scripts/e2e.sh $(test)
 
 .PHONY: debian
-debian:
+debian: deps
 		IMAGE=jrei/systemd-debian:latest ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu16
-ubuntu16:
+ubuntu16: deps
 		IMAGE=jrei/systemd-ubuntu:16.04 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu
-ubuntu:
+ubuntu: deps
 		IMAGE=jrei/systemd-ubuntu:18.04 ./scripts/e2e.sh $(test)
 
 .PHONY: fedora
-fedora:
+fedora: deps
 		IMAGE=jrei/systemd-fedora:latest ./scripts/e2e.sh $(test)
 
 .PHONY: centos
-centos:
+centos: deps
 		IMAGE=jrei/systemd-centos:7 ./scripts/e2e.sh $(test)
 
 .PHONY: docs
