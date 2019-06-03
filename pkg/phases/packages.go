@@ -149,6 +149,9 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 		return false
 	}
 	for _, p := range *cfg.Packages {
+		if !MatchesAny(flags, p.Flags) {
+			continue
+		}
 		installed := os.GetPackageManager().GetInstalledVersion(p.Name)
 		if p.Uninstall {
 			if installed == "" {
