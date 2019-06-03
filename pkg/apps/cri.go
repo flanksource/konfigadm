@@ -5,9 +5,8 @@ import (
 	"strings"
 
 	"github.com/moshloop/konfigadm/pkg/phases"
-	"github.com/moshloop/konfigadm/pkg/utils"
-
 	. "github.com/moshloop/konfigadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var CRI Phase = cri{}
@@ -71,7 +70,7 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
 
-	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
+	sys.AddPackage("docker-ce docker-ce-cli containerd.io doccker-debian", &DEBIAN_LIKE)
 	sys.AddCommand("systemctl enable docker && systemctl start docker")
 	return []Command{}, Filesystem{}, nil
 }

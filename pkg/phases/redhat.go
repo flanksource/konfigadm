@@ -1,16 +1,17 @@
-package os
+package phases
 
 import (
 	"strings"
 
+	. "github.com/moshloop/konfigadm/pkg/types"
 	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var (
-	Redhat      = redhat{}
-	Centos      = centos{}
-	RHEL        = rhel{}
-	AmazonLinux = amazonLinux{}
+	Redhat           = redhat{}
+	Centos           = centos{}
+	RedhatEnterprise = rhel{}
+	AmazonLinux      = amazonLinux{}
 )
 
 type redhat struct {
@@ -20,8 +21,8 @@ func (r redhat) GetPackageManager() PackageManager {
 	return YumPackageManager{}
 }
 
-func (r redhat) GetTags() []string {
-	return []string{"redhat", "redhat-like"}
+func (r redhat) GetTags() []Flag {
+	return []Flag{REDHAT, REDHAT_LIKE}
 }
 
 func (r redhat) DetectAtRuntime() bool {
@@ -39,8 +40,8 @@ func (c centos) GetPackageManager() PackageManager {
 	return YumPackageManager{}
 }
 
-func (c centos) GetTags() []string {
-	return []string{"centos", "redhat-like"}
+func (c centos) GetTags() []Flag {
+	return []Flag{CENTOS, REDHAT_LIKE}
 }
 
 func (c centos) DetectAtRuntime() bool {
@@ -58,8 +59,8 @@ func (r rhel) GetPackageManager() PackageManager {
 	return YumPackageManager{}
 }
 
-func (r rhel) GetTags() []string {
-	return []string{"rhel", "redhat-like"}
+func (r rhel) GetTags() []Flag {
+	return []Flag{RHEL, REDHAT_LIKE}
 }
 
 func (r rhel) DetectAtRuntime() bool {
@@ -77,8 +78,8 @@ func (a amazonLinux) GetPackageManager() PackageManager {
 	return YumPackageManager{}
 }
 
-func (a amazonLinux) GetTags() []string {
-	return []string{"amazonLinux", "redhat-like"}
+func (a amazonLinux) GetTags() []Flag {
+	return []Flag{AMAZON_LINUX, REDHAT_LIKE}
 }
 
 func (a amazonLinux) DetectAtRuntime() bool {

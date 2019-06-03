@@ -1,8 +1,9 @@
-package os
+package phases
 
 import (
 	"strings"
 
+	. "github.com/moshloop/konfigadm/pkg/types"
 	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
@@ -33,8 +34,8 @@ func (u ubuntu) GetPackageManager() PackageManager {
 	return AptPackageManager{}
 }
 
-func (u ubuntu) GetTags() []string {
-	return []string{"ubuntu", "debian-like"}
+func (u ubuntu) GetTags() []Flag {
+	return []Flag{UBUNTU, DEBIAN_LIKE}
 }
 
 func (u ubuntu) DetectAtRuntime() bool {
@@ -52,8 +53,8 @@ func (d debian) GetPackageManager() PackageManager {
 	return AptPackageManager{}
 }
 
-func (d debian) GetTags() []string {
-	return []string{"debian", "debian-like"}
+func (d debian) GetTags() []Flag {
+	return []Flag{DEBIAN, DEBIAN_LIKE}
 }
 
 func (d debian) DetectAtRuntime() bool {

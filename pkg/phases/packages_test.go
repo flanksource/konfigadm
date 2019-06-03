@@ -18,6 +18,15 @@ func TestPackageDebian(t *testing.T) {
 	cfg, g := NewFixture("packages.yml", t).WithFlags(DEBIAN, DEBIAN_LIKE).Build()
 	g.Expect(cfg).To(ContainPackage("netcat-openbsd"))
 	g.Expect(cfg).NotTo(ContainPackage("nmap-netcat"))
+	g.Expect(cfg).NotTo(ContainPackage("nano"))
+
+}
+
+func TestPackageUbuntu(t *testing.T) {
+	cfg, g := NewFixture("packages.yml", t).WithFlags(UBUNTU, DEBIAN_LIKE).Build()
+	g.Expect(cfg).To(ContainPackage("netcat-openbsd"))
+	g.Expect(cfg).NotTo(ContainPackage("nmap-netcat"))
+	g.Expect(cfg).To(ContainPackage("nano"))
 
 }
 

@@ -1,7 +1,9 @@
-package os
+package phases
 
 import (
-	"strings"
+	"fmt"
+
+	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
 //OS provides an abstraction over different operating systems
@@ -14,8 +16,7 @@ type OS interface {
 	GetPackageManager() PackageManager
 
 	//GetTags returns all the tags to which this OS applies
-	/*TODO GetTag doesn't return a Tag directly as it would create an import cycle**/
-	GetTags() []string
+	GetTags() []Flag
 
 	//DetectAtRuntime will detect if it is compatible with the current running OS
 	DetectAtRuntime() bool
@@ -28,7 +29,7 @@ var SupportedOperatingSystems = OperatingSystemList{
 	Debian,
 	Redhat,
 	Ubuntu,
-	RHEL,
+	RedhatEnterprise,
 	Centos,
 	AmazonLinux,
 }
@@ -39,15 +40,17 @@ var BaseOperatingSystems = OperatingSystemList{
 	Redhat,
 }
 
-func GetOSForTag(name string) *OS {
-	for _, os := range SupportedOperatingSystems {
-		for _, tag := range os.GetTags() {
-			if strings.EqualFold(tag, name) {
-				return &os
+func GetOSForTag(tags ...Flag) (OS, error) {
+	for _, t := range tags {
+		for _, os := range SupportedOperatingSystems {
+			for _, tag := range os.GetTags() {
+				if tag.Name == t.Name {
+					return os, nil
+				}
 			}
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("Unable to find OS for %s", tags)
 }
 
 //Detect returns a list of all compatible operating systems at runtime

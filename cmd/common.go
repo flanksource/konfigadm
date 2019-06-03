@@ -2,7 +2,7 @@ package cmd
 
 import (
 	_ "github.com/moshloop/konfigadm/pkg"
-	"github.com/moshloop/konfigadm/pkg/os"
+	"github.com/moshloop/konfigadm/pkg/phases"
 	"github.com/moshloop/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -22,12 +22,10 @@ func GetConfig(cmd *cobra.Command) *types.Config {
 	flags := []types.Flag{}
 
 	if ok, _ := cmd.Flags().GetBool("detect-tags"); ok {
-		for _, _os := range os.SupportedOperatingSystems {
+		for _, _os := range phases.SupportedOperatingSystems {
 			if _os.DetectAtRuntime() {
 				log.Infof("Detected %s\n", _os.GetTags())
-				for _, tag := range _os.GetTags() {
-					flags = append(flags, types.FLAG_MAP[tag])
-				}
+				flags = append(flags, _os.GetTags()...)
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -13,8 +14,96 @@ type Command struct {
 	Flags []Flag
 }
 
+type Commands struct {
+	dependencies *[]Command
+	commands     *[]Command
+}
+
+func NewCommand(cmd string) Commands {
+	return Commands{
+		commands: &[]Command{Command{Cmd: cmd}},
+	}
+}
+
+func (c *Commands) Add(commands ...string) Commands {
+	if c.commands == nil {
+		c.commands = &[]Command{}
+	}
+	commandsSlice := *c.commands
+	for _, command := range commands {
+		commandsSlice = append(commandsSlice, Command{Cmd: command})
+	}
+	c.commands = &commandsSlice
+	return *c
+}
+
+func (c Commands) AddDependency(commands ...string) Commands {
+	if c.dependencies == nil {
+		c.dependencies = &[]Command{}
+	}
+	commandsSlice := *c.dependencies
+	for _, command := range commands {
+		commandsSlice = append(commandsSlice, Command{Cmd: command})
+	}
+	c.dependencies = &commandsSlice
+	return c
+}
+
+func (c1 *Commands) Append(c2 Commands) *Commands {
+	var cmdSlice []Command
+	var depSlice []Command
+	if c1.commands == nil {
+		c1.commands = &[]Command{}
+	}
+
+	if c2.commands != nil {
+		cmdSlice = append(*c1.commands, *c2.commands...)
+		c1.commands = &cmdSlice
+	}
+	if c1.dependencies == nil {
+		c1.dependencies = &[]Command{}
+	}
+	if c2.dependencies != nil {
+		depSlice = append(*c1.dependencies, *c2.dependencies...)
+		c1.dependencies = &depSlice
+	}
+	return c1
+}
+
+func (c *Commands) Merge() []Command {
+	commands := []Command{}
+	if c.dependencies != nil {
+		commands = append(commands, *c.dependencies...)
+	}
+	if c.commands != nil {
+		commands = append(commands, *c.commands...)
+	}
+	return commands
+}
+
+func (c Commands) WithTags(tags ...Flag) Commands {
+	if c.commands != nil {
+		commands := *c.commands
+		for i, command := range commands {
+			command.Flags = tags
+			commands[i] = command
+		}
+		c.commands = &commands
+	}
+
+	if c.dependencies != nil {
+		dependencies := *c.dependencies
+		for i, command := range dependencies {
+			command.Flags = tags
+			dependencies[i] = command
+		}
+		c.dependencies = &dependencies
+	}
+	return c
+}
+
 func (c Command) String() string {
-	return c.Cmd
+	return c.Cmd + fmt.Sprintf("%s", c.Flags)
 }
 
 func (cfg *Config) AddCommand(cmd string, flags ...*Flag) *Config {

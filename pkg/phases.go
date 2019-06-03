@@ -18,7 +18,7 @@ func init() {
 			phases.Packages,
 			phases.Services,
 			phases.Files,
-			phases.Commands,
+			phases.CommandsPhase,
 		}
 	})
 }

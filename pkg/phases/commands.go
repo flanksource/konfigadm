@@ -2,7 +2,7 @@ package phases
 
 import . "github.com/moshloop/konfigadm/pkg/types"
 
-var Commands AllPhases = command{}
+var CommandsPhase AllPhases = command{}
 
 type command struct{}
 

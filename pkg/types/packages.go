@@ -16,8 +16,37 @@ type Package struct {
 	Flags     []Flag
 }
 
+func CompareVersions(version string, compareTo string) bool {
+	if strings.Contains(compareTo, "==") {
+		compareTo = strings.Split(compareTo, "==")[1]
+	} else if strings.Contains(compareTo, "=") {
+		compareTo = strings.Split(compareTo, "=")[1]
+	}
+	return version == compareTo
+}
+
+//PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
+type PackageRepo struct {
+	Name            string `yaml:"name"`
+	URL             string `yaml:"url"`
+	GPGKey          string `yaml:"gpgKey,omitempty"`
+	Channel         string `yaml:"channel,omitempty"`
+	VersionCodeName string `yaml:"versionCodeName,omitempty"`
+	Flags           []Flag `yaml:"tags,omitempty"`
+}
+
+type PackageManager interface {
+	Install(pkg ...string) Commands
+	Uninstall(pkg ...string) Commands
+	Mark(pkg ...string) Commands
+	AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) Commands
+	GetInstalledVersion(pkg string) string
+	CleanupCaches() Commands
+	Update() Commands
+}
+
 func (p Package) String() string {
-	return p.Name
+	return p.Name + fmt.Sprintf("%s", p.Flags)
 }
 
 //AddPackage is a helper function to add new packages
@@ -92,14 +121,4 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 		}
 	}
 	return nil
-}
-
-//PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
-type PackageRepo struct {
-	Name            string `yaml:"name"`
-	URL             string `yaml:"url"`
-	GPGKey          string `yaml:"gpgKey,omitempty"`
-	Channel         string `yaml:"channel,omitempty"`
-	VersionCodeName string `yaml:"versionCodeName,omitempty"`
-	Flags           []Flag `yaml:"tags,omitempty"`
 }

@@ -1,33 +1,32 @@
-package os
+package phases
 
 import (
 	"fmt"
 	"strings"
 
+	. "github.com/moshloop/konfigadm/pkg/types"
 	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 type YumPackageManager struct{}
 
-func (p YumPackageManager) Install(pkg ...string) string {
-	return fmt.Sprintf("yum install -y %s", strings.Join(pkg, " "))
+func (p YumPackageManager) Install(pkg ...string) Commands {
+	return NewCommand(fmt.Sprintf("yum install -y %s", strings.Join(pkg, " ")))
 }
 
-func (p YumPackageManager) Update() string {
-	return ""
+func (p YumPackageManager) Update() Commands {
+	return Commands{}
 }
-func (p YumPackageManager) Uninstall(pkg ...string) string {
-	return fmt.Sprintf("yum remove -y %s", strings.Join(pkg, " "))
+func (p YumPackageManager) Uninstall(pkg ...string) Commands {
+	return NewCommand(fmt.Sprintf("yum remove -y %s", strings.Join(pkg, " ")))
 }
-func (p YumPackageManager) Mark(pkg ...string) string {
-	return ""
+func (p YumPackageManager) Mark(pkg ...string) Commands {
+	return Commands{}
 }
-func (p YumPackageManager) ListInstalled() string {
-	return ""
-}
-func (p YumPackageManager) CleanupCaches() string {
-	return ""
+
+func (p YumPackageManager) CleanupCaches() Commands {
+	return Commands{}
 }
 
 func (p YumPackageManager) GetInstalledVersion(pkg string) string {
@@ -52,7 +51,7 @@ func (p YumPackageManager) GetInstalledVersion(pkg string) string {
 	return ""
 }
 
-func (p YumPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) string {
+func (p YumPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) Commands {
 	repo := fmt.Sprintf(
 		`[%s]
 name=%s
@@ -65,11 +64,7 @@ enabled=1
 repo_gpgcheck=1
 gpgkey=%s`, gpgKey)
 	}
-	return fmt.Sprintf(`cat <<EOF >/etc/yum.repos.d/%s.repo
+	return NewCommand(fmt.Sprintf(`cat <<EOF >/etc/yum.repos.d/%s.repo
 %s
-EOF`, name, repo)
-}
-
-func (p YumPackageManager) Setup() string {
-	return "[[ $(which curl 2> /dev/null) && $(which sudo 2> /dev/null) ]] || yum install -y sudo curl"
+EOF`, name, repo))
 }

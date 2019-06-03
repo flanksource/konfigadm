@@ -2,12 +2,9 @@ package phases
 
 import (
 	"fmt"
-	"net/url"
-	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 
-	operatingSystem "github.com/moshloop/konfigadm/pkg/os"
 	. "github.com/moshloop/konfigadm/pkg/types"
 )
 
@@ -16,100 +13,106 @@ var Packages AllPhases = packages{}
 type packages struct{}
 
 func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	var commands []Command
+	commands := Commands{}
 	files := Filesystem{}
 
-	osUpdates := make(map[operatingSystem.OS]bool)
-	pkgMgrSetup := make(map[operatingSystem.PackageManager]bool)
-	// log.Tracef("Adding repositories: %s\n", *sys.PackageRepos)
 	for _, repo := range *sys.PackageRepos {
-		_osR := operatingSystem.GetOSForTag(repo.Flags[0].Name)
-		if _osR == nil {
-			return nil, nil, fmt.Errorf("Cannot get OS for %s", repo.Flags[0])
+		var os OS
+		var err error
+		if os, err = GetOSForTag(repo.Flags...); err != nil {
+			return nil, nil, err
 		}
-		_os := *_osR
+
 		log.Tracef("Adding %s\n", repo)
-		if repo.GPGKey != "" {
-			//setup the OS with the helper tools for adding new GPG keys
-			if _, ok := pkgMgrSetup[_os.GetPackageManager()]; !ok {
-				pkgMgrSetup[_os.GetPackageManager()] = true
-				commands = append(commands, Command{
-					Cmd:   _os.GetPackageManager().Setup(),
-					Flags: GetTags(_os),
-				})
-			}
-			// commands = append(commands, Command{
-			// 	Cmd:   _os.GetPackageManager().AddKey(repo.GPGKey),
-			// 	Flags: repo.Flags,
-			// })
-		}
 		if repo.URL != "" {
-			codename := repo.VersionCodeName
-			if codename == "" {
-				codename = "$(lsb_release -cs)"
-			}
-			if repo.Name == "" {
-				uri, _ := url.Parse(repo.URL)
-				repo.Name = filepath.Base(uri.Path)
-			}
-			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().AddRepo(repo.URL, repo.Channel, codename, repo.Name, repo.GPGKey),
-				Flags: repo.Flags,
-			})
-		}
-		//flag os for update after all package repos have been added.
-		osUpdates[_os] = true
-	}
-
-	//only execute updates once if multiple package repos have been installed
-	for _os, _ := range osUpdates {
-		commands = append(commands, Command{
-			Cmd:   _os.GetPackageManager().Update(),
-			Flags: GetTags(_os),
-		})
-	}
-	for _, _os := range operatingSystem.BaseOperatingSystems {
-		install := []string{}
-		uninstall := []string{}
-		mark := []string{}
-		for _, p := range *sys.Packages {
-			if p.Uninstall {
-				uninstall = append(uninstall, p.Name)
-			} else {
-				install = append(install, p.Name)
-			}
-		}
-
-		if len(install) > 0 {
-			// update package repos before installing
-			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().Update(),
-				Flags: GetTags(_os),
-			})
-			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().Install(install...),
-				Flags: GetTags(_os),
-			})
-
-		}
-		if len(uninstall) > 0 {
-			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().Uninstall(install...),
-				Flags: GetTags(_os),
-			})
-
-		}
-
-		if len(mark) > 0 {
-			commands = append(commands, Command{
-				Cmd:   _os.GetPackageManager().Mark(install...),
-				Flags: GetTags(_os),
-			})
+			_commands := os.GetPackageManager().
+				AddRepo(repo.URL, repo.Channel, repo.VersionCodeName, repo.Name, repo.GPGKey)
+			commands.Append(_commands.WithTags(repo.Flags...))
 		}
 	}
-
-	return commands, files, nil
+	addPackageCommands(sys, &commands)
+	_commands := commands.Merge()
+	return _commands, files, nil
 }
+
+type packageOperations struct {
+	install   []string
+	uninstall []string
+	mark      []string
+	tags      []Flag
+}
+
+func appendStrings(slice []string, s string) []string {
+	var newSlice []string
+	if slice != nil {
+		newSlice = slice
+	}
+	newSlice = append(newSlice, s)
+	return newSlice
+}
+
+func getKeyFromTags(tags ...Flag) string {
+	return fmt.Sprintf("%s", tags)
+}
+
+func addPackageCommands(sys *Config, commands *Commands) {
+	var managers = make(map[string]packageOperations)
+
+	for _, p := range *sys.Packages {
+		if len(p.Flags) == 0 {
+			continue
+		}
+		var ops packageOperations
+		var ok bool
+		if ops, ok = managers[getKeyFromTags(p.Flags...)]; !ok {
+			ops = packageOperations{tags: p.Flags}
+
+		}
+		if p.Uninstall {
+			ops.uninstall = appendStrings(ops.uninstall, p.Name)
+		} else {
+			ops.install = appendStrings(ops.install, p.Name)
+		}
+		managers[getKeyFromTags(p.Flags...)] = ops
+	}
+
+	for _, os := range BaseOperatingSystems {
+		for _, p := range *sys.Packages {
+			if len(p.Flags) > 0 {
+				continue
+			}
+			var ops packageOperations
+			var ok bool
+			if ops, ok = managers[getKeyFromTags(os.GetTags()...)]; !ok {
+				ops = packageOperations{tags: os.GetTags()}
+
+			}
+			if p.Uninstall {
+				ops.uninstall = appendStrings(ops.uninstall, p.Name)
+			} else {
+				ops.install = appendStrings(ops.install, p.Name)
+			}
+			managers[getKeyFromTags(os.GetTags()...)] = ops
+		}
+	}
+
+	for _, ops := range managers {
+		os, _ := GetOSForTag(ops.tags...)
+		commands.Append(os.GetPackageManager().Update().WithTags(ops.tags...))
+
+		if ops.install != nil && len(ops.install) > 0 {
+			commands = commands.Append(os.GetPackageManager().Install(ops.install...).WithTags(ops.tags...))
+		}
+		if ops.uninstall != nil && len(ops.uninstall) > 0 {
+			commands = commands.Append(os.GetPackageManager().Uninstall(ops.uninstall...).WithTags(ops.tags...))
+		}
+		if ops.mark != nil && len(ops.mark) > 0 {
+			commands = commands.Append(os.GetPackageManager().Mark(ops.mark...).WithTags(ops.tags...))
+		}
+	}
+
+}
+
 func (p packages) ProcessFlags(sys *Config, flags ...Flag) {
 	minified := []Package{}
 	for _, pkg := range *sys.Packages {
@@ -130,7 +133,12 @@ func (p packages) ProcessFlags(sys *Config, flags ...Flag) {
 
 func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
 	verify := true
-	os := cfg.Context.OS
+	var os OS
+	var err error
+	if os, err = GetOSForTag(flags...); err != nil {
+		results.Fail("Unable to find OS for tags %s", flags)
+		return false
+	}
 	for _, p := range *cfg.Packages {
 		installed := os.GetPackageManager().GetInstalledVersion(p.Name)
 		if p.Uninstall {

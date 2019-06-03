@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moshloop/konfigadm/pkg/os"
-
 	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
 	"github.com/moshloop/konfigadm/pkg/utils"
 )
@@ -80,7 +78,6 @@ func (c Container) Name() string {
 	}
 	return name
 }
-
 
 //User mirrors the CloudInit User struct.
 type User struct {
@@ -170,11 +167,11 @@ type User struct {
 
 //File is a primitive representing a single file
 type File struct {
-	Content        string   `yaml:"content,omitempty"`
-	ContentFromURL string   `yaml:"content_from_url,omitempty"`
-	Unarchive      bool     `yaml:"unarchive,omitempty"`
-	Permissions    string   `yaml:"permissions,omitempty"`
-	Owner          string   `yaml:"owner,omitempty"`
+	Content        string `yaml:"content,omitempty"`
+	ContentFromURL string `yaml:"content_from_url,omitempty"`
+	Unarchive      bool   `yaml:"unarchive,omitempty"`
+	Permissions    string `yaml:"permissions,omitempty"`
+	Owner          string `yaml:"owner,omitempty"`
 	Flags          []Flag `yaml:"tags,omitempty"`
 }
 
@@ -234,7 +231,6 @@ type SystemContext struct {
 	Vars  map[string]interface{}
 	Flags []Flag
 	Name  string
-	OS    os.OS
 }
 
 type Transformer func(cfg *Config, ctx *SystemContext) (commands []Command, files Filesystem, err error)
