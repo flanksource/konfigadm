@@ -12,6 +12,8 @@ test: &test
     - checkout
     - run: go mod download
     - run: IMAGE="jrei/systemd-$CIRCLE_JOB" make test integration
+    - store_test_results:
+        path: test-output
 jobs:
   "ubuntu:16.04":
       <<: *test

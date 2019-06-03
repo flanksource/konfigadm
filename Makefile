@@ -7,7 +7,10 @@ linux:
 
 .PHONY: test
 test:
-	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic
+	mkdir -p test-output
+	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic | tee unit.out
+	cat unit.out | go2xunit -output test-output/unit.xml
+	rm unit.out
 
 .PHONY: integration
 integration: linux
@@ -43,7 +46,6 @@ fedora:
 .PHONY: centos
 centos:
 		IMAGE=jrei/systemd-centos:7 ./scripts/e2e.sh $(test)
-
 
 .PHONY: docs
 docs:
