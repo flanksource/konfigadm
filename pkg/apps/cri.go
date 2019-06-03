@@ -51,12 +51,14 @@ func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
 
 func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	sys.AppendPackageRepo(PackageRepo{
-		URL:     "https://download.docker.com/linux/ubuntu",
+		Name:    "docker-ce",
+		URL:     "https://download.docker.com/linux/ubuntu/",
 		GPGKey:  "https://download.docker.com/linux/ubuntu/gpg",
 		Channel: "stable",
 	}, UBUNTU)
 
 	sys.AppendPackageRepo(PackageRepo{
+		Name:    "docker-ce",
 		URL:     "https://download.docker.com/linux/debian",
 		GPGKey:  "https://download.docker.com/linux/debian/gpg",
 		Channel: "stable",
@@ -70,7 +72,7 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
 
-	sys.AddPackage("docker-ce docker-ce-cli containerd.io doccker-debian", &DEBIAN_LIKE)
+	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("systemctl enable docker && systemctl start docker")
 	return []Command{}, Filesystem{}, nil
 }

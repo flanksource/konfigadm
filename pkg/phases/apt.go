@@ -66,19 +66,19 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 		name = filepath.Base(_uri.Path)
 	}
 
+	cmds = cmds.AddDependency("([ \"$(ls /var/lib/apt/lists)\" == \"\" ] && apt-get update) || true")
 	if strings.HasPrefix(uri, "https://") {
 		cmds = cmds.AddDependency("[ -e /usr/share/doc/apt-transport-https ] || apt-get install -y apt-transport-https")
 	}
 	cmds = cmds.
 		AddDependency("which sudo 2>&1 > /dev/null || apt-get install -y sudo").
-		AddDependency("which curl 2>&1 > /dev/null || apt-get install -y curl").
-		AddDependency("which add-apt-repository 2>&1 /dev/null  || apt-get install -y software-properties-common")
+		AddDependency("which curl 2>&1 > /dev/null || apt-get install -y curl")
 
 	if gpgKey != "" {
-		cmds = cmds.Add(fmt.Sprintf("curl -fsSKL %s | sudo apt-key add -", uri))
+		cmds = cmds.Add(fmt.Sprintf("curl -skL %s | sudo apt-key add -", gpgKey))
 	}
 
-	return cmds.Add(fmt.Sprintf("add-apt-repository \"deb [arch=amd64] %s %s %s\"", uri, versionCodeName, channel))
+	return cmds.Add(fmt.Sprintf("echo deb [arch=amd64] %s %s %s > /etc/apt/sources.list.d/%s.list", uri, versionCodeName, channel, name))
 }
 
 func (p AptPackageManager) CleanupCaches() Commands {
