@@ -58,6 +58,8 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 		channel = "main"
 	}
 
+	cmds = cmds.AddDependency("([ \"$(ls /var/lib/apt/lists)\" == \"\" ] && apt-get update) || true")
+
 	if versionCodeName == "" {
 		cmds = cmds.AddDependency("which lsb_release 2>&1 > /dev/null || apt-get install -y lsb-release")
 		versionCodeName = "$(lsb_release -cs)"
@@ -67,7 +69,6 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 		name = filepath.Base(_uri.Path)
 	}
 
-	cmds = cmds.AddDependency("([ \"$(ls /var/lib/apt/lists)\" == \"\" ] && apt-get update) || true")
 	if strings.HasPrefix(uri, "https://") {
 		cmds = cmds.AddDependency("[ -e /usr/share/doc/apt-transport-https ] || apt-get install -y apt-transport-https")
 	}
