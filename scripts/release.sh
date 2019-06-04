@@ -9,6 +9,7 @@ if ! which goreleaser 2>&1 > /dev/null; then
   // need to pin the version
   wget -nv https://github.com/goreleaser/goreleaser/releases/download/v0.108.0/goreleaser_amd64.deb
   sudo dpkg -i goreleaser_amd64.deb
+  goreleaser --rm-dist
 fi
 
 GO111MODULE=off go get github.com/aktau/github-release
