@@ -11,18 +11,18 @@ builds:
        - linux
        - darwin
 
-# nfpms:
-#     -
-#       name_template: "{{ .ProjectName }}"
-#       replacements:
-#         amd64: 64-bit
-#         386: 32-bit
-#         darwin: macOS
+nfpms:
+    -
+      name_template: "{{ .ProjectName }}"
+      replacements:
+        amd64: 64-bit
+        386: 32-bit
+        darwin: macOS
 
-#       license: Apache 2.0
-#       formats:
-#         - deb
-#         - rpm
+      license: Apache 2.0
+      formats:
+        - deb
+        - rpm
 
 archive:
   replacements:
