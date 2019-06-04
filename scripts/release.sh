@@ -10,6 +10,10 @@ if ! which goreleaser 2>&1 > /dev/null; then
   sudo dpkg -i goreleaser_amd64.deb
 fi
 
+if ! which rpmbuild 2>&1 > /dev/null; then
+  sudo apt-get update && apt-get install -y rpm
+fi
+
 git stash
 git clean -fd
 goreleaser --rm-dist
