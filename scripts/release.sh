@@ -11,7 +11,7 @@ if ! which goreleaser 2>&1 > /dev/null; then
 fi
 
 if ! which rpmbuild 2>&1 > /dev/null; then
-  sudo apt-get update && apt-get install -y rpm
+  sudo apt-get update && sudo apt-get install -y rpm
 fi
 
 git stash
