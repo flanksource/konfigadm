@@ -8,6 +8,7 @@ go: &go
 test: &test
   <<: *go
   steps:
+    - setup_remote_docker
     - checkout
     - run: go mod download
     - run: IMAGE="jrei/systemd-$CIRCLE_JOB" make test integration
