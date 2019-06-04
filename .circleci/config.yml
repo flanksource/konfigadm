@@ -29,6 +29,7 @@ jobs:
       <<: *go
       steps:
         - checkout
+        - setup_remote_docker
         - run: go mod download
         - run: ./scripts/release.sh
   docs:
