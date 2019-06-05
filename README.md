@@ -1,4 +1,4 @@
-<p align="center">]
+<p align="center">
 <a href="https://circleci.com/gh/moshloop/konfigadm"><img src="https://circleci.com/gh/moshloop/konfigadm.svg?style=svg"></a>
 <a href="https://codecov.io/gh/moshloop/konfigadm"><img src="https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg"></a>
 <a href="https://goreportcard.com/report/github.com/moshloop/konfigadm"><img src="https://goreportcard.com/badge/github.com/moshloop/konfigadm"></a>
@@ -9,7 +9,7 @@
   <a href="#installation">Installation</a> •
   <a href="#installing-kubernetes">Kubernetes</a> •
   <a href="#features">Key Features</a> •
-  <a href="#compatiblity">Compatibility</a> •
+  <a href="#compatibility">Compatibility</a> •
   <a href="https://www.moshloop.com/konfigadm"> Full Documentation </a>
 </p>
 
@@ -50,7 +50,7 @@ wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/downlo
 
 ## Getting Started
 
-### Install Kubernetes
+### Installing Kubernetes
 
 ```bash
 konfigadm apply -c - <<-EOF
