@@ -5,6 +5,8 @@
 
 ### Mental Models
 
+![](./docs/konfigadm.png)
+
 `konfigadm` intentionally reuses mental models and concepts from kubernetes, golang and ansible these include:
 
 * Kubernetes declarative model for specifying intent
