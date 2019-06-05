@@ -13,7 +13,7 @@
   <a href="https://www.moshloop.com/konfigadm"> Full Documentation </a>
 </p>
 
-
+<script src="https://asciinema.org/a/250079.js" id="asciicast-250079" async></script>
 
 konfigadm is a declarative configuration management tool focused on bootstrapping nodes for container based environments.
 
@@ -65,7 +65,7 @@ EOF
 
 ## Compatibility
 
-Compatibility is tested via the docker systemd images created by [jrei](github.com/jrei), All example fixtures are first verified as false, applied, and then verified as true.
+Compatibility is tested via the docker systemd images created by [jrei](https://github.com/j8r/dockerfiles/tree/master/systemd), All example fixtures are first verified as false, applied, and then verified as true.
 
 To run integration tests:
 
@@ -101,6 +101,12 @@ konfigadm is a node instance configuration tool focused on bootstrapping nodes f
 * Automatic testing / verification based on intent, not just command success code
 * Generate cloud-init or shell scripts to be used by other systems
 
+## TODO
+
+* Incremental mode
+* Merge duplicate command dependencies (e.g. installing curl)
+* Support templating everywhere (currently only supported in files)
+*
 
 ## Usage
 
