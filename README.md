@@ -13,8 +13,7 @@
   <a href="https://www.moshloop.com/konfigadm"> Full Documentation </a>
 </p>
 
-<script src="https://asciinema.org/a/250079.js" id="asciicast-250079" async></script>
-
+[![asciicast](https://asciinema.org/a/250079.png)](https://asciinema.org/a/250079)
 konfigadm is a declarative configuration management tool focused on bootstrapping nodes for container based environments.
 
 `konfigadm` differs from tools like ansible, puppet and chef in that it uses a Virtual Filesystem and Shell (VFS), configuration items don't actually make changes, they only update the VFS, changes to the system are only made from the VFS in the final step.
