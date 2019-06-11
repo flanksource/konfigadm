@@ -47,7 +47,7 @@ workflows:
       - "ubuntu:18.04"
       - "debian:9"
       - "centos:7"
-      - "fedora:latest"
+      # - "fedora:latest"
       - release:
           context: Github
           filters:
