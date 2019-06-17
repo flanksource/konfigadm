@@ -14,58 +14,58 @@ var (
 
 //Port maps src and target ports
 type Port struct {
-	Port   int `json:"port,omitempty"  validate:"min=1,max=65536"`
-	Target int `json:"target,omitempty"  validate:"min=1,max=65536"`
+	Port   int `yaml:"port,omitempty"  validate:"min=1,max=65536"`
+	Target int `yaml:"target,omitempty"  validate:"min=1,max=65536"`
 }
 
 //Container represents a container to be run using systemd
 type Container struct {
 	//The name of the service (e.g systemd unit name or deployment name)
-	Service string `json:"service,omitempty"`
+	Service string `yaml:"service,omitempty"`
 
-	Image string `json:"image"`
+	Image string `yaml:"image"`
 
 	//A map of environment variables to pass through
-	Env map[string]string `json:"env,omitempty"`
+	Env map[string]string `yaml:"env,omitempty"`
 
 	//A map of labels to add to the container
-	Labels map[string]string `json:"labels,omitempty"`
+	Labels map[string]string `yaml:"labels,omitempty"`
 
 	//Additional arguments to the docker run command e.g. -p 8080:8080
-	DockerOpts string `json:"docker_opts,omitempty"`
+	DockerOpts string `yaml:"docker_opts,omitempty"`
 
 	//Additional options to the docker client e.g. -H unix:///tmp/var/run/docker.sock
-	DockerClientArgs string `json:"docker_client_args,omitempty"`
+	DockerClientArgs string `yaml:"docker_client_args,omitempty"`
 
 	//Additional arguments to the container
-	Args string `json:"args,omitempty"`
+	Args string `yaml:"args,omitempty"`
 
-	Ports []Port `json:"ports,omitempty"`
+	Ports []Port `yaml:"ports,omitempty"`
 
-	Commands []string `json:"commands,omitempty"`
+	Commands []string `yaml:"commands,omitempty"`
 
 	//Map of files to mount into the container
-	Files map[string]string `json:"files,omitempty"`
+	Files map[string]string `yaml:"files,omitempty"`
 
 	//Map of templates to mount into the container
-	Templates map[string]string `json:"templates,omitempty"`
+	Templates map[string]string `yaml:"templates,omitempty"`
 
 	//TODO:
-	Volumes []string `json:"volumes,omitempty"`
+	Volumes []string `yaml:"volumes,omitempty"`
 
 	//TODO  capabilities:
 
 	//CPU limit in cores (Defaults to 1 )
-	CPU int `json:"cpu,omitempty" validate:"min=0,max=32"`
+	CPU int `yaml:"cpu,omitempty" validate:"min=0,max=32"`
 
 	//	Memory Limit in MB. (Defaults to 1024)
-	Mem int `json:"mem,omitempty" validate:"min=0,max=1048576"`
+	Mem int `yaml:"mem,omitempty" validate:"min=0,max=1048576"`
 
 	//default:	user-bridge	 only
-	Network string `json:"network,omitempty"`
+	Network string `yaml:"network,omitempty"`
 
 	// default: 1
-	Replicas int `json:"replicas,omitempty"`
+	Replicas int `yaml:"replicas,omitempty"`
 }
 
 func (c Container) Name() string {
