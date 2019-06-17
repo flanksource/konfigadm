@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -14,19 +15,19 @@ import (
 )
 
 var (
-	Reset        = "\x1b[0m"
-	Red          = "\x1b[31m"
-	LightRed     = "\x1b[31;1m"
-	Green        = "\x1b[32m"
-	LightGreen   = "\x1b[32;1m"
-	LightBlue    = "\x1b[34;1m"
-	Magenta      = "\x1b[35m"
-	LightMagenta = "\x1b[35;1m"
-	Cyan         = "\x1b[36m"
-	LightCyan    = "\x1b[36;1m"
-	White        = "\x1b[37;1m"
-	Bold         = "\x1b[1m"
-	BoldOff      = "\x1b[22m"
+	reset        = "\x1b[0m"
+	red          = "\x1b[31m"
+	lightRed     = "\x1b[31;1m"
+	green        = "\x1b[32m"
+	lightGreen   = "\x1b[32;1m"
+	lightBlue    = "\x1b[34;1m"
+	magenta      = "\x1b[35m"
+	lightMagenta = "\x1b[35;1m"
+	cyan         = "\x1b[36m"
+	lightCyan    = "\x1b[36;1m"
+	white        = "\x1b[37;1m"
+	bold         = "\x1b[1m"
+	boldOff      = "\x1b[22m"
 )
 
 //SafeExec executes the sh script and returns the stdout and stderr, errors will result in a nil return only.
@@ -210,4 +211,71 @@ func SplitAllInSlice(a []string, split string, index int) (replaced []string) {
 		replaced = append(replaced, strings.Split(s, split)[index])
 	}
 	return
+}
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+func FileCopy(src string, dst string) error {
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", src)
+	}
+
+	source, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+	_, err = io.Copy(destination, source)
+	return err
+}
+
+func IsTTY() bool {
+	fi, _ := os.Stdout.Stat()
+	if (fi.Mode() & os.ModeCharDevice) == 0 {
+		return false
+	} else {
+		return true
+	}
+}
+
+func Redf(msg string, args ...interface{}) string {
+	if IsTTY() {
+		return red + fmt.Sprintf(msg, args...) + reset
+	}
+	return fmt.Sprintf(msg, args...)
+}
+
+func Greenf(msg string, args ...interface{}) string {
+	if IsTTY() {
+		return green + fmt.Sprintf(msg, args...) + reset
+	}
+	return fmt.Sprintf(msg, args...)
+}
+
+func LightGreenf(msg string, args ...interface{}) string {
+	if IsTTY() {
+		return lightGreen + fmt.Sprintf(msg, args...) + reset
+	}
+	return fmt.Sprintf(msg, args...)
+}
+
+func LightCyanf(msg string, args ...interface{}) string {
+	if IsTTY() {
+		return lightCyan + fmt.Sprintf(msg, args...) + reset
+	}
+	return fmt.Sprintf(msg, args...)
 }

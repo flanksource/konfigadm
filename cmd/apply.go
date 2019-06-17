@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 
-	_ "github.com/moshloop/konfigadm/pkg"
 	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -17,7 +16,6 @@ var (
 		Short: "Apply the configuration to the local machine",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-
 			cfg := GetConfig(cmd)
 
 			files, commands, err := cfg.ApplyPhases()
@@ -26,7 +24,7 @@ var (
 			}
 
 			for path, file := range files {
-				log.Infof("Writing %s\n", path)
+				log.Infof("Writing %s\n", utils.LightGreenf(path))
 				perms, _ := strconv.Atoi(file.Permissions)
 				if perms == 0 {
 					perms = 0644
@@ -35,7 +33,7 @@ var (
 			}
 
 			for _, cmd := range commands {
-				log.Infof("Executing %s\n", cmd.Cmd)
+				log.Infof("Executing %s\n", utils.LightGreenf(cmd.Cmd))
 				if err := utils.Exec(cmd.Cmd); err != nil {
 					log.Fatalf("Failed to run: %s, %s", cmd.Cmd, err)
 				}
