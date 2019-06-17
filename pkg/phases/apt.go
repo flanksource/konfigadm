@@ -15,7 +15,7 @@ type AptPackageManager struct {
 }
 
 func (p AptPackageManager) Install(pkg ...string) Commands {
-	return NewCommand("apt-get install -y --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
+	return NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
 }
 
 func (p AptPackageManager) Uninstall(pkg ...string) Commands {
@@ -73,13 +73,12 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 		cmds = cmds.AddDependency("[ -e /usr/share/doc/apt-transport-https ] || apt-get install -y apt-transport-https")
 	}
 	cmds = cmds.
-		AddDependency("which sudo 2>&1 > /dev/null || apt-get install -y sudo").
 		AddDependency("which curl 2>&1 > /dev/null || apt-get install -y curl")
 
 	if gpgKey != "" {
 		cmds = cmds.
-			AddDependency("which gpg2 2>&1 > /dev/null || apt-get install -y gnupg2")
-		cmds = cmds.Add(fmt.Sprintf("curl -skL %s | sudo apt-key add -", gpgKey))
+			AddDependency("which gpg2 2>&1 > /dev/null || apt-get install -y gnupg")
+		cmds = cmds.Add(fmt.Sprintf("curl -skL \"%s\" | apt-key add -", gpgKey))
 	}
 
 	return cmds.Add(fmt.Sprintf("echo deb [arch=amd64] %s %s %s > /etc/apt/sources.list.d/%s.list", uri, versionCodeName, channel, name))
