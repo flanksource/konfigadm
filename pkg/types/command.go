@@ -129,7 +129,7 @@ func (c *Command) UnmarshalYAML(node *yaml.Node) error {
 		if FLAG, ok := FLAG_MAP[flag]; ok {
 			c.Flags = append(c.Flags, FLAG)
 		} else {
-			log.Warnf("Ignoring flags: %s on line: %s\n", comment, node.Value)
+			log.Debugf("Ignoring flags: %s on line: %s\n", comment, node.Value)
 			return nil
 		}
 	}
