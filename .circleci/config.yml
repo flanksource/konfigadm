@@ -51,10 +51,8 @@ workflows:
       - release:
           context: Github
           filters:
-            branches:
-              ignore: /.*/
             tags:
-              only: /.*/
+              only: /v.*/
       - docs:
           context: Github
 
