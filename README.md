@@ -68,20 +68,20 @@ Integration testing with tools like molecule is possible, but cannot verify that
 ### Ubuntu / Debian
 
 ```bash
-wget https://github.com/moshloop/konfigadm/releases/download/0.2.0/konfigadm.deb
+wget https://github.com/moshloop/konfigadm/releases/download/v0.2.3/konfigadm.deb
 dpkg -i konfigadm.deb
 ```
 
 ### Centos / Fedora / Redhat
 
 ```bash
-rpm -i https://github.com/moshloop/konfigadm/releases/download/0.2.0/konfigadm.rpm
+rpm -i https://github.com/moshloop/konfigadm/releases/download/v0.2.3/konfigadm.rpm
 ```
 
 ### Binary
 
 ```bash
-wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/download/0.2.0/konfigadm && chmod +x /usr/bin/konfigadm
+wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/download/v0.2.3/konfigadm && chmod +x /usr/bin/konfigadm
 ```
 
 ## Getting Started
@@ -89,7 +89,7 @@ wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/downlo
 ### Installing Kubernetes
 
 ```bash
-konfigadm apply -c - <<-EOF
+sudo konfigadm apply -c - <<-EOF
 kubernetes:
   version: 1.14.2
 container_runtime:
@@ -104,7 +104,7 @@ EOF
 ### Building a kubernetes image
 
 ```bash
-konfigadm build-image --image ubuntu:1804 -c - <<-EOF
+sudo konfigadm build-image --image ubuntu:1804 -c - <<-EOF
 kubernetes:
   version: 1.14.2
 container_runtime:
