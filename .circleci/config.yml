@@ -50,9 +50,6 @@ workflows:
       # - "fedora:latest"
       - release:
           context: Github
-          filters:
-            tags:
-              only: /v.*/
       - docs:
           context: Github
 
