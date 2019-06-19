@@ -267,14 +267,14 @@ func (c *VerifyResults) Done() {
 
 func (c *VerifyResults) Pass(msg string, args ...interface{}) {
 	c.PassCount++
-	fmt.Printf("%s [pass] %s %s\n", utils.Greenf(msg, args...))
+	fmt.Println(utils.Greenf(" [pass] "+msg, args...))
 
 }
 func (c *VerifyResults) Fail(msg string, args ...interface{}) {
 	c.FailCount++
-	fmt.Printf("%s [fail] %s %s\n", utils.Redf(msg, args...))
+	fmt.Println(utils.Redf(" [fail] "+msg, args...))
 }
 func (c VerifyResults) Skip(msg string, args ...interface{}) {
 	c.SkipCount++
-	fmt.Printf("%s [skip] %s %s\n", utils.LightCyanf(msg, args...))
+	fmt.Println(utils.LightCyanf(" [skip] "+msg, args...))
 }
