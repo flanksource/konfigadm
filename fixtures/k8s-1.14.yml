@@ -1,0 +1,4 @@
+container_runtime:
+  type: docker
+kubernetes:
+  version: 1.14.2
