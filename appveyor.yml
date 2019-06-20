@@ -1,8 +1,8 @@
 version: 1.0.{build}
 image: Ubuntu1804
 
-#init:
-#  - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+init:
+ - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
 
 environment:
   matrix:
@@ -16,5 +16,5 @@ environment:
 
 stack: go 1.12.5
 build_script:
-    - sh: sudo apt-get update && sudo apt-get -y install qemu-system-x86 kpartx python-pexpect python-serial libguestfs-tools golang-go
+    - sh: sudo apt-get update && sudo apt-get -y install qemu-system-x86 kpartx python-pexpect python-serial libguestfs-tools
     - sh: sudo go run main.go --image $image -c fixtures/k8s-1.14.yml
