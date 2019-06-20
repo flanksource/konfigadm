@@ -31,6 +31,6 @@ require (
 	github.com/voxelbrain/goptions v0.0.0-20180630082107-58cddc247ea2 // indirect
 	go.uber.org/dig v1.7.0
 	gopkg.in/yaml.v2 v2.2.2
-	gopkg.in/yaml.v3 v3.0.0-20190409140830-cdc409dda467
+	gopkg.in/yaml.v3 v3.0.0-20190502103701-55513cacd4ae
 	gotest.tools v2.2.0+incompatible // indirect
 )
