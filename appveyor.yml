@@ -2,6 +2,7 @@ version: 1.0.{build}
 image: Ubuntu1804
 
 init:
+ - sh: export APPVEYOR_SSH_BLOCK=true
  - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
 
 environment:
