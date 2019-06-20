@@ -3,7 +3,7 @@ NAME=$(basename $(git remote get-url origin | sed 's/\.git//'))
 GITHUB_USER=$(basename $(dirname $(git remote get-url origin | sed 's/\.git//')))
 GITHUB_USER=${GITHUB_USER##*:}
 TAG=$(git tag --points-at HEAD )
-if ! git describe --exact-match HEAD 2> /dev/null; then
+if [[ "$TAG" == "" ]];  then
   echo "Skipping release of untagged commit"
   exit 0
 fi
