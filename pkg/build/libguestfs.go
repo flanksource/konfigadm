@@ -23,7 +23,7 @@ func (l Libguestfs) Build(image string, config *os.File) {
 		--delete /tmp/builder.log \
 		--copy-in %s:/tmp \
 		--copy-in %s:/tmp \
-		--run-command '/tmp/%s apply -vv -c %s'`, image, konfigadmPath, config.Name(), konfigAdm, config.Name())
+		--run-command '/tmp/%s apply -vv -c %s' 1>&2`, image, konfigadmPath, config.Name(), konfigAdm, config.Name())
 
 	log.Infof("Executing %s\n", colorstring.Color("[light_green]"+cmdLine))
 	if err := utils.Exec(cmdLine); err != nil {

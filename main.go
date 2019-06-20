@@ -15,6 +15,9 @@ var (
 	date    = "unknown"
 )
 
+func init() {
+	log.SetOutput(os.Stderr)
+}
 func main() {
 	var root = &cobra.Command{
 		Use: "konfigadm",
@@ -30,6 +33,7 @@ func main() {
 			default:
 				log.SetLevel(log.WarnLevel)
 			}
+			log.SetOutput(os.Stderr)
 		},
 	}
 
