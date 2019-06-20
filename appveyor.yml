@@ -17,5 +17,5 @@ environment:
 
 build_script:
     - sh: sudo apt-get update && sudo apt-get -y install qemu-system-x86 kpartx python-pexpect python-serial libguestfs-tools
-    - sh: snap install go --classic
+    - sh: sudo snap install go --classic
     - sh: sudo /snap/bin/go run main.go build-image --image $image -c fixtures/k8s-1.14.yml
