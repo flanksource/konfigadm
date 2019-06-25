@@ -92,6 +92,7 @@ func GetKeys(m map[string]File) []string {
 //ToCloudInit will apply all phases and produce a CloudInit object from the results
 func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	cloud := sys.Extra
+	log.Debugf("Extra: %+v", cloud)
 
 	files, commands, err := sys.ApplyPhases()
 	if err != nil {
@@ -101,6 +102,8 @@ func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	for path, content := range files {
 		cloud.AddFile(path, content.Content)
 	}
+	yml, _ := yaml.Marshal(sys)
+	cloud.AddFile("/etc/konfigadm.yml", string(yml))
 	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", konfigadm), ToScript(commands))
 	cloud.AddCommand(fmt.Sprintf("/usr/bin/%s.sh", konfigadm))
 	return *cloud
@@ -117,7 +120,9 @@ func ToScript(commands []Command) string {
 
 func (sys *Config) Init() {
 	sys.Services = make(map[string]Service)
-	sys.Extra = &cloudinit.CloudInit{}
+	if sys.Extra == nil {
+		sys.Extra = &cloudinit.CloudInit{}
+	}
 	sys.Environment = make(map[string]string)
 	sys.Files = make(map[string]string)
 	sys.Filesystem = make(map[string]File)
@@ -159,6 +164,17 @@ func (sys Config) String() {
 
 //ImportConfig merges to configs together, everything but containerRuntime and Kubernetes configs are merged
 func (sys *Config) ImportConfig(c2 Config) {
+	if c2.Extra != nil {
+		if strings.TrimSpace(fmt.Sprintf("%+v", sys.Extra)) == "{}" {
+			sys.Extra = c2.Extra
+		} else if strings.TrimSpace(fmt.Sprintf("%+v", c2.Extra)) != "#cloud-config\n{}" {
+			log.Warnf("More than 1 extra cloud-init section found , merging clout-init is not supported and will override")
+			sys.Extra = c2.Extra
+		}
+	}
+	if c2.Cleanup != nil {
+		sys.Cleanup = c2.Cleanup
+	}
 	sys.Commands = append(sys.Commands, c2.Commands...)
 	sys.PreCommands = append(sys.PreCommands, c2.PreCommands...)
 	sys.PostCommands = append(sys.PostCommands, c2.PostCommands...)
@@ -190,6 +206,10 @@ func (sys *Config) ImportConfig(c2 Config) {
 	pkgs := append(*sys.Packages, *c2.Packages...)
 	sys.Packages = &pkgs
 	sys.Timezone = c2.Timezone
-	sys.ContainerRuntime = c2.ContainerRuntime
-	sys.Kubernetes = c2.Kubernetes
+	if c2.ContainerRuntime != nil {
+		sys.ContainerRuntime = c2.ContainerRuntime
+	}
+	if c2.Kubernetes != nil {
+		sys.Kubernetes = c2.Kubernetes
+	}
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/onsi/gomega"
 	. "github.com/onsi/gomega"
 	"github.com/ory/dockertest"
+	yaml "gopkg.in/yaml.v3"
 )
 
 // uses a sensible default on windows (tcp/http) and linux/osx (socket)
@@ -137,6 +138,23 @@ func (c konfigadm) Verify(config ...string) bool {
 
 func (c konfigadm) Apply(config ...string) bool {
 	return false
+}
+
+func TestYamlRoundTrip(t *testing.T) {
+	for _, f := range fixtures {
+		t.Run(f.in, func(t *testing.T) {
+			_, container := setup(t)
+			defer container.Delete()
+			stdout, err := container.Exec(binary, "minify", "-c", cwd+"/fixtures/"+f.in)
+			if err != nil {
+				t.Errorf("Minify failed %s:\n %s\n", f.in, stdout)
+			}
+			var data map[string]interface{}
+			if err := yaml.Unmarshal([]byte(stdout), &data); err != nil {
+				t.Errorf("Failed to unmarshall: %s\n%s", err, stdout)
+			}
+		})
+	}
 }
 
 func TestFull(t *testing.T) {
