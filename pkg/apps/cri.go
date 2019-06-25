@@ -20,6 +20,8 @@ func (c cri) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 
 	if sys.ContainerRuntime.Type == "docker" {
 		return c.Docker(sys, ctx)
+	} else if sys.ContainerRuntime.Type == "containerd" {
+		return c.Containerd(sys, ctx)
 	} else {
 		return []Command{}, Filesystem{}, fmt.Errorf("unknown container runtime %s", sys.ContainerRuntime.Type)
 	}
@@ -42,6 +44,15 @@ func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
 			results.Fail("docker ps failed with: %s", out)
 		}
 
+	} else if sys.ContainerRuntime.Type == "containerd" {
+		verify = verify && phases.VerifyService("containerd", results)
+		out, ok := utils.SafeExec("crictl ps")
+		if ok {
+			results.Pass("crictl ps returned %d containers", len(strings.Split(out, "\n"))-2)
+		} else {
+			verify = false
+			results.Fail("crictl ps failed with: %s", out)
+		}
 	} else {
 		results.Fail("Unknown runtime %s", sys.ContainerRuntime.Type)
 		return false
@@ -49,7 +60,7 @@ func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
 	return verify
 }
 
-func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
+func addDockerRepos(sys *Config) {
 	sys.AppendPackageRepo(PackageRepo{
 		Name:    "docker-ce",
 		URL:     "https://download.docker.com/linux/ubuntu/",
@@ -76,6 +87,21 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 		GPGKey: "https://download.docker.com/linux/fedora/gpg",
 	}, FEDORA)
 
+}
+
+func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
+	addDockerRepos(sys)
+	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
+	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2", &FEDORA)
+	sys.AddPackage("containerd.io", &DEBIAN_LIKE)
+	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
+	sys.AddCommand("systemctl enable containerd && systemctl start containerd")
+	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
+	return []Command{}, Filesystem{}, nil
+}
+
+func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
+	addDockerRepos(sys)
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
