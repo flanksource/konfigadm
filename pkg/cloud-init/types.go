@@ -470,9 +470,10 @@ type DiskSetup struct {
 }
 
 type CloudInit struct {
-	FsSetup []FsSetup `yaml:"fs_setup,omitempty"`
-	Chef    Chef      `yaml:"chef,omitempty"`
-	Output  struct {
+	FileEncoding string    `yaml:"-"`
+	FsSetup      []FsSetup `yaml:"fs_setup,omitempty"`
+	Chef         Chef      `yaml:"chef,omitempty"`
+	Output       struct {
 		All string `yaml:"all,omitempty"`
 	} `yaml:"output,omitempty"`
 	DeviceAliases map[string]string `yaml:"device_aliases,omitempty"`
@@ -563,7 +564,6 @@ type CloudInit struct {
 	//   False/default: Disables pipelining for APT
 	//   None/Unchanged: Use OS default
 	//   Number: Set pipelining to some number (not recommended)
-	AptPipelining string `yaml:"apt_pipelining,omitempty"`
-
-	YumRepos map[string]YumRepo `yaml:"yum_repos,omitempty"`
+	AptPipelining string             `yaml:"apt_pipelining,omitempty"`
+	YumRepos      map[string]YumRepo `yaml:"yum_repos,omitempty"`
 }
