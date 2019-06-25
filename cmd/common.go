@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func GetConfig(cmd *cobra.Command) *types.Config {
+func GetConfig(cmd *cobra.Command, args []string) *types.Config {
 
 	configs, err := cmd.Flags().GetStringSlice("config")
 	if err != nil {
@@ -46,7 +46,7 @@ func GetConfig(cmd *cobra.Command) *types.Config {
 		log.Fatalf("%s", err)
 	}
 
-	cfg, err := types.NewConfig(configs...).
+	cfg, err := types.NewConfig(append(configs, args...)...).
 		WithVars(vars...).
 		WithFlags(flags...).
 		Build()

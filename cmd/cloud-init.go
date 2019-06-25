@@ -13,8 +13,7 @@ var (
 
 		Run: func(cmd *cobra.Command, args []string) {
 
-			cfg := GetConfig(cmd)
-			println(cfg.ToCloudInit().String())
+			cfg := GetConfig(cmd, args)
 
 		},
 	}

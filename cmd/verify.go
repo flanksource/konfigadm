@@ -15,7 +15,7 @@ var (
 		Short: "Verify that the configuration has been applied correctly and is in a healthy state",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			cfg := GetConfig(cmd)
+			cfg := GetConfig(cmd, args)
 			_, _, err := cfg.ApplyPhases()
 			if err != nil {
 				log.Error(err)

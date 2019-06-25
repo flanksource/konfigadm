@@ -15,7 +15,7 @@ var (
 		Short: "Resolve all lookups and dependencies and export a single config file",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			cfg := GetConfig(cmd)
+			cfg := GetConfig(cmd, args)
 			fs, commands, err := cfg.ApplyPhases()
 			if err != nil {
 				log.Fatalf("Error applying phases %s\n", err)

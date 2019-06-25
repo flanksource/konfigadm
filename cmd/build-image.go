@@ -23,7 +23,7 @@ var drivers = map[string]Driver{
 	"libguestfs": Libguestfs{},
 }
 
-func buildImage(cmd *cobra.Command, image, outputDir string) {
+func buildImage(cmd *cobra.Command, args []string, image, outputDir string) {
 	HOME, _ := os.UserHomeDir()
 	IMAGE_CACHE := HOME + "/.konfigadm/images"
 	driverName, _ := cmd.Flags().GetString("driver")
@@ -105,7 +105,7 @@ var (
 			}
 			outputDir, _ := cmd.Flags().GetString("output-dir")
 			image, _ := cmd.Flags().GetString("image")
-			buildImage(cmd, image, outputDir)
+			buildImage(cmd, args, image, outputDir)
 		},
 	}
 )

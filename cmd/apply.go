@@ -16,7 +16,7 @@ var (
 		Short: "Apply the configuration to the local machine",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			cfg := GetConfig(cmd)
+			cfg := GetConfig(cmd, args)
 
 			files, commands, err := cfg.ApplyPhases()
 			if err != nil {
