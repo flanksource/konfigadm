@@ -15,7 +15,7 @@ type AptPackageManager struct {
 }
 
 func (p AptPackageManager) Install(pkg ...string) Commands {
-	return NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
+	return NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-downgrades --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
 }
 
 func (p AptPackageManager) Uninstall(pkg ...string) Commands {
@@ -24,7 +24,7 @@ func (p AptPackageManager) Uninstall(pkg ...string) Commands {
 
 func (p AptPackageManager) Mark(pkg ...string) Commands {
 	cmds := NewCommand("apt-get mark -y " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
-	return cmds.AddDependency("apt-get install -y apt-mark")
+	return *cmds.AddDependency("apt-get install -y apt-mark")
 }
 
 func (p AptPackageManager) ListInstalled() string {
@@ -45,6 +45,7 @@ func (p AptPackageManager) GetInstalledVersion(pkg string) string {
 	status := strings.Split(stdout, "\t")[0]
 	version := strings.Split(stdout, "\t")[1]
 
+	log.Tracef("package: %s, status: %s,  version: %s", pkg, status, version)
 	if status != "installed" {
 		log.Debugf("%s is in db, but is not installed: %s", pkg, status)
 		return ""
@@ -53,7 +54,7 @@ func (p AptPackageManager) GetInstalledVersion(pkg string) string {
 }
 
 func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName string, name string, gpgKey string) Commands {
-	cmds := Commands{}
+	cmds := &Commands{}
 	if channel == "" {
 		channel = "main"
 	}
@@ -81,10 +82,10 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 		cmds = cmds.Add(fmt.Sprintf("curl -skL \"%s\" | apt-key add -", gpgKey))
 	}
 
-	return cmds.Add(fmt.Sprintf("echo deb [arch=amd64] %s %s %s > /etc/apt/sources.list.d/%s.list", uri, versionCodeName, channel, name))
+	return *cmds.Add(fmt.Sprintf("echo deb [arch=amd64] %s %s %s > /etc/apt/sources.list.d/%s.list", uri, versionCodeName, channel, name))
 }
 
 func (p AptPackageManager) CleanupCaches() Commands {
 	set := Commands{}
-	return set.Add("apt-get -y autoremove --purge", "apt-get -y clean", "apt-get -y autoclean")
+	return *set.Add("apt-get -y autoremove --purge", "apt-get -y clean", "apt-get -y autoclean")
 }

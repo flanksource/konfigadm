@@ -220,6 +220,7 @@ type Config struct {
 	Extra            *cloudinit.CloudInit `yaml:"extra,omitempty"`
 	Services         map[string]Service   `yaml:"services,omitempty"`
 	Users            []User               `yaml:"users,omitempty"`
+	Cleanup          *bool                `yaml:"cleanup,omitempty"`
 	Context          *SystemContext       `yaml:"-"`
 }
 

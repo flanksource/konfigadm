@@ -19,6 +19,7 @@ func init() {
 			phases.Services,
 			phases.Files,
 			phases.CommandsPhase,
+			apps.Cleanup,
 		}
 	})
 }
