@@ -1,7 +1,7 @@
 package build
 
-import "os"
+import "github.com/moshloop/konfigadm/pkg/types"
 
 type Driver interface {
-	Build(image string, config *os.File)
+	Build(image string, cfg *types.Config)
 }

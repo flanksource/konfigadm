@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -14,13 +13,13 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
-	yaml "gopkg.in/yaml.v3"
 )
 
 var IMAGE_CACHE string
 
 var drivers = map[string]Driver{
 	"libguestfs": Libguestfs{},
+	"qemu":       Qemu{},
 }
 
 func buildImage(cmd *cobra.Command, args []string, image, outputDir string) {
@@ -65,28 +64,19 @@ func buildImage(cmd *cobra.Command, args []string, image, outputDir string) {
 		log.Fatalf("%s does not exists", image)
 	}
 
-	tmpfile, err := ioutil.TempFile("", "konfigadm.*.yml")
-	if err != nil {
-		log.Fatalf("Cannot create tempfile %s", err)
-	}
-	cfg := GetConfig(cmd)
-	_, _, err = cfg.ApplyPhases()
-	if err != nil {
-		log.Fatalf("Error applying phases %s\n", err)
-	}
-	data, _ := yaml.Marshal(cfg)
-
-	if _, err := tmpfile.Write(data); err != nil {
-		log.Fatalf("Error writing tmp file %s", err)
-	}
+	cfg := GetConfig(cmd, args)
 
 	var driver Driver
 	var ok bool
 	if driver, ok = drivers[driverName]; !ok {
 		log.Fatalf("Invalid driver name: %s ", driverName)
 	}
-	driver.Build(image, tmpfile)
 
+	if !strings.HasPrefix(image, "/") {
+		cwd, _ := os.Getwd()
+		image = path.Join(cwd, image)
+	}
+	driver.Build(image, cfg)
 	fmt.Println(image)
 }
 
@@ -114,6 +104,6 @@ func init() {
 	cwd, _ := os.Getwd()
 	BuildImg.Flags().String("image", "", "A local or remote path to a disk image")
 	BuildImg.Flags().Bool("list-images", false, "Print a list of available public images to use")
-	BuildImg.Flags().String("driver", "libguestfs", "The image build driver to use, currently only libguestfs supported")
+	BuildImg.Flags().String("driver", "qemu", "The image build driver to use:  Supported options are: qemu,libguestfs")
 	BuildImg.Flags().String("output-dir", cwd, "Output directory for new images")
 }

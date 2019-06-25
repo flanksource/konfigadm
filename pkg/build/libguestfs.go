@@ -2,17 +2,33 @@ package build
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 
 	"github.com/mitchellh/colorstring"
+	"github.com/moshloop/konfigadm/pkg/types"
 	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 )
 
 type Libguestfs struct{}
 
-func (l Libguestfs) Build(image string, config *os.File) {
+func (l Libguestfs) Build(image string, cfg *types.Config) {
+
+	_, _, err := cfg.ApplyPhases()
+	if err != nil {
+		log.Fatalf("Error applying phases %s\n", err)
+	}
+	data, _ := yaml.Marshal(cfg)
+	tmpfile, err := ioutil.TempFile("", "konfigadm.*.yml")
+	if err != nil {
+		log.Fatalf("Cannot create tempfile %s", err)
+	}
+	if _, err := tmpfile.Write(data); err != nil {
+		log.Fatalf("Error writing tmp file %s", err)
+	}
 	os.Remove("/tmp/builder.log")
 	os.Remove("builder.log")
 
@@ -23,7 +39,7 @@ func (l Libguestfs) Build(image string, config *os.File) {
 		--delete /tmp/builder.log \
 		--copy-in %s:/tmp \
 		--copy-in %s:/tmp \
-		--run-command '/tmp/%s apply -vv -c %s' 1>&2`, image, konfigadmPath, config.Name(), konfigAdm, config.Name())
+		--run-command '/tmp/%s apply -vv -c %s' 1>&2`, image, konfigadmPath, tmpfile.Name(), konfigAdm, tmpfile.Name())
 
 	log.Infof("Executing %s\n", colorstring.Color("[light_green]"+cmdLine))
 	if err := utils.Exec(cmdLine); err != nil {
