@@ -1,6 +1,8 @@
 package phases
 
-import . "github.com/moshloop/konfigadm/pkg/types"
+import (
+	. "github.com/moshloop/konfigadm/pkg/types"
+)
 
 var CommandsPhase AllPhases = command{}
 
@@ -12,6 +14,9 @@ func (p command) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 	commands = append(commands, sys.PreCommands...)
 	commands = append(commands, sys.Commands...)
 	commands = append(commands, sys.PostCommands...)
+	sys.PreCommands = nil
+	sys.Commands = nil
+	sys.PostCommands = nil
 
 	return commands, files, nil
 }
