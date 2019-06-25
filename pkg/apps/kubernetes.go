@@ -41,8 +41,20 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 		AddPackage("kubeadm=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
 		AddPackage("kubectl=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE)
 
+	sys.AddPackage("socat jq ebtables ntp libseccomp nfs-utils", &REDHAT_LIKE)
+	sys.AddPackage("socat jq ebtables ntp libseccomp2 nfs-client", &DEBIAN_LIKE)
+
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
-	// sys.Sysctls["vm.swappiness"] = "0"
-	return []Command{}, Filesystem{}, nil
+	sys.Sysctls["vm.swappiness"] = "0"
+	sys.Sysctls["net.bridge.bridge-nf-call-iptables"] = "1"
+	sys.Sysctls["net.bridge.bridge-nf-call-ip6tables"] = "1"
+	sys.Sysctls["net.ipv4.ip_forward"] = "1"
+
+	fs := Filesystem{}
+	fs["/etc/modules-load.d/kubernetes.conf"] = File{Content: "overlay\nbr_netfilter"}
+
+	//TODO(moshloop) ensure kernel modules are loaded: overlay and br_netfilter
+
+	return []Command{}, fs, nil
 
 }
