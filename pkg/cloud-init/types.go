@@ -393,7 +393,7 @@ type User struct {
 	// Optional. Import SSH ids
 	SSHImportID string `yaml:"ssh_import_id,omitempty"`
 	//Defaults to true. Lock the password to disable password login
-	LockPasswd bool `yaml:"lock_passwd,omitempty"`
+	LockPasswd *bool `yaml:"lock_passwd,omitempty"`
 	//When set to true, do not create home directory
 	NoCreateHome bool `yaml:"no_create_home,omitempty"`
 	//When set to true, do not create a group named after the user.
