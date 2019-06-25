@@ -49,6 +49,13 @@ func (p Package) String() string {
 	return p.Name + fmt.Sprintf("%s", p.Flags)
 }
 
+func (p Package) VersionedName() string {
+	if p.Version == "" {
+		return p.Name
+	}
+	return p.Name + "=" + p.Version
+}
+
 //AddPackage is a helper function to add new packages
 func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
 	pkg := Package{
@@ -107,6 +114,12 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 	if strings.HasPrefix(node.Value, "=") {
 		p.Name = node.Value[1:]
 		p.Mark = true
+	}
+
+	if strings.Contains(p.Name, "=") {
+		parts := strings.Split(p.Name, "=")
+		p.Name = parts[0]
+		p.Version = parts[len(parts)-1]
 	}
 	comment := node.LineComment
 	if !strings.Contains(comment, "#") {

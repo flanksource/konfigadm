@@ -78,7 +78,7 @@ func addPackageCommands(sys *Config, commands *Commands) {
 		if p.Uninstall {
 			ops.uninstall = appendStrings(ops.uninstall, p.Name)
 		} else {
-			ops.install = appendStrings(ops.install, p.Name)
+			ops.install = appendStrings(ops.install, p.VersionedName())
 		}
 		managers[getKeyFromTags(p.Flags...)] = ops
 	}
@@ -93,12 +93,11 @@ func addPackageCommands(sys *Config, commands *Commands) {
 			var ok bool
 			if ops, ok = managers[getKeyFromTags(os.GetTags()...)]; !ok {
 				ops = packageOperations{tags: os.GetTags()}
-
 			}
 			if p.Uninstall {
 				ops.uninstall = appendStrings(ops.uninstall, p.Name)
 			} else {
-				ops.install = appendStrings(ops.install, p.Name)
+				ops.install = appendStrings(ops.install, p.VersionedName())
 			}
 			managers[getKeyFromTags(os.GetTags()...)] = ops
 		}
@@ -148,27 +147,29 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 		results.Fail("Unable to find OS for tags %s", flags)
 		return false
 	}
+
 	for _, p := range *cfg.Packages {
 		if !MatchesAny(flags, p.Flags) {
 			continue
 		}
+		log.Tracef("Verifying package: %s, version: %s", p.Name, p.Version)
 		installed := os.GetPackageManager().GetInstalledVersion(p.Name)
 		if p.Uninstall {
 			if installed == "" {
 				results.Pass("%s is not installed", p)
 			} else {
-				results.Fail("%s-%s should not be installed", p, installed)
+				results.Fail("%s should not be installed", p)
 				verify = false
 			}
 		} else if p.Version == "" && installed != "" {
-			results.Pass("%s-%s is installed", p, installed)
+			results.Pass("%s is installed with any version: %s", p, installed)
 		} else if p.Version == "" && installed == "" {
 			results.Fail("%s is not installed, any version required", p)
 			verify = false
 		} else if installed == p.Version {
-			results.Pass("%s-%s is installed", p, installed)
+			results.Pass("%s is installed with expected version: %s", p, installed)
 		} else {
-			results.Fail("%s-%s is installed, but not the correct version: %s", p.Name, installed, p.Version)
+			results.Fail("%s is installed, but expected %s, got %s", p.Name, p.Version, installed)
 			verify = false
 		}
 	}
