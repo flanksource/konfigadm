@@ -46,12 +46,12 @@ func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
 
 	} else if sys.ContainerRuntime.Type == "containerd" {
 		verify = verify && phases.VerifyService("containerd", results)
-		out, ok := utils.SafeExec("crictl ps")
+		out, ok := utils.SafeExec("ctr c list")
 		if ok {
-			results.Pass("crictl ps returned %d containers", len(strings.Split(out, "\n"))-2)
+			results.Pass("ctr c list returned %d containers", len(strings.Split(out, "\n"))-2)
 		} else {
 			verify = false
-			results.Fail("crictl ps failed with: %s", out)
+			results.Fail("ctr c list failed with: %s", out)
 		}
 	} else {
 		results.Fail("Unknown runtime %s", sys.ContainerRuntime.Type)
