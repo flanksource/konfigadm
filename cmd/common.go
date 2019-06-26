@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	_ "github.com/moshloop/konfigadm/pkg"
 	"github.com/moshloop/konfigadm/pkg/phases"
 	"github.com/moshloop/konfigadm/pkg/types"
@@ -23,10 +25,13 @@ func GetConfig(cmd *cobra.Command, args []string) *types.Config {
 	if ok, _ := cmd.Flags().GetBool("detect-tags"); ok {
 		for _, _os := range phases.SupportedOperatingSystems {
 			if _os.DetectAtRuntime() {
-				log.Infof("Detected %s\n", _os.GetTags())
 				flags = append(flags, _os.GetTags()...)
 			}
 		}
+		if os.Getenv("container") != "" {
+			flags = append(flags, types.CONTAINER)
+		}
+		log.Infof("Detected %s\n", flags)
 	}
 
 	flagNames, err := cmd.Flags().GetStringSlice("tag")
