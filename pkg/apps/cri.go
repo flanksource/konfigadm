@@ -91,8 +91,8 @@ func addDockerRepos(sys *Config) {
 
 func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	addDockerRepos(sys)
-	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
-	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2", &FEDORA)
+	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &REDHAT_LIKE)
+	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &FEDORA)
 	sys.AddPackage("containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
 	sys.AddCommand("systemctl enable containerd && systemctl restart containerd")
