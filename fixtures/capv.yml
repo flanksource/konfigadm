@@ -1,0 +1,31 @@
+container_runtime:
+  type: containerd
+kubernetes:
+  version: 1.13.6
+cleanup: true
+post_commands:
+  - set -o verbose
+  - echo "root:root" | chpasswd
+  - update-grub
+  - curl -sSL https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo/master/install.sh | sh -
+  - kubeadm config images pull --kubernetes-version 1.13.6 --cri-socket=unix:///var/run/containerd/containerd.sock
+
+package_repos:
+  - url: http://ppa.launchpad.net/detiber/cloud-init/ubuntu
+    name: detiber
+    gpgKey: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xD8DE31CD49D026AC
+    channel: main
+    tags:
+      - "debian-like"
+  - url: https://copr.fedorainfracloud.org/coprs/jdetiber/cloud-init/repo/epel-7/jdetiber-cloud-init-epel-7.repo
+    name: detiber
+    tags:
+      - "redhat-like"
+
+packages:
+  - python3-pip #debian-like
+  - python3-distutils #debian-like
+  - python3-netifaces #debian-like
+  - yum-utils #redhat-like
+  - python2-pip  #redhat-like
+  - cloud-init=18.3-52-gc5f78957-1~bddeb~18.04.1
