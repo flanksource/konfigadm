@@ -30,7 +30,9 @@ func (sys *Config) Verify(results *VerifyResults) bool {
 		switch v := phase.(type) {
 		case VerifyPhase:
 			log.Tracef("Verifying %s", reflect.TypeOf(phase).Name())
-			verify = verify && v.Verify(sys, results, sys.Context.Flags...)
+			// run verification always, even if previous verifications have failed
+			_verify := v.Verify(sys, results, sys.Context.Flags...)
+			verify = verify && _verify
 		}
 	}
 	return verify
