@@ -95,7 +95,7 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
-	sys.AddCommand("systemctl enable containerd && systemctl start containerd")
+	sys.AddCommand("systemctl enable containerd && systemctl restart containerd")
 	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
 	return []Command{}, Filesystem{}, nil
 }
