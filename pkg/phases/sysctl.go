@@ -2,6 +2,7 @@ package phases
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	. "github.com/moshloop/konfigadm/pkg/types"
@@ -31,6 +32,10 @@ func (p sysctl) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesyst
 func (p sysctl) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
 	verify := true
 	for k, v := range cfg.Sysctls {
+		if os.Getenv("container") != "" {
+			results.Skip("sysctl[%s]: cannot test inside a container", k)
+			continue
+		}
 		value := SafeRead("/proc/sys" + strings.Replace(k, ".", "/", -1))
 		if value == v {
 			results.Pass("sysctl[%s]: %s", k, v)
