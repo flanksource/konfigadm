@@ -58,6 +58,12 @@ func buildImage(cmd *cobra.Command, args []string, image, outputDir string) {
 			log.Fatalf("Failed to create new base image %s, %s", image, err)
 		}
 		log.Infof("Created new base image")
+		if resize, _ := cmd.Flags().GetString("resize"); resize != "" {
+			log.Infof("Reizing %s to %s\n", image, resize)
+			if err := utils.Exec("qemu-img resize \"%s\" %s", image, resize); err != nil {
+				log.Fatalf("Error resizing disk  %s", err)
+			}
+		}
 
 	}
 	if !utils.FileExists(image) {
@@ -105,5 +111,6 @@ func init() {
 	BuildImg.Flags().String("image", "", "A local or remote path to a disk image")
 	BuildImg.Flags().Bool("list-images", false, "Print a list of available public images to use")
 	BuildImg.Flags().String("driver", "qemu", "The image build driver to use:  Supported options are: qemu,libguestfs")
+	BuildImg.Flags().String("resize", "", "Resize the image")
 	BuildImg.Flags().String("output-dir", cwd, "Output directory for new images")
 }

@@ -14,9 +14,9 @@ import (
 type Qemu struct{}
 
 func (q Qemu) Build(image string, config *types.Config) {
-
-	config.PostCommands = append(config.PostCommands, types.Command{Cmd: "cloud-init clean; shutdown -h now"})
-	iso, _ := cloudinit.CreateISO("builder", config.ToCloudInit().String())
+	cloud_init := config.ToCloudInit()
+	cloud_init.PowerState.Mode = "poweroff"
+	iso, _ := cloudinit.CreateISO("builder", cloud_init.String())
 	cmdLine := fmt.Sprintf(`
 	kvm -M pc -m 1024 -smp 2 \
 	-nographic \
