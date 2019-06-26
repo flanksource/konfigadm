@@ -18,6 +18,7 @@ var (
 func init() {
 	log.SetOutput(os.Stderr)
 }
+
 func main() {
 	var root = &cobra.Command{
 		Use: "konfigadm",

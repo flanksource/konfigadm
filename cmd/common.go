@@ -9,7 +9,6 @@ import (
 )
 
 func GetConfig(cmd *cobra.Command, args []string) *types.Config {
-
 	configs, err := cmd.Flags().GetStringSlice("config")
 	if err != nil {
 		log.Fatalf("%s", err)

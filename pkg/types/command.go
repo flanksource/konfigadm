@@ -25,7 +25,17 @@ func NewCommand(cmd string) Commands {
 	}
 }
 
-func (c *Commands) Add(commands ...string) Commands {
+func (c *Commands) AddAll(cmd ...Command) *Commands {
+	if c.commands == nil {
+		c.commands = &[]Command{}
+	}
+	commandsSlice := *c.commands
+	commandsSlice = append(commandsSlice, cmd...)
+	c.commands = &commandsSlice
+	return c
+}
+
+func (c *Commands) Add(commands ...string) *Commands {
 	if c.commands == nil {
 		c.commands = &[]Command{}
 	}
@@ -34,10 +44,10 @@ func (c *Commands) Add(commands ...string) Commands {
 		commandsSlice = append(commandsSlice, Command{Cmd: command})
 	}
 	c.commands = &commandsSlice
-	return *c
+	return c
 }
 
-func (c Commands) AddDependency(commands ...string) Commands {
+func (c *Commands) AddDependency(commands ...string) *Commands {
 	if c.dependencies == nil {
 		c.dependencies = &[]Command{}
 	}
@@ -47,6 +57,19 @@ func (c Commands) AddDependency(commands ...string) Commands {
 	}
 	c.dependencies = &commandsSlice
 	return c
+}
+
+func (c Commands) GetCommands() []Command {
+	if c.dependencies == nil && c.commands == nil {
+		return []Command{}
+	}
+	if c.dependencies == nil {
+		return *c.commands
+	}
+	if c.commands == nil {
+		return *c.dependencies
+	}
+	return append(*c.dependencies, *c.commands...)
 }
 
 func (c1 *Commands) Append(c2 Commands) *Commands {

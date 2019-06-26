@@ -111,7 +111,7 @@ func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 
 //ToScript returns a bash script of all the commands that can be run directly
 func ToScript(commands []Command) string {
-	script := "#!/bin/bash\n"
+	script := "#!/bin/bash\nset -o verbose\n"
 	for _, command := range commands {
 		script += command.Cmd + "\n"
 	}

@@ -258,7 +258,7 @@ type PowerState struct {
 	//       0: condition met
 	//       1: condition not met
 	//    other exit codes will result in 'not met', but are reserved  for future use.
-	Condition bool `yaml:"condition,omitempty"`
+	Condition string `yaml:"condition,omitempty"`
 }
 
 type MAASDatasource struct {
