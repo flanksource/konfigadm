@@ -52,7 +52,12 @@ func buildImage(cmd *cobra.Command, args []string, image, outputDir string) {
 			}
 		}
 		timestamp := time.Now().Format("-20060102150405")
-		image = outputDir + "/" + strings.Split(basename, ".")[0] + timestamp + "." + strings.Split(basename, ".")[1]
+		if out, _ := cmd.Flags().GetString("output-filename"); out != "" {
+			image = path.Join(outputDir, out)
+		} else {
+			image = outputDir + "/" + strings.Split(basename, ".")[0] + timestamp + "." + strings.Split(basename, ".")[1]
+		}
+
 		log.Infof("Creating new base image: %s", image)
 		if err := utils.FileCopy(cachedImage, image); err != nil {
 			log.Fatalf("Failed to create new base image %s, %s", image, err)
@@ -112,5 +117,6 @@ func init() {
 	BuildImg.Flags().Bool("list-images", false, "Print a list of available public images to use")
 	BuildImg.Flags().String("driver", "qemu", "The image build driver to use:  Supported options are: qemu,libguestfs")
 	BuildImg.Flags().String("resize", "", "Resize the image")
+	BuildImg.Flags().String("output-filename", "", "Output filename of image")
 	BuildImg.Flags().String("output-dir", cwd, "Output directory for new images")
 }
