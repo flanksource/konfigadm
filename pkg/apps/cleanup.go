@@ -18,7 +18,7 @@ func (c cleanup) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 	}
 
 	for _, os := range phases.BaseOperatingSystems {
-		cmds.AddAll(os.GetPackageManager().CleanupCaches().GetCommands()...)
+		cmds.AddAll(os.GetPackageManager().CleanupCaches().WithTags(os.GetTags()...).GetCommands()...)
 	}
 
 	cmds.Add("rm -rf /tmp/* || true").
