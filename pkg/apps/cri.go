@@ -83,7 +83,7 @@ func addDockerRepos(sys *Config) {
 
 	sys.AppendPackageRepo(PackageRepo{
 		Name:   "docker-ce",
-		URL:    "https://download.docker.com/linux/fedora/\\$releasever/\\$basearch/stable",
+		URL:    "https://download.docker.com/linux/fedora/\\$releasever/\\$basearch/nightly",
 		GPGKey: "https://download.docker.com/linux/fedora/gpg",
 	}, FEDORA)
 
