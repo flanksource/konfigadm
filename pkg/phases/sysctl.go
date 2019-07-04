@@ -19,7 +19,7 @@ func (p sysctl) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesyst
 	files := Filesystem{}
 
 	if len(sys.Sysctls) > 0 {
-		filename := fmt.Sprintf("/etc/sysctl.conf.d/100-%s.conf", sys.Context.Name)
+		filename := fmt.Sprintf("/etc/sysctl.d/100-%s.conf", sys.Context.Name)
 		files[filename] = File{Content: MapToIni(sys.Sysctls)}
 	}
 
