@@ -106,19 +106,6 @@ func buildImage(image string) string {
 	return image
 }
 
-func testImage(image string) string {
-	if image == "" {
-		log.Fatalf("Must specify --image")
-	}
-
-	if !inline {
-		image = cloneImage(image)
-	}
-
-	driver.Test(image, cfg)
-	return image
-}
-
 var (
 	//Images command
 	Images = cobra.Command{
