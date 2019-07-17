@@ -37,7 +37,7 @@ func CreateISO(hostname string, userData string) (string, error) {
 	}
 
 	if which("genisoimage") {
-		utils.Exec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data &", isoFilename.Name())
+		utils.Exec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data", isoFilename.Name())
 	} else if which("mkisofs") {
 		utils.Exec("mkisofs -output %s -volid cidata -joliet -rock user-data meta-data", isoFilename.Name())
 	} else {
