@@ -229,9 +229,10 @@ type Applier interface {
 }
 
 type SystemContext struct {
-	Vars  map[string]interface{}
-	Flags []Flag
-	Name  string
+	Vars        map[string]interface{}
+	Flags       []Flag
+	Name        string
+	CaptureLogs string
 }
 
 type Transformer func(cfg *Config, ctx *SystemContext) (commands []Command, files Filesystem, err error)

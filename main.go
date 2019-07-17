@@ -43,7 +43,7 @@ func main() {
 	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to use, valid tags:  debian,ubuntu,redhat,rhel,centos,aws,vmware")
 	root.PersistentFlags().BoolP("detect-tags", "d", true, "Detect tags to use")
 
-	root.AddCommand(&cmd.CloudInit, &cmd.Minify, &cmd.Apply, &cmd.Verify, &cmd.BuildImg)
+	root.AddCommand(&cmd.CloudInit, &cmd.Minify, &cmd.Apply, &cmd.Verify, &cmd.Images)
 	if len(commit) > 8 {
 		version = fmt.Sprintf("%v, commit %v, built at %v", version, commit[0:8], date)
 	}

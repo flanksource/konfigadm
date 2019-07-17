@@ -52,9 +52,5 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 
 	fs := Filesystem{}
 	fs["/etc/modules-load.d/kubernetes.conf"] = File{Content: "overlay\nbr_netfilter"}
-
-	//TODO(moshloop) ensure kernel modules are loaded: overlay and br_netfilter
-
 	return []Command{}, fs, nil
-
 }
