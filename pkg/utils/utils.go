@@ -8,8 +8,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"reflect"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -49,6 +51,7 @@ func SafeExec(sh string, args ...interface{}) (string, bool) {
 
 //Exec runs the sh script and forwards stderr/stdout to the console
 func Exec(sh string, args ...interface{}) error {
+	log.Debugf("exec: "+sh, args...)
 	cmd := exec.Command("bash", "-c", fmt.Sprintf(sh, args...))
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
@@ -218,6 +221,24 @@ func FileExists(path string) bool {
 	return err == nil
 }
 
+func GetBaseName(filename string) string {
+	filename = path.Base(filename)
+	parts := strings.Split(filename, ".")
+	if len(parts) == 1 {
+		return filename
+	}
+	return strings.Join(parts[0:len(parts)-1], ".")
+}
+
+func GetEnvOrDefault(names ...string) string {
+	for _, name := range names {
+		if val := os.Getenv(name); val != "" {
+			return val
+		}
+	}
+	return ""
+}
+
 func FileCopy(src string, dst string) error {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -278,4 +299,12 @@ func LightCyanf(msg string, args ...interface{}) string {
 		return lightCyan + fmt.Sprintf(msg, args...) + reset
 	}
 	return fmt.Sprintf(msg, args...)
+}
+
+// ShortTimestamp returns a shortened timestamp using
+// week of year + day of week to represent a day of the
+// e.g. 1st of Jan on a Tuesday is 13
+func ShortTimestamp() string {
+	_, week := time.Now().ISOWeek()
+	return fmt.Sprintf("%d%d-%s", week, time.Now().Weekday(), time.Now().Format("150405"))
 }
