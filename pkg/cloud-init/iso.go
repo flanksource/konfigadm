@@ -12,8 +12,9 @@ import (
 
 //CreateISO creates a new ISO with the user/meta data and returns a path to the iso
 func CreateISO(hostname string, userData string) (string, error) {
-
 	dir, err := ioutil.TempDir("", "cloudinit")
+	cwd, _ := os.Getwd()
+	defer os.Chdir(cwd)
 	if err := os.Chdir(dir); err != nil {
 		return "", fmt.Errorf("Failed to chdir %v", err)
 	}
@@ -36,7 +37,7 @@ func CreateISO(hostname string, userData string) (string, error) {
 	}
 
 	if which("genisoimage") {
-		utils.Exec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data", isoFilename.Name())
+		utils.Exec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data &", isoFilename.Name())
 	} else if which("mkisofs") {
 		utils.Exec("mkisofs -output %s -volid cidata -joliet -rock user-data meta-data", isoFilename.Name())
 	} else {
