@@ -6,8 +6,12 @@ konfigadm_osx
 konfigadm
 *.tar.gz*
 coverage*
+test-output/
 *.img
 *.log
+*.ova
+*.vmx
 *.vmdk
 *.out
-test-output/
+*.qcow*
+logs*

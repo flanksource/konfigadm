@@ -1,5 +1,7 @@
 package_repos:
-  - url: https://download.docker.com/linux/ubuntu #ubuntu
+  -
+    url: https://download.docker.com/linux/ubuntu #ubuntu
+    name: docker
     gpgKey: https://download.docker.com/linux/ubuntu/gpg
     channel: stable
     tags:

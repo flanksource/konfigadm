@@ -1,12 +1,16 @@
 all: test docs integration
 
+.PHONY: clean
+clean:
+	rm *.img *.vmx *.vmdk *.qcow2 *.ova || true
+
 .PHONY: deps
 deps:
 	GO111MODULE=off which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
 
 .PHONY: linux
 linux:
-	GOOS=linux go build -o dist/konfigadm -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' .
+	 CGO_ENABLED=0 GOOS=linux go build -o dist/konfigadm.tmp -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' . && mv dist/konfigadm.tmp dist/konfigadm
 
 .PHONY: test
 test: deps
