@@ -26,6 +26,7 @@ var drivers = map[string]Driver{
 
 var driverName, outputDir, outputFilename, resize, image, outputFormat, captureLogs string
 var inline bool
+var alias *Image
 var cfg *types.Config
 var driver Driver
 
@@ -119,22 +120,29 @@ var (
 			image, _ = cmd.Flags().GetString("image")
 			inline, _ = cmd.Flags().GetBool("inline")
 			captureLogs, _ = cmd.Flags().GetString("capture-logs")
-			if url, ok := images[image]; ok {
-				log.Infof("%s is an alias for %s", image, url)
-				image = url
+			imageVersion := ""
+			if strings.Contains(image, ":") {
+				imageVersion = strings.Split(image, ":")[1]
+				image = strings.Split(image, ":")[0]
 			}
+
+			if val, ok := images[image]; ok {
+				alias = &val
+				alias.Version = imageVersion
+				log.Infof("%s is an alias for %s", image, alias)
+				image = alias.GetURL()
+			}
+			cfg = GetConfig(cmd, args)
 			if driverName != "" {
 				var ok bool
 				if driver, ok = drivers[driverName]; !ok {
 					log.Fatalf("Invalid driver name: %s ", driverName)
 				}
 			}
-			cfg = GetConfig(cmd, args)
-
 			cfg.Context.CaptureLogs = captureLogs
-
 		},
 	}
+
 	upload = cobra.Command{
 		Use:   "upload",
 		Short: "Upload an image into a cloud provider",
@@ -146,6 +154,23 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			for k, v := range images {
 				fmt.Printf("%s: %s\n", k, v)
+			}
+		},
+	}
+
+	convert = cobra.Command{
+		Use:   "convert",
+		Short: "Convert image to another format",
+		Run: func(cmd *cobra.Command, args []string) {
+
+			name, _ := cmd.Flags().GetString("name")
+			format, _ := cmd.Flags().GetString("format")
+			if format == "ova" {
+				_, err := ova.Create(name, image, make(map[string]string))
+				if err != nil {
+					log.Fatalf("Failed to create OVA %s", err)
+				}
+
 			}
 		},
 	}
@@ -177,8 +202,9 @@ func init() {
 	cwd, _ := os.Getwd()
 	upload.AddCommand(&ova.Ova)
 
-	Images.AddCommand(&list, &build, &upload)
-
+	convert.Flags().String("name", "", "Name of the template")
+	convert.Flags().String("format", "ova", "Target format for conversion")
+	Images.AddCommand(&list, &build, &upload, &convert)
 	Images.PersistentFlags().String("image", "", "A local or remote path to a disk image")
 	Images.PersistentFlags().Bool("inline", false, "If true do not make a copy of the image and work on it directly")
 	Images.PersistentFlags().String("capture-logs", "", "Attach a scratch drive to copy logs onto for debugging purposes ")
