@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"runtime"
 
 	log "github.com/sirupsen/logrus"
 
@@ -102,6 +103,10 @@ vmci0.unrestricted = "false"
 )
 
 func Create(name, image string, properties map[string]string) (string, error) {
+
+	if runtime.GOOS == "Darwin" {
+		return "", fmt.Errorf("Converting qcow to vmdk/ova on MacOSX is not supported due to corruption issues using qemu-img")
+	}
 	dir, _ := os.Getwd()
 	base := utils.GetBaseName(image)
 	vmdk := path.Join(dir, base+".vmdk")

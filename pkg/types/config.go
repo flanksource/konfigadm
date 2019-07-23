@@ -170,7 +170,7 @@ func (sys *Config) ImportConfig(c2 Config) {
 		if strings.TrimSpace(fmt.Sprintf("%+v", sys.Extra)) == "{}" {
 			sys.Extra = c2.Extra
 		} else if strings.TrimSpace(fmt.Sprintf("%+v", c2.Extra)) != "#cloud-config\n{}" {
-			log.Warnf("More than 1 extra cloud-init section found , merging clout-init is not supported and will override")
+			log.Warnf("More than 1 extra cloud-init section found, merging cloud-init is not supported and will be ignored from %s")
 			sys.Extra = c2.Extra
 		}
 	}

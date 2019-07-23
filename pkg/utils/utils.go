@@ -1,11 +1,15 @@
 package utils
 
 import (
+	"bufio"
 	"bytes"
 	"compress/gzip"
+	"crypto/rand"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -307,4 +311,108 @@ func LightCyanf(msg string, args ...interface{}) string {
 func ShortTimestamp() string {
 	_, week := time.Now().ISOWeek()
 	return fmt.Sprintf("%d%d-%s", week, time.Now().Weekday(), time.Now().Format("150405"))
+}
+
+func Interpolate(arg string, vars interface{}) string {
+	tmpl, err := template.New("test").Parse(arg)
+	if err != nil {
+		log.Errorf("Failed to parse template %s -> %s\n", arg, err)
+		return arg
+	}
+	buf := bytes.NewBufferString("")
+
+	err = tmpl.Execute(buf, vars)
+	if err != nil {
+		log.Errorf("Failed to execute template %s -> %s\n", arg, err)
+		return arg
+	}
+	return buf.String()
+
+}
+func InterpolateStrings(arg []string, vars interface{}) []string {
+	out := make([]string, len(arg))
+	for i, e := range arg {
+		out[i] = Interpolate(e, vars)
+	}
+	return out
+}
+
+func ToGenericMap(m map[string]string) map[string]interface{} {
+	var out = map[string]interface{}{}
+	for k, v := range m {
+		out[k] = v
+	}
+	return out
+}
+
+func ToStringMap(m map[string]interface{}) map[string]string {
+	var out = make(map[string]string)
+	for k, v := range m {
+		out[k] = fmt.Sprintf("%v", v)
+	}
+	return out
+}
+
+func GET(url string, args ...interface{}) ([]byte, error) {
+	url = fmt.Sprintf(url, args...)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, nil
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	return body, nil
+}
+
+func Download(url, path string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil
+	}
+	defer resp.Body.Close()
+	out, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// randomChars defines the alphanumeric characters that can be part of a random string
+const randomChars = "0123456789abcdefghijklmnopqrstuvwxyz"
+
+// RandString returns a random string consisting of the characters in
+// randomChars, with the length customized by the parameter
+func RandomString(length int) string {
+	// len("0123456789abcdefghijklmnopqrstuvwxyz") = 36 which doesn't evenly divide
+	// the possible values of a byte: 256 mod 36 = 4. Discard any random bytes we
+	// read that are >= 252 so the bytes we evenly divide the character set.
+	const maxByteValue = 252
+
+	var (
+		b     byte
+		err   error
+		token = make([]byte, length)
+	)
+
+	reader := bufio.NewReaderSize(rand.Reader, length*2)
+	for i := range token {
+		for {
+			if b, err = reader.ReadByte(); err != nil {
+				return ""
+			}
+			if b < maxByteValue {
+				break
+			}
+		}
+
+		token[i] = randomChars[int(b)%len(randomChars)]
+	}
+
+	return string(token)
 }

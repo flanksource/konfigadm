@@ -17,7 +17,7 @@ func createIso(config *types.Config) string {
 	if config.Context.CaptureLogs != "" {
 		cloud_init.Runcmd = append([][]string{[]string{"bash", "-x", "-c", "mkdir /scratch; mount /dev/sdb1 /scratch"}}, cloud_init.Runcmd...)
 	}
-	if config.Context.CaptureLogs != "" && config.Cleanup == nil || !*config.Cleanup {
+	if config.Context.CaptureLogs != "" && (config.Cleanup == nil || !*config.Cleanup) {
 		cloud_init.Runcmd = append(cloud_init.Runcmd, []string{"bash", "-x", "-c", strings.Join(CaptureLogCommands(), "; ")})
 	}
 
