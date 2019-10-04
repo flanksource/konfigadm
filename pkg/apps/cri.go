@@ -105,10 +105,31 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 
 func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	addDockerRepos(sys)
-	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &REDHAT_LIKE)
-	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &FEDORA)
-	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
+	version := "18.06.3"
+	if sys.ContainerRuntime.Version != "" {
+		version = sys.ContainerRuntime.Version
+	}
+
+	if !strings.Contains(version, "~") {
+		// Expand the logical docker version into a full version string
+		id := "$(. /etc/os-release && echo $ID)"
+		codename := "$(. /etc/os-release && echo $VERSION_CODENAME)"
+		if strings.HasPrefix(version, "18.09") {
+			version = fmt.Sprintf("5:%s~3-0~%s-%s", version, id, codename)
+		} else if strings.HasPrefix(version, "18.06") {
+			version = fmt.Sprintf("%s~ce~3-0~%s", version, id)
+		}
+	}
+
+	sys.AppendPackages(nil,
+		Package{Name: fmt.Sprintf("docker-ce=%s", version), Mark: true},
+		Package{Name: fmt.Sprintf("docker-ce-cli=%s", version), Mark: true})
+
+	sys.AddPackage("device-mapper-persistent-data lvm2", &FEDORA)
+	sys.AddPackage("device-mapper-persistent-data lvm2", &REDHAT_LIKE)
+
 	sys.AddCommand("systemctl enable docker && systemctl start docker")
+
 	for _, image := range sys.ContainerRuntime.Images {
 		sys.AddCommand(fmt.Sprintf("docker pull %s", image))
 	}
