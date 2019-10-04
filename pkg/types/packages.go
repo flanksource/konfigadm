@@ -56,16 +56,29 @@ func (p Package) VersionedName() string {
 	return p.Name + "=" + p.Version
 }
 
+//AppendPackages is a helper function to add new packages
+func (cfg *Config) AppendPackages(flag *Flag, packages ...Package) *Config {
+	for _, pkg := range packages {
+		if flag != nil {
+			pkg.Flags = []Flag{*flag}
+		}
+		pkgs := append(*cfg.Packages, pkg)
+		cfg.Packages = &pkgs
+	}
+	return cfg
+}
+
 //AddPackage is a helper function to add new packages
-func (cfg *Config) AddPackage(name string, flag *Flag) *Config {
-	pkg := Package{
-		Name: name,
+func (cfg *Config) AddPackage(names string, flag *Flag) *Config {
+	for _, name := range strings.Split(names, " ") {
+		pkg := Package{}
+		parsePackage(name, &pkg)
+		if flag != nil {
+			pkg.Flags = []Flag{*flag}
+		}
+		pkgs := append(*cfg.Packages, pkg)
+		cfg.Packages = &pkgs
 	}
-	if flag != nil {
-		pkg.Flags = []Flag{*flag}
-	}
-	pkgs := append(*cfg.Packages, pkg)
-	cfg.Packages = &pkgs
 	return cfg
 }
 
@@ -104,23 +117,29 @@ func (p Package) MarshalYAML() (interface{}, error) {
 	}, nil
 }
 
-//UnmarshalYAML decodes comments into tags and parses modifiers for packages
-func (p *Package) UnmarshalYAML(node *yaml.Node) error {
-	p.Name = node.Value
-	if strings.HasPrefix(node.Value, "!") {
-		p.Name = node.Value[1:]
+func parsePackage(name string, p *Package) *Package {
+	if strings.HasPrefix(name, "!") {
+		p.Name = name[1:]
 		p.Uninstall = true
-	}
-	if strings.HasPrefix(node.Value, "=") {
-		p.Name = node.Value[1:]
+	} else if strings.HasPrefix(name, "+") {
+		p.Name = "marked+" + name[2:]
 		p.Mark = true
+	} else {
+		p.Name = name
 	}
 
-	if strings.Contains(p.Name, "=") {
-		parts := strings.Split(p.Name, "=")
+	if strings.Contains(name, "=") {
+		parts := strings.Split(name, "=")
 		p.Name = parts[0]
 		p.Version = parts[len(parts)-1]
 	}
+	return p
+}
+
+//UnmarshalYAML decodes comments into tags and parses modifiers for packages
+func (p *Package) UnmarshalYAML(node *yaml.Node) error {
+	parsePackage(node.Value, p)
+
 	comment := node.LineComment
 	if !strings.Contains(comment, "#") {
 		return nil
