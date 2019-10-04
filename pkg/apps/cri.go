@@ -97,6 +97,9 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
 	sys.AddCommand("systemctl enable containerd && systemctl restart containerd")
 	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
+	for _, image := range sys.ContainerRuntime.Images {
+		sys.AddCommand(fmt.Sprintf("crictl pull %s", image))
+	}
 	return []Command{}, Filesystem{}, nil
 }
 
@@ -106,5 +109,9 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("docker-ce docker-ce-cli containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("systemctl enable docker && systemctl start docker")
+	for _, image := range sys.ContainerRuntime.Images {
+		sys.AddCommand(fmt.Sprintf("docker pull %s", image))
+	}
+
 	return []Command{}, Filesystem{}, nil
 }
