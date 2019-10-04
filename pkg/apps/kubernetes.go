@@ -1,6 +1,10 @@
 package apps
 
-import . "github.com/moshloop/konfigadm/pkg/types"
+import (
+	"strings"
+
+	. "github.com/moshloop/konfigadm/pkg/types"
+)
 
 var Kubernetes Phase = kubernetes{}
 
@@ -10,7 +14,6 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 	if sys.Kubernetes == nil {
 		return []Command{}, Filesystem{}, nil
 	}
-
 	sys.
 		AppendPackageRepo(PackageRepo{
 			Name:            "kubernetes",
@@ -29,17 +32,20 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 			GPGKey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg",
 		}, FEDORA)
 
-	sys.AddPackage("kubelet-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
-		AddPackage("kubeadm-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE).
-		AddPackage("kubectl-"+sys.Kubernetes.Version+"-0", &REDHAT_LIKE)
+	sys.AppendPackages(&REDHAT_LIKE,
+		Package{Name: "kubelet-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubeadm-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubectl-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
 
-	sys.AddPackage("kubelet-"+sys.Kubernetes.Version+"-0", &FEDORA).
-		AddPackage("kubeadm-"+sys.Kubernetes.Version+"-0", &FEDORA).
-		AddPackage("kubectl-"+sys.Kubernetes.Version+"-0", &FEDORA)
+	sys.AppendPackages(&FEDORA,
+		Package{Name: "kubelet-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubeadm-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubectl-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
 
-	sys.AddPackage("kubelet=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
-		AddPackage("kubeadm=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE).
-		AddPackage("kubectl=="+sys.Kubernetes.Version+"-00", &DEBIAN_LIKE)
+	sys.AppendPackages(&DEBIAN_LIKE,
+		Package{Name: "kubelet==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
+		Package{Name: "kubeadm==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
+		Package{Name: "kubectl==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true})
 
 	sys.AddPackage("socat jq ebtables ntp libseccomp nfs-utils", &REDHAT_LIKE)
 	sys.AddPackage("socat jq ebtables ntp libseccomp2 nfs-client", &DEBIAN_LIKE)
@@ -53,4 +59,12 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 	fs := Filesystem{}
 	fs["/etc/modules-load.d/kubernetes.conf"] = File{Content: "overlay\nbr_netfilter"}
 	return []Command{}, fs, nil
+}
+
+func withDefaultPatch(version, patch string) string {
+	if strings.Contains(version, "-") {
+		return version
+	}
+	return version + "-" + patch
+
 }
