@@ -1,11 +1,13 @@
 package ova
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
 	"runtime"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 
@@ -103,10 +105,6 @@ vmci0.unrestricted = "false"
 )
 
 func Create(name, image string, properties map[string]string) (string, error) {
-
-	if runtime.GOOS == "Darwin" {
-		return "", fmt.Errorf("Converting qcow to vmdk/ova on MacOSX is not supported due to corruption issues using qemu-img")
-	}
 	dir, _ := os.Getwd()
 	base := utils.GetBaseName(image)
 	vmdk := path.Join(dir, base+".vmdk")
@@ -114,10 +112,16 @@ func Create(name, image string, properties map[string]string) (string, error) {
 	vmx := path.Join(dir, base+".vmx")
 	ioutil.WriteFile(vmx, []byte(getVmx(name, path.Base(vmdk), properties)), 0644)
 
-	log.Infof("Converting image to vmdk")
-	if err := utils.Exec("qemu-img convert -O vmdk -p %s %s", image, vmdk); err != nil {
-		return "", err
+	if !strings.HasSuffix(image, ".vmdk") {
+		if runtime.GOOS == "Darwin" {
+			return "", errors.New("qcow to vmdk conversion on MacOSX is broken in qemu, see https://bugs.launchpad.net/qemu/+bug/1776920")
+		}
+		log.Infof("Converting image to vmdk")
+		if err := utils.Exec("qemu-img convert -O vmdk -p %s %s", image, vmdk); err != nil {
+			return "", err
+		}
 	}
+
 	log.Infof("Creating OVA")
 	if err := utils.Exec("ovftool %s %s", vmx, ovf); err != nil {
 		return "", err
