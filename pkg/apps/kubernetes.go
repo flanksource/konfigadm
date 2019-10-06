@@ -48,7 +48,7 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 		Package{Name: "kubectl==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true})
 
 	sys.AddPackage("socat jq ebtables ntp libseccomp nfs-utils", &REDHAT_LIKE)
-	sys.AddPackage("socat jq ebtables ntp libseccomp2 nfs-client", &DEBIAN_LIKE)
+	sys.AddPackage("socat jq ebtables ntp libseccomp2 nfs-common", &DEBIAN_LIKE)
 
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
 	sys.Sysctls["vm.swappiness"] = "0"
