@@ -1,25 +1,23 @@
-package phases_test
+package types
 
 import (
 	"fmt"
 	"strings"
-
-	. "github.com/moshloop/konfigadm/pkg/types"
 
 	"github.com/onsi/gomega/types"
 )
 
 func MatchCommand(expected interface{}) types.GomegaMatcher {
 	return &CommandMatcher{
-		expected: expected,
+		Expected: expected,
 	}
 }
 
 type CommandMatcher struct {
-	expected   interface{}
-	commands   []Command
-	filesystem Filesystem
-	err        error
+	Expected   interface{}
+	Commands   []Command
+	Filesystem Filesystem
+	Err        error
 }
 
 func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err error) {
@@ -30,13 +28,13 @@ func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err erro
 			return false, err
 		}
 		for _, cmd := range commands {
-			if strings.Contains(cmd.Cmd, matcher.expected.(string)) {
+			if strings.Contains(cmd.Cmd, matcher.Expected.(string)) {
 				return true, nil
 			}
 		}
 	case []Command:
 		for _, cmd := range v {
-			if strings.Contains(cmd.Cmd, matcher.expected.(string)) {
+			if strings.Contains(cmd.Cmd, matcher.Expected.(string)) {
 				return true, nil
 			}
 		}
@@ -47,11 +45,11 @@ func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err erro
 }
 
 func (matcher *CommandMatcher) FailureMessage(actual interface{}) (message string) {
-	return fmt.Sprintf("Expected \t%#v to contain command: \t%#v", actual, matcher.expected)
+	return fmt.Sprintf("Expected \t%#v to contain command: \t%#v", actual, matcher.Expected)
 }
 
 func (matcher *CommandMatcher) NegatedFailureMessage(actual interface{}) (message string) {
-	return fmt.Sprintf("Expected \t%#v to NOT contain command: \t%#v", actual, matcher.expected)
+	return fmt.Sprintf("Expected \t%#v to NOT contain command: \t%#v", actual, matcher.Expected)
 }
 
 func ContainPackage(expected interface{}) types.GomegaMatcher {

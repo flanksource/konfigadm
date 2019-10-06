@@ -1,10 +1,7 @@
-package phases_test
+package types
 
 import (
 	"testing"
-
-	_ "github.com/moshloop/konfigadm/pkg"
-	. "github.com/moshloop/konfigadm/pkg/types"
 
 	"github.com/onsi/gomega"
 )
@@ -44,10 +41,4 @@ func NewFixture(name string, t *testing.T) *Fixture {
 		t:    t,
 		g:    gomega.NewWithT(t),
 	}
-}
-
-func TestMultipleConfigs(t *testing.T) {
-}
-
-func TestRemoteConfig(t *testing.T) {
 }

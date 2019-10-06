@@ -3,6 +3,7 @@ package phases_test
 import (
 	"testing"
 
+	. "github.com/moshloop/konfigadm/pkg/types"
 	"github.com/onsi/gomega"
 )
 
