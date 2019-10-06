@@ -15,7 +15,7 @@ type AptPackageManager struct {
 }
 
 func (p AptPackageManager) Install(pkg ...string) Commands {
-	return NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-downgrades --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
+	return NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
 }
 
 func (p AptPackageManager) Uninstall(pkg ...string) Commands {
@@ -23,8 +23,7 @@ func (p AptPackageManager) Uninstall(pkg ...string) Commands {
 }
 
 func (p AptPackageManager) Mark(pkg ...string) Commands {
-	cmds := NewCommand("apt-get mark -y " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
-	return *cmds.AddDependency("apt-get install -y apt-mark")
+	return NewCommand("apt-mark hold " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
 }
 
 func (p AptPackageManager) ListInstalled() string {
