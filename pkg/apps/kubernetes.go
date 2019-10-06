@@ -33,22 +33,22 @@ func (k kubernetes) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 		}, FEDORA)
 
 	sys.AppendPackages(&REDHAT_LIKE,
-		Package{Name: "kubelet-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		Package{Name: "kubeadm-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		Package{Name: "kubectl-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
+		Package{Name: "kubelet", Version:withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubeadm" , Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubectl" , Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
 
 	sys.AppendPackages(&FEDORA,
-		Package{Name: "kubelet-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		Package{Name: "kubeadm-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		Package{Name: "kubectl-" + withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
+		Package{Name: "kubelet" , Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		Package{Name: "kubectl" , Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
 
 	sys.AppendPackages(&DEBIAN_LIKE,
-		Package{Name: "kubelet==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
-		Package{Name: "kubeadm==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
-		Package{Name: "kubectl==" + withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true})
+		Package{Name: "kubelet" , Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
+		Package{Name: "kubeadm" , Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
+		Package{Name: "kubectl" , Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true})
 
-	sys.AddPackage("socat jq ebtables ntp libseccomp nfs-utils", &REDHAT_LIKE)
-	sys.AddPackage("socat jq ebtables ntp libseccomp2 nfs-common", &DEBIAN_LIKE)
+	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils", &REDHAT_LIKE)
+	sys.AddPackage("socat ebtables ntp libseccomp2 nfs-common", &DEBIAN_LIKE)
 
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
 	sys.Sysctls["vm.swappiness"] = "0"

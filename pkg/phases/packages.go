@@ -176,7 +176,7 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 		} else if p.Version == "" && installed == "" {
 			results.Fail("%s is not installed, any version required", p)
 			verify = false
-		} else if installed == expandedVersion{
+		} else if strings.HasPrefix( expandedVersion, installed) || strings.HasPrefix( installed, expandedVersion) {
 			results.Pass("%s is installed with expected version: %s", p, installed)
 		} else {
 			results.Fail("%s is installed, but expected %s, got %s", p.Name, expandedVersion, installed)
