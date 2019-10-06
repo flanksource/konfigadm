@@ -12,7 +12,10 @@ import (
 type YumPackageManager struct{}
 
 func (p YumPackageManager) Install(pkg ...string) Commands {
-	return NewCommand(fmt.Sprintf("yum install -y %s", strings.Join(pkg, " ")))
+	arg :=  strings.Join(pkg, " ")
+	// Yum versions are specified using a -, not a =
+	arg =  strings.Replace(arg, "=", "-",-1)
+	return NewCommand(fmt.Sprintf("yum install -y %s",arg))
 }
 
 func (p YumPackageManager) Update() Commands {

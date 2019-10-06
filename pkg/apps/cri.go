@@ -25,7 +25,6 @@ func (c cri) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	} else {
 		return []Command{}, Filesystem{}, fmt.Errorf("unknown container runtime %s", sys.ContainerRuntime.Type)
 	}
-	return []Command{}, Filesystem{}, nil
 }
 
 func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
@@ -103,6 +102,28 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	return []Command{}, Filesystem{}, nil
 }
 
+var versioner map[string]func(version string) string = make(map[string]func(version string) string)
+
+func init() {
+	fn := func(version string) string { return version }
+	versioner[FEDORA.String()] = fn
+	versioner[REDHAT_LIKE.String()] = fn
+	versioner[UBUNTU.String()] = func(version string) string {
+		if strings.Contains(version, "~") {
+			return version
+		}
+		id := "$(. /etc/os-release && echo $ID)"
+		codename := "$(. /etc/os-release && echo $VERSION_CODENAME)"
+		if strings.Contains(version, "18.06") || strings.Contains(version, "18.03") {
+			return fmt.Sprintf("%s~ce~3-0~%s", version, id)
+		} else {
+			// docker versions 18.09+ use a new version syntax
+			return fmt.Sprintf("5:%s~3-0~%s-%s", version, id, codename)
+		}
+	}
+	versioner[DEBIAN.String()] = versioner[UBUNTU.String()]
+}
+
 func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	addDockerRepos(sys)
 	version := "19.03.2"
@@ -110,24 +131,26 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 		version = sys.ContainerRuntime.Version
 	}
 
-	id := "$(. /etc/os-release && echo $ID)"
-	codename := "$(. /etc/os-release && echo $VERSION_CODENAME)"
-
-	if strings.Contains(version, "18.06") || strings.Contains(version, "18.03")  {
-		if !strings.Contains(version, "~") {
-			// Expand the logical docker version into a full version string
-			version = fmt.Sprintf("%s~ce~3-0~%s", version, id)
+	for tag, fn := range versioner {
+		if !strings.Contains(version, "18.06") && !strings.Contains(version, "18.03") {
+			//docker-ce-cli package is required from 18.09
+			sys.AppendPackages(nil, Package{
+				Name:    "docker-ce-cli",
+				Version: fn(version),
+				Mark:    true,
+				Flags:   []Flag{*GetTag(tag)},
+			})
 		}
-	} else {
-			if !strings.Contains(version, "~") {
-				// Expand the logical docker version into a full version string
-				// docker versions 18.09+ use a new version syntax
-				version = fmt.Sprintf("5:%s~3-0~%s-%s", version, id, codename)
-			}
-		//docker-ce-cli package is required from 18.09
-		sys.AppendPackages(nil,		Package{Name: fmt.Sprintf("docker-ce-cli=%s", version), Mark: true})
+
+		sys.AppendPackages(nil, Package{
+			Name:    "docker-ce",
+			Version: fn(version),
+			Mark:    true,
+			Flags:   []Flag{*GetTag(tag)},
+		})
+
 	}
-	sys.AppendPackages(nil,		Package{Name: fmt.Sprintf("docker-ce=%s", version), Mark: true})
+
 	sys.AddPackage("device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("device-mapper-persistent-data lvm2", &REDHAT_LIKE)
 	sys.AddCommand("systemctl enable docker && systemctl start docker")
