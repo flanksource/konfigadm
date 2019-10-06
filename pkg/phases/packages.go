@@ -2,10 +2,12 @@ package phases
 
 import (
 	"fmt"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 
 	. "github.com/moshloop/konfigadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var Packages AllPhases = packages{}
@@ -158,7 +160,9 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 		if !MatchesAny(flags, p.Flags) {
 			continue
 		}
-		log.Tracef("Verifying package: %s, version: %s", p.Name, p.Version)
+		expandedVersion, _ := utils.SafeExec("echo %s", p.Version)
+		expandedVersion= strings.Replace(expandedVersion, "\n", "", -1)
+		log.Tracef("Verifying package: %s, version: %s => %s", p.Name, p.Version, expandedVersion)
 		installed := os.GetPackageManager().GetInstalledVersion(p.Name)
 		if p.Uninstall {
 			if installed == "" {
@@ -172,10 +176,10 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 		} else if p.Version == "" && installed == "" {
 			results.Fail("%s is not installed, any version required", p)
 			verify = false
-		} else if installed == p.Version {
+		} else if installed == expandedVersion{
 			results.Pass("%s is installed with expected version: %s", p, installed)
 		} else {
-			results.Fail("%s is installed, but expected %s, got %s", p.Name, p.Version, installed)
+			results.Fail("%s is installed, but expected %s, got %s", p.Name, expandedVersion, installed)
 			verify = false
 		}
 	}

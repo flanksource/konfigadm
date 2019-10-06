@@ -7,10 +7,10 @@ import (
 	"reflect"
 	"strings"
 
-	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
 	yaml "gopkg.in/yaml.v3"
+	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
 )
 
 var (
@@ -170,7 +170,7 @@ func (sys *Config) ImportConfig(c2 Config) {
 		if strings.TrimSpace(fmt.Sprintf("%+v", sys.Extra)) == "{}" {
 			sys.Extra = c2.Extra
 		} else if strings.TrimSpace(fmt.Sprintf("%+v", c2.Extra)) != "#cloud-config\n{}" {
-			log.Warnf("More than 1 extra cloud-init section found, merging cloud-init is not supported and will be ignored from %s")
+			log.Warnf("More than 1 extra cloud-init section found, merging cloud-init is not supported and will be ignored from")
 			sys.Extra = c2.Extra
 		}
 	}
