@@ -113,7 +113,7 @@ func init() {
 			return version
 		}
 		id := "$(. /etc/os-release && echo $ID)"
-		codename := "$(. /etc/os-release && echo $VERSION_CODENAME)"
+		codename := "$(lsb_release -cs)"
 		if strings.Contains(version, "18.06") || strings.Contains(version, "18.03") {
 			return fmt.Sprintf("%s~ce~3-0~%s", version, id)
 		} else {
