@@ -39,11 +39,10 @@ func (c cleanup) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 		Add("find /var/log -type f | while read -r f; do echo -ne '' > \"$f\"; done;").
 		Add("cloud-init clean").
 		Add("journalctl --rotate && sleep 5 && journalctl --vacuum-time=1s").
+		Add("echo > /etc/machine-id").
+		Add("echo > /root/.bash_history").
 		Add("echo Finished cleanup on $(date) > /var/log/cleanup.log").
 		Add("dd if=/dev/zero of=/EMPTY bs=1M  2>/dev/null || true;  rm -f /EMPTY")
-
-	fs["/etc/machine-id"] = File{Content: ""}
-	fs["/root/.bash_history"] = File{Content: ""}
 
 	return cmds.GetCommands(), fs, nil
 }
