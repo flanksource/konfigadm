@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path"
 	"runtime"
@@ -133,7 +134,11 @@ func Import(name, ova, network string) error {
 	tmp, _ := ioutil.TempFile("", "options*.json")
 	tmp.WriteString(getOptions(network))
 	defer os.Remove(tmp.Name())
-	log.Infof("Importing OVA to %s", os.Getenv("GOVC_URL"))
+	url, e := url.Parse(os.Getenv("GOVC_URL"))
+	if e != nil {
+		return e
+	}
+	log.Infof("Importing OVA to %s\n", url.Host)
 	return utils.Exec("govc import.ova --name %s --options %s %s", name, tmp.Name(), ova)
 }
 
