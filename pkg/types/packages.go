@@ -122,7 +122,7 @@ func parsePackage(name string, p *Package) *Package {
 		p.Name = name[1:]
 		p.Uninstall = true
 	} else if strings.HasPrefix(name, "+") {
-		p.Name = "marked+" + name[2:]
+		p.Name = name[1:]
 		p.Mark = true
 	} else {
 		p.Name = name
