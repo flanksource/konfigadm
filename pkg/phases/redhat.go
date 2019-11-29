@@ -27,7 +27,8 @@ func (r redhat) GetTags() []Flag {
 }
 
 func (r redhat) DetectAtRuntime() bool {
-	return false
+	id, ok := utils.IniToMap("/etc/os-release")["ID"]
+	return ok && id == "rhel"
 }
 
 func (r redhat) GetVersionCodeName() string {
