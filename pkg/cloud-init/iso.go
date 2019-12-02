@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 
 	"github.com/moshloop/konfigadm/pkg/utils"
 )
@@ -36,16 +37,17 @@ func CreateISO(hostname string, userData string) (string, error) {
 		return "", fmt.Errorf("Failed to write metadata %v", err)
 	}
 
+	var out string
+	var ok bool
 	if which("genisoimage") {
-		if out, ok := utils.SafeExec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data 2>&1 >", isoFilename.Name()); !ok {
-			return "", fmt.Errorf("Failed to create ISO %s", out)
-		}
+		out, ok = utils.SafeExec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data 2>&1 >", isoFilename.Name())
 	} else if which("mkisofs") {
-		if out, ok := utils.SafeExec("mkisofs -output %s -volid cidata -joliet -rock user-data meta-data 2>&1", isoFilename.Name()); !ok {
-			return "", fmt.Errorf("Failed to create ISO %s", out)
-		}
+		out, ok = utils.SafeExec("mkisofs -output %s -volid cidata -joliet -rock user-data meta-data 2>&1", isoFilename.Name())
 	} else {
 		return "", fmt.Errorf("genisoimage or mkisofs not found")
+	}
+	if !ok && strings.Trim(out, " \n") != "" {
+		return "", fmt.Errorf("Failed to create ISO %s", out)
 	}
 	return isoFilename.Name(), nil
 }
