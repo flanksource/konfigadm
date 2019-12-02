@@ -11,7 +11,7 @@ type Driver interface {
 	Build(image string, cfg *types.Config)
 }
 
-func createIso(config *types.Config) string {
+func createIso(config *types.Config) (string, error) {
 	cloud_init := config.ToCloudInit()
 
 	if config.Context.CaptureLogs != "" {
@@ -26,6 +26,5 @@ func createIso(config *types.Config) string {
 	//	"cloud_init.PowerState.Mode = "poweroff"
 	// so we append a shutdown manually
 	cloud_init.Runcmd = append(cloud_init.Runcmd, []string{"shutdown", "-h", "now"})
-	iso, _ := cloudinit.CreateISO("builder", cloud_init.String())
-	return iso
+	return cloudinit.CreateISO("builder", cloud_init.String())
 }

@@ -3,11 +3,11 @@ package build
 import (
 	"fmt"
 
-	"github.com/moshloop/konfigadm/pkg/types"
-
 	"github.com/mitchellh/colorstring"
-	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/moshloop/konfigadm/pkg/types"
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 type Qemu struct{}
@@ -19,7 +19,14 @@ func (q Qemu) Build(image string, config *types.Config) {
 		scratch = NewScratch()
 	}
 
-	cmdLine := qemuSystem(image, createIso(config))
+	iso, err := createIso(config)
+	if err != nil {
+		log.Fatalf("Failed to build ISO %v", err)
+	}
+	if iso == "" {
+		log.Fatalf("Empty ISO created")
+	}
+	cmdLine := qemuSystem(image, iso)
 	if config.Context.CaptureLogs != "" {
 		cmdLine += fmt.Sprintf(" -hdb %s", scratch.GetImg())
 	}
