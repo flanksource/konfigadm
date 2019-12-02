@@ -18,11 +18,11 @@ func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 
 		sys.Services[c.Name()] = Service{
 			Name:      c.Name(),
-			ExecStart: exec(c),
+			ExecStart: exec(ctx, c),
 			Extra:     DefaultSystemdService(c.Name()),
 		}
 		if len(c.Env) > 0 {
-			files["/etc/environment."+c.Name()] = File{Content: toEnvironmentFile(c)}
+			files["/etc/environment."+c.Name()] = File{Content: toEnvironmentFile(ctx, c)}
 		}
 
 	}
@@ -53,15 +53,15 @@ func (p containers) Verify(cfg *Config, results *VerifyResults, flags ...Flag) b
 	return verify
 }
 
-func toEnvironmentFile(c Container) string {
+func toEnvironmentFile(ctx *SystemContext, c Container) string {
 	s := ""
-	for k, v := range c.Env {
+	for k, v := range interpolateMap(ctx, c.Env) {
 		s += fmt.Sprintf("%s=%s\n", k, v)
 	}
 	return s
 }
 
-func exec(c Container) string {
+func exec(ctx *SystemContext, c Container) string {
 	exec := c.DockerOpts
 	if len(c.Env) > 0 {
 		exec += fmt.Sprintf(" --env-file /etc/environment.%s", c.Name())
@@ -78,5 +78,5 @@ func exec(c Container) string {
 		exec += fmt.Sprintf(" -p %d:%d", p.Port, p.Target)
 	}
 
-	return fmt.Sprintf("/usr/bin/docker run --rm --name %s %s %s %s", c.Name(), exec, c.Image, c.Args)
+	return fmt.Sprintf("/usr/bin/docker run --rm --name %s %s %s %s", c.Name(), exec, c.Image, interpolate(ctx, c.Args))
 }
