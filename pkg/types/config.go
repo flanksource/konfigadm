@@ -7,10 +7,10 @@ import (
 	"reflect"
 	"strings"
 
+	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
 	yaml "gopkg.in/yaml.v3"
-	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
 )
 
 var (
@@ -94,7 +94,7 @@ func GetKeys(m map[string]File) []string {
 //ToCloudInit will apply all phases and produce a CloudInit object from the results
 func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	cloud := sys.Extra
-	log.Debugf("Extra: %+v", cloud)
+	log.Tracef("Extra: %+v", cloud)
 
 	files, commands, err := sys.ApplyPhases()
 	if err != nil {
