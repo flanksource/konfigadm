@@ -3,9 +3,10 @@ package ova
 import (
 	"path"
 
-	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/moshloop/konfigadm/pkg/utils"
 )
 
 var (
@@ -32,7 +33,9 @@ var (
 				}
 			}
 
-			Import(name, image, network)
+			if err := Import(name, image, network); err != nil {
+				log.Fatalf("Failed to upload %s: %v", name, err)
+			}
 		},
 	}
 )
