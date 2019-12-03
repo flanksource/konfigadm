@@ -40,7 +40,7 @@ func CreateISO(hostname string, userData string) (string, error) {
 	var out string
 	var ok bool
 	if which("genisoimage") {
-		out, ok = utils.SafeExec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data 2>&1 >", isoFilename.Name())
+		out, ok = utils.SafeExec("genisoimage -output %s -volid cidata -joliet -rock user-data meta-data 2>&1", isoFilename.Name())
 	} else if which("mkisofs") {
 		out, ok = utils.SafeExec("mkisofs -output %s -volid cidata -joliet -rock user-data meta-data 2>&1", isoFilename.Name())
 	} else {
@@ -48,6 +48,10 @@ func CreateISO(hostname string, userData string) (string, error) {
 	}
 	if !ok && strings.Trim(out, " \n") != "" {
 		return "", fmt.Errorf("Failed to create ISO %s", out)
+	}
+	info, _ := isoFilename.Stat()
+	if info.Size() == 0 {
+		return "", fmt.Errorf("Empty iso created")
 	}
 	return isoFilename.Name(), nil
 }
