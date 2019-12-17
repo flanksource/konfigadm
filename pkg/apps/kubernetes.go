@@ -3,7 +3,7 @@ package apps
 import (
 	"strings"
 
-	. "github.com/moshloop/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types"
 )
 
 var Kubernetes Phase = kubernetes{}

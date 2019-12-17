@@ -4,7 +4,7 @@ go: &go
     GO111MODULE: "on"
   docker:
     - image: circleci/golang:1.12
-  working_directory: /go/src/github.com/moshloop/konfigadm
+  working_directory: /go/src/github.com/flanksource/konfigadm
 test: &test
   <<: *go
   steps:

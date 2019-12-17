@@ -1,7 +1,7 @@
 <p align="center">
-<a href="https://circleci.com/gh/moshloop/konfigadm"><img src="https://circleci.com/gh/moshloop/konfigadm.svg?style=svg"></a>
-<a href="https://codecov.io/gh/moshloop/konfigadm"><img src="https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg"></a>
-<a href="https://goreportcard.com/report/github.com/moshloop/konfigadm"><img src="https://goreportcard.com/badge/github.com/moshloop/konfigadm"></a>
+<a href="https://circleci.com/gh/flanksource/konfigadm"><img src="https://circleci.com/gh/flanksource/konfigadm.svg?style=svg"></a>
+<a href="https://codecov.io/gh/flanksource/konfigadm"><img src="https://codecov.io/gh/flanksource/konfigadm/branch/master/graph/badge.svg"></a>
+<a href="https://goreportcard.com/report/github.com/flanksource/konfigadm"><img src="https://goreportcard.com/badge/github.com/flanksource/konfigadm"></a>
 <img src="https://img.shields.io/badge/OS-ubuntu%20%7C%20debian%20%7C%20centos%20%7C%20redhat%20%7C%20fedora-lightgrey.svg"/></a>
 </p>
 
@@ -11,8 +11,8 @@
   <a href="#features">Key Features</a> •
   <a href="#compatibility">Compatibility</a> •
   <a href="DESIGN.md">Design</a> •
-  <a href="https://github.com/moshloop/konfigadm-images/releases">Prebuilt Images</a> •
-  <a href="https://www.moshloop.com/konfigadm"> Full Documentation </a>
+  <a href="https://github.com/flanksource/konfigadm-images/releases">Prebuilt Images</a> •
+  <a href="https://www.flanksource.com/konfigadm"> Full Documentation </a>
 </p>
 
 `konfigadm` is a declarative configuration management tool and image builder focused on bootstrapping nodes for container based environments.
@@ -46,20 +46,20 @@ Flags:
 ### Ubuntu / Debian
 
 ```bash
-wget https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm.deb
+wget https://github.com/flanksource/konfigadm/releases/download/v0.4.2/konfigadm.deb
 dpkg -i konfigadm.deb
 ```
 
 ### Centos / Fedora / Redhat
 
 ```bash
-rpm -i https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm.rpm
+rpm -i https://github.com/flanksource/konfigadm/releases/download/v0.4.2/konfigadm.rpm
 ```
 
 ### Binary
 
 ```bash
-wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm && chmod +x /usr/bin/konfigadm
+wget -O /usr/bin/konfigadm https://github.com/flanksource/konfigadm/releases/download/v0.4.2/konfigadm && chmod +x /usr/bin/konfigadm
 ```
 
 ## Getting Started

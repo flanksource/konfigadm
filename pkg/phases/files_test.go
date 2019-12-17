@@ -3,7 +3,7 @@ package phases_test
 import (
 	"io/ioutil"
 	"testing"
-	. "github.com/moshloop/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types"
 	"github.com/onsi/gomega"
 )
 

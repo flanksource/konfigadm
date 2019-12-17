@@ -1,7 +1,7 @@
 package types
 
 import (
-	. "github.com/moshloop/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/utils"
 )
 
 //Service is a systemd service to be installed and started

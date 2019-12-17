@@ -1,6 +1,6 @@
-[![CircleCI](https://circleci.com/gh/moshloop/konfigadm.svg?style=svg)](https://circleci.com/gh/moshloop/konfigadm)
-[![codecov](https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/konfigadm)
-[![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/konfigadm)](https://goreportcard.com/report/github.com/moshloop/konfigadm)
+[![CircleCI](https://circleci.com/gh/flanksource/konfigadm.svg?style=svg)](https://circleci.com/gh/flanksource/konfigadm)
+[![codecov](https://codecov.io/gh/flanksource/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/flanksource/konfigadm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/flanksource/konfigadm)](https://goreportcard.com/report/github.com/flanksource/konfigadm)
 
 # konfigadm
 

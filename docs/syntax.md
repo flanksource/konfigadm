@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/moshloop/konfigadm.svg?branch=master)](https://travis-ci.org/moshloop/konfigadm)
-[![codecov](https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/moshloop/konfigadm)
-[![Go Report Card](https://goreportcard.com/badge/github.com/moshloop/konfigadm)](https://goreportcard.com/report/github.com/moshloop/konfigadm)
+[![Build Status](https://travis-ci.org/flanksource/konfigadm.svg?branch=master)](https://travis-ci.org/flanksource/konfigadm)
+[![codecov](https://codecov.io/gh/flanksource/konfigadm/branch/master/graph/badge.svg)](https://codecov.io/gh/flanksource/konfigadm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/flanksource/konfigadm)](https://goreportcard.com/report/github.com/flanksource/konfigadm)
 
 # konfigadm
 

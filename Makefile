@@ -56,6 +56,6 @@ centos: deps
 
 .PHONY: docs
 docs:
-	git remote add docs "https://$(GH_TOKEN)@github.com/moshloop/konfigadm.git"
+	git remote add docs "https://$(GH_TOKEN)@github.com/flanksource/konfigadm.git"
 	git fetch docs && git fetch docs gh-pages:gh-pages
 	mkdocs gh-deploy -v --remote-name docs -m "Deployed {sha} with MkDocs version: {version} [ci skip]"
