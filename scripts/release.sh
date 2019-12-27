@@ -40,8 +40,8 @@ github-release upload -R -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME}_osx -f
 echo Building docker image
 
 
-docker build . --build-arg OVFTOOL_LOCATION=${OVFTOOL_LOCATION} -t docker.pkg.github.com/flanksource/konfigadm:$TAG --build-arg KONFIGADM_VERSION=$TAG
+docker build . --build-arg OVFTOOL_LOCATION=${OVFTOOL_LOCATION} -t $GITHUB_USER/$NAME:$TAG --build-arg KONFIGADM_VERSION=$TAG
 
 echo Pushing docker image
-docker login docker.pkg.github.com --username moshloop --password $GITHUB_TOKEN
-docker push docker.pkg.github.com/flanksource/konfigadm:$TAG
+docker login --username $DOCKER_LOGIN --password $DOCKER_PASS
+docker push $GITHUB_USER/$NAME:$TAG
