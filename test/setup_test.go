@@ -31,7 +31,7 @@ func init() {
 	cwd = filepath.Dir(cwd)
 	image = os.Getenv("IMAGE")
 	cwdVol = os.Getenv("CWD_VOL")
-	binary = cwd + "/dist/konfigadm"
+	binary = cwd + "/.bin/konfigadm"
 }
 
 type Container struct {
