@@ -1,3 +1,9 @@
+NAME:=konfigadm
+
+ifeq ($(VERSION),)
+VERSION := $(shell git describe --tags)
+endif
+
 all: test docs integration
 
 .PHONY: clean
@@ -8,13 +14,27 @@ clean:
 deps:
 	GO111MODULE=off which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
 
+
 .PHONY: linux
 linux:
-	CGO_ENABLED=0 GOOS=linux go build -o dist/konfigadm.tmp -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' . && 	mv dist/konfigadm.tmp dist/konfigadm
+	GOOS=linux go build -o ./.bin/$(NAME) -ldflags "-X \"main.version=$(VERSION)\""  main.go
+
+.PHONY: darwin
+darwin:
+	GOOS=darwin go build -o ./.bin/$(NAME)_osx -ldflags "-X \"main.version=$(VERSION)\""  main.go
+
+.PHONY: windows
+windows:
+	GOOS=windows go build -o ./.bin/$(NAME).exe -ldflags "-X \"main.version=$(VERSION)\""  main.go
+
+.PHONY: compress
+compress:
+	which upx 2>&1 >  /dev/null  || (sudo apt-get update && sudo apt-get install -y upx-ucl)
+	upx ./.bin/$(NAME) ./.bin/$(NAME)_osx ./.bin/$(NAME).exe
 
 .PHONY: install
 install:
-	go build -ldflags '-X main.version=built-$(shell date +%Y%m%d%M%H%M%S)' -o konfigadm
+	go build -ldflags '-X main.version=$(VERSION)-$(shell date +%Y%m%d%M%H%M%S)' -o konfigadm
 	mv konfigadm /usr/local/bin/konfigadm
 
 .PHONY: test
