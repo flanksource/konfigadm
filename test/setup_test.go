@@ -112,7 +112,7 @@ func TestVersion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%s: %s", err, stdout)
 	}
-	g.Expect(stdout).To(ContainSubstring("built"))
+	g.Expect(stdout).To(ContainSubstring("v"))
 	g.Expect(strings.Split(stdout, "\n")).To(HaveLen(2))
 }
 
