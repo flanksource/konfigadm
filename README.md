@@ -46,7 +46,7 @@ Flags:
 ### Ubuntu / Debian
 
 ```bash
-wget https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm.deb
+wget https://github.com/flanksource/konfigadm/releases/download/v0.4.2/konfigadm.deb
 dpkg -i konfigadm.deb
 ```
 
