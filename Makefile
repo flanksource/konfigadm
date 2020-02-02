@@ -17,7 +17,7 @@ deps:
 
 .PHONY: linux
 linux:
-	GOOS=linux go build -o ./.bin/$(NAME) -ldflags "-X \"main.version=$(VERSION)\""  main.go
+	GOOS=linux GOARCH=386 go build -o ./.bin/$(NAME) -ldflags "-X \"main.version=$(VERSION)\""  main.go
 
 .PHONY: darwin
 darwin:
