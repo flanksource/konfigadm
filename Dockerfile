@@ -45,4 +45,4 @@ RUN install_bin https://github.com/CrunchyData/postgres-operator/releases/downlo
 RUN install_bin https://github.com/hongkailiu/gojsontoyaml/releases/download/e8bd32d/gojsontoyaml
 
 ARG KONFIGADM_VERSION=
-RUN install_bin https://github.com/moshloop/konfigadm/releases/download/${KONFIGADM_VERSION}/konfigadm
+RUN install_bin https://github.com/flanksource/konfigadm/releases/download/${KONFIGADM_VERSION}/konfigadm
