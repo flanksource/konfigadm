@@ -1,7 +1,7 @@
 <p align="center">
-<a href="https://circleci.com/gh/moshloop/konfigadm"><img src="https://circleci.com/gh/moshloop/konfigadm.svg?style=svg"></a>
-<a href="https://codecov.io/gh/moshloop/konfigadm"><img src="https://codecov.io/gh/moshloop/konfigadm/branch/master/graph/badge.svg"></a>
-<a href="https://goreportcard.com/report/github.com/moshloop/konfigadm"><img src="https://goreportcard.com/badge/github.com/moshloop/konfigadm"></a>
+<a href="https://circleci.com/gh/flanksource/konfigadm"><img src="https://circleci.com/gh/flanksource/konfigadm.svg?style=svg"></a>
+<a href="https://codecov.io/gh/flanksource/konfigadm"><img src="https://codecov.io/gh/flanksource/konfigadm/branch/master/graph/badge.svg"></a>
+<a href="https://goreportcard.com/report/github.com/flanksource/konfigadm"><img src="https://goreportcard.com/badge/github.com/flanksource/konfigadm"></a>
 <img src="https://img.shields.io/badge/OS-ubuntu%20%7C%20debian%20%7C%20centos%20%7C%20redhat%20%7C%20fedora-lightgrey.svg"/></a>
 </p>
 
