@@ -5,7 +5,7 @@ import (
 
 	"github.com/onsi/gomega"
 
-	. "github.com/moshloop/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types"
 )
 
 func TestArgs(t *testing.T) {

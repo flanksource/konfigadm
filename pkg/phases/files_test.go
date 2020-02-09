@@ -1,10 +1,10 @@
 package phases_test
 
 import (
+	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/onsi/gomega"
 	"io/ioutil"
 	"testing"
-	. "github.com/moshloop/konfigadm/pkg/types"
-	"github.com/onsi/gomega"
 )
 
 func TestCopy(t *testing.T) {
