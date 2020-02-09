@@ -1,11 +1,11 @@
 
 ## Design
 
-![](./docs/flow.png)
+![](flow.png)
 
 ### Mental Models
 
-![](./docs/konfigadm.png)
+![](konfigadm.png)
 
 `konfigadm` intentionally reuses mental models and concepts from kubernetes, golang and ansible these include:
 
