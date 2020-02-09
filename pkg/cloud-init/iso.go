@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/moshloop/konfigadm/pkg/utils"
+	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 //CreateISO creates a new ISO with the user/meta data and returns a path to the iso

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	_ "github.com/moshloop/konfigadm/pkg"
-	"github.com/moshloop/konfigadm/pkg/types"
+	_ "github.com/flanksource/konfigadm/pkg"
+	"github.com/flanksource/konfigadm/pkg/types"
 
 	"github.com/onsi/gomega"
 )

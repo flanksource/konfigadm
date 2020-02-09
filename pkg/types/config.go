@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
+	cloudinit "github.com/flanksource/konfigadm/pkg/cloud-init"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
 	yaml "gopkg.in/yaml.v3"

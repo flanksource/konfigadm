@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/moshloop/konfigadm/cmd"
+	"github.com/flanksource/konfigadm/cmd"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

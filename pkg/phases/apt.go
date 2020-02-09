@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	. "github.com/moshloop/konfigadm/pkg/types"
-	"github.com/moshloop/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 

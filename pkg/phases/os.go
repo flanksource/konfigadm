@@ -3,7 +3,7 @@ package phases
 import (
 	"fmt"
 
-	. "github.com/moshloop/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types"
 )
 
 //OS provides an abstraction over different operating systems

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
-	"github.com/moshloop/konfigadm/pkg/utils"
+	cloudinit "github.com/flanksource/konfigadm/pkg/cloud-init"
+	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 var (
