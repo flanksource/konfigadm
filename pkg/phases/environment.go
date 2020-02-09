@@ -1,8 +1,8 @@
 package phases
 
 import (
-	. "github.com/moshloop/konfigadm/pkg/types"
-	"github.com/moshloop/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 var Environment Phase = environment{}

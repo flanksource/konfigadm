@@ -1,7 +1,7 @@
 package phases
 
 import (
-	. "github.com/moshloop/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types"
 )
 
 var CommandsPhase AllPhases = command{}

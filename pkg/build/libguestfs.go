@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
+	"github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/utils"
 	"github.com/mitchellh/colorstring"
-	"github.com/moshloop/konfigadm/pkg/types"
-	"github.com/moshloop/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )

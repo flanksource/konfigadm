@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/moshloop/konfigadm/pkg/utils"
+	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
