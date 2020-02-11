@@ -4,7 +4,7 @@ ifeq ($(VERSION),)
 VERSION := $(shell git describe --tags)
 endif
 
-all: test docs integration
+all: test integration
 
 .PHONY: clean
 clean:
