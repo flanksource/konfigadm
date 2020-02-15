@@ -1,9 +1,9 @@
 package apps
 
 import (
-	"github.com/moshloop/konfigadm/pkg/build"
-	"github.com/moshloop/konfigadm/pkg/phases"
-	. "github.com/moshloop/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/build"
+	"github.com/flanksource/konfigadm/pkg/phases"
+	. "github.com/flanksource/konfigadm/pkg/types"
 )
 
 var Cleanup Phase = cleanup{}

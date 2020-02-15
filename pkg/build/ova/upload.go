@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/moshloop/konfigadm/pkg/utils"
+	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 var (

@@ -3,9 +3,9 @@ package cmd
 import (
 	"os"
 
-	_ "github.com/moshloop/konfigadm/pkg"
-	"github.com/moshloop/konfigadm/pkg/phases"
-	"github.com/moshloop/konfigadm/pkg/types"
+	_ "github.com/flanksource/konfigadm/pkg"
+	"github.com/flanksource/konfigadm/pkg/phases"
+	"github.com/flanksource/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

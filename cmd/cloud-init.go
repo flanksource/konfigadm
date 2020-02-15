@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	cloudinit "github.com/moshloop/konfigadm/pkg/cloud-init"
+	cloudinit "github.com/flanksource/konfigadm/pkg/cloud-init"
 	"github.com/spf13/cobra"
 )
 
