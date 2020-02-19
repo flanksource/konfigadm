@@ -1,0 +1,3 @@
+files:
+  # we copy in a copy of our self
+  /etc/test: "../../fixtures/files.yml"

@@ -1,0 +1,6 @@
+pre_commands:
+  - echo pre
+commands:
+  - echo command
+post_commands:
+  - echo post

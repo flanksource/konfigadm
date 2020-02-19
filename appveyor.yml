@@ -1,0 +1,21 @@
+version: 1.0.{build}
+image: Ubuntu1804
+
+init:
+#  - sh: export APPVEYOR_SSH_BLOCK=true
+ - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+
+environment:
+  matrix:
+    - image: ubuntu:1804
+    # - image: debian:9
+    # - image: fedora:29
+    # - image: centos:7
+  GOPATH: /usr/go/
+  GO111MODULES: on
+  APPVEYOR_SSH_KEY: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDF4fzNRtQoSJMmp+kgg+K+zGAJu9YKpYSH/96nkIBXbXqZpOmtGnweFTXLcJQHV46YZCCQdcFxjm6e2vUG+6F4e3aGuCQBgiHMcB0/Qsvm2f84bHQpUfxsK5Sa/1wDEe8pyWXuylTbiW1jV+knH3m3b7uijBh4qaHBF8hIqHSOtP5X67NTBcFYuQ8gkiqM519BOxYq/K+A5vFDA62vdErpdjrZbw8A7+VXxzIkDRnztQNo5kVj2+/6UqaGzbSS4pvLszKOlvwB6g9vTAYcdP43NxgzOS42FnMclJfBm+IE6RhdWq8ulyvS5RdahzwEwQOBkxUnkiO4XWQXsaKbhcVl
+
+build_script:
+    - sh: sudo apt-get update && sudo apt-get -y install qemu-system-x86 kpartx python-pexpect python-serial libguestfs-tools
+    - sh: sudo snap install go --classic
+    - sh: sudo /snap/bin/go run main.go build-image --image $image -c fixtures/k8s-1.14.yml

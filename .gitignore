@@ -1,0 +1,17 @@
+.vscode
+.DS_Store
+*.code-workspace
+dist/
+konfigadm_osx
+konfigadm
+*.tar.gz*
+coverage*
+test-output/
+*.img
+*.log
+*.ova
+*.vmx
+*.vmdk
+*.out
+*.qcow*
+logs*

@@ -1,0 +1,13 @@
+files:
+  /root/script2.sh: |
+      #!/bin/bash
+      echo Hello world
+filesystem:
+  /root/script.sh:
+      content: |
+          #!/bin/bash
+          echo Hello world
+      permissions: "0755"
+      owner: "root"
+commands:
+  - cat /root/script.sh

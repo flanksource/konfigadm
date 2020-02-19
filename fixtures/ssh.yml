@@ -1,0 +1,7 @@
+commands:
+  - echo root:root | chpasswd
+extra:
+  users:
+    - name: default
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDF4fzNRtQoSJMmp+kgg+K+zGAJu9YKpYSH/96nkIBXbXqZpOmtGnweFTXLcJQHV46YZCCQdcFxjm6e2vUG+6F4e3aGuCQBgiHMcB0/Qsvm2f84bHQpUfxsK5Sa/1wDEe8pyWXuylTbiW1jV+knH3m3b7uijBh4qaHBF8hIqHSOtP5X67NTBcFYuQ8gkiqM519BOxYq/K+A5vFDA62vdErpdjrZbw8A7+VXxzIkDRnztQNo5kVj2+/6UqaGzbSS4pvLszKOlvwB6g9vTAYcdP43NxgzOS42FnMclJfBm+IE6RhdWq8ulyvS5RdahzwEwQOBkxUnkiO4XWQXsaKbhcVl
