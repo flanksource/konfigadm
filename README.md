@@ -64,7 +64,7 @@ wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/downlo
 
 ## Getting Started
 
-### Installing Kubernetes
+### Installing Kubernetes on the local machine
 
 ```bash
 sudo konfigadm apply -c - <<-EOF
@@ -82,7 +82,7 @@ EOF
 ### Building a kubernetes image
 
 ```bash
-sudo konfigadm build-image --image ubuntu:1804 -c - <<-EOF
+sudo konfigadm images build --image ubuntu1804 -c - <<-EOF
 kubernetes:
   version: 1.14.2
 container_runtime:
