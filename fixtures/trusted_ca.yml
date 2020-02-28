@@ -1,0 +1,7 @@
+ca:
+  - "../../fixtures/trusted_ca.yml" # we copy in a copy of our self
+  - https://certs.example.com/cert
+  - |
+    -----BEGIN CERTIFICATE-----
+    Third cert
+    -----END CERTIFICATE-----
