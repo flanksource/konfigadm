@@ -69,7 +69,7 @@ ubuntu16: deps
 
 .PHONY: ubuntu
 ubuntu: deps
-	IMAGE=jrei/systemd-ubuntu:18.04 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/ubuntu18.04:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: fedora
 fedora: deps

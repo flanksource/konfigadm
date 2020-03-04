@@ -1,16 +1,29 @@
 package phases
 
 import (
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"path/filepath"
 	"strings"
 
 	. "github.com/flanksource/konfigadm/pkg/types"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
 	certificateHeader = "-----BEGIN CERTIFICATE-----"
+)
+
+var (
+	caCertificateFiles = []string{
+		"/etc/ssl/certs/ca-certificates.crt",
+		"/usr/lib/python3.8/site-packages/pip/_vendor/certifi/cacert.pem",
+		"/usr/lib/ssl/certs/%s.pem",
+	}
 )
 
 var TrustedCA Phase = trustedCA{}
@@ -25,7 +38,7 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 		return commands, files, nil
 	}
 
-	scriptFilename := "/tmp/trustedCA/install_certs"
+	scriptFilename := "/tmp/install_certs"
 	scriptFile := installCertificatesScript()
 
 	files[scriptFilename] = File{
@@ -35,7 +48,7 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 	}
 
 	for i, caFile := range sys.TrustedCA {
-		tmpFile := fmt.Sprintf("/tmp/trustedCA/konfigadm-trusted-%d.pem", i)
+		tmpFile := fmt.Sprintf("/tmp/konfigadm-trusted-%d.pem", i)
 
 		file, err := certificateToPem(string(caFile))
 		if err != nil {
@@ -47,10 +60,82 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 		commands[i] = Command{Cmd: cmd}
 	}
 
-	rmCommand := Command{Cmd: "rm -r /tmp/trustedCA/"}
-	commands = append(commands, rmCommand)
+	//rmCertsCommand := Command{Cmd: "rm -r /tmp/konfigadm-trusted-*.pem"}
+	//rmScriptCommand := Command{Cmd: "rm -r /tmp/install_certs"}
+	//commands = append(commands, rmCertsCommand, rmScriptCommand)
 
 	return commands, files, nil
+}
+
+func (p trustedCA) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+	if len(cfg.TrustedCA) == 0 {
+		return true
+	}
+
+	verify := false
+
+	for _, caFile := range cfg.TrustedCA {
+		file, err := certificateToPem(string(caFile))
+		if err != nil {
+			return false
+		}
+
+		var content string
+
+		if file.Content != "" {
+			content = file.Content
+		} else {
+			resp, err := http.Get(file.ContentFromURL)
+			if err != nil {
+				results.Fail("certificate %s download error: %v", file.ContentFromURL, err)
+				continue
+			}
+			defer resp.Body.Close()
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				results.Fail("certificate %s read body error: %v", file.ContentFromURL, err)
+				continue
+			}
+			content = string(b)
+		}
+
+		block, _ := pem.Decode([]byte(content))
+		if block == nil {
+			results.Fail("could not read certificate")
+			continue
+		}
+
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			results.Fail("could not parse certificate: %v", err)
+			continue
+		}
+
+		if found := findCertificateInFiles(results, cert.Subject.CommonName, content); found {
+			verify = true
+		} else {
+			results.Fail("certificate %s does not exist in cert file paths", cert.Subject.CommonName)
+		}
+	}
+
+	return verify
+}
+
+func findCertificateInFiles(results *VerifyResults, certName string, certBytes string) bool {
+	found := false
+	for _, fp := range caCertificateFiles {
+		filePath := fmt.Sprintf(fp, certName)
+		bytes, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			log.Printf("Error reading: %s : %s", filePath, err)
+			continue
+		}
+		if strings.Contains(string(bytes), certBytes) {
+			found = true
+			results.Pass("certificate %s found in path %s", certName, filePath)
+		}
+	}
+	return found
 }
 
 func certificateToPem(certificate string) (*File, error) {
@@ -64,7 +149,12 @@ func certificateToPem(certificate string) (*File, error) {
 		return file, nil
 	}
 
-	body, err := ioutil.ReadFile(certificate)
+	fullPath, err := filepath.Abs(certificate)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to expand path")
+	}
+
+	body, err := ioutil.ReadFile(fullPath)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to read certificate %s from disk", certificate)
 	}
@@ -83,13 +173,13 @@ install_cert() {
   echo "Importing $desc"
   if which update-ca-trust  2>&1 > /dev/null; then
     echo "Updating ca certs via update-ca-trust"
-    cp $cert /usr/share/pki/ca-trust-source/$desc.crt
+    cp $cert "/usr/share/pki/ca-trust-source/$desc.crt"
     update-ca-trust extract
   fi
 
   if which update-ca-certificates 2>&1 > /dev/null; then
     echo "Updating ca certs via update-ca-certificates"
-    cp $cert /usr/local/share/ca-certificates/$desc.crt
+    cp $cert "/usr/local/share/ca-certificates/$desc.crt"
     update-ca-certificates
   fi
 

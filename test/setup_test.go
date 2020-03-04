@@ -44,7 +44,7 @@ func (c *Container) Delete() {
 }
 
 func (c *Container) Exec(args ...string) (string, error) {
-	arg := []string{"exec", c.id}
+	arg := []string{"exec", "-w", cwd, c.id}
 	arg = append(arg, args...)
 	cmd := exec.Command("docker", arg...)
 	data, err := cmd.CombinedOutput()
@@ -127,6 +127,7 @@ var fixtures = []struct {
 	{"files.yml"},
 	{"kubernetes.yml"},
 	{"packages.yml"},
+	{"trusted_ca.yml"},
 	// {"sysctl.yml"},
 }
 
