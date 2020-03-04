@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strconv"
 
@@ -29,7 +30,23 @@ var (
 				if perms == 0 {
 					perms = 0644
 				}
-				ioutil.WriteFile(path, []byte(file.Content), os.FileMode(perms))
+				content := []byte(file.Content)
+				if file.Content == "" && file.ContentFromURL != "" {
+					log.Infof("Downloading %s to path %s", file.ContentFromURL, path)
+					resp, err := http.Get(file.ContentFromURL)
+					if err != nil {
+						log.Errorf("Failed to download from url %s: %v", file.ContentFromURL, err)
+						continue
+					}
+					defer resp.Body.Close()
+					c, err := ioutil.ReadAll(resp.Body)
+					if err != nil {
+						log.Errorf("Failed to read response body from url %s: %v", file.ContentFromURL, err)
+						continue
+					}
+					content = c
+				}
+				ioutil.WriteFile(path, []byte(content), os.FileMode(perms))
 			}
 
 			for _, cmd := range commands {
