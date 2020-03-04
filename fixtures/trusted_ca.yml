@@ -2,6 +2,7 @@ packages:
   - openssl
   - python3
   - ca-certificates #ubuntu
+  - which #+centos
 ca:
   - "fixtures/files/example-k8s-ca.pem"
   - "https://dl.cacerts.digicert.com/CybertrustGlobalRoot.crt.pem"

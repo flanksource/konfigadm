@@ -21,8 +21,13 @@ const (
 var (
 	caCertificateFiles = []string{
 		"/etc/ssl/certs/ca-certificates.crt",
-		"/usr/lib/python3.8/site-packages/pip/_vendor/certifi/cacert.pem",
+		"/etc/ssl/certs/%s.pem",
+		"/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
+		"/etc/pki/tls/certs/%s.pem",
+		"/etc/pki/tls/certs/ca-bundle.crt",
 		"/usr/lib/ssl/certs/%s.pem",
+		"/usr/lib/python3.6/site-packages/pip/_vendor/requests/cacert.pem",
+		"/usr/lib/python3.8/site-packages/pip/_vendor/certifi/cacert.pem",
 	}
 )
 
@@ -60,9 +65,9 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 		commands[i] = Command{Cmd: cmd}
 	}
 
-	//rmCertsCommand := Command{Cmd: "rm -r /tmp/konfigadm-trusted-*.pem"}
-	//rmScriptCommand := Command{Cmd: "rm -r /tmp/install_certs"}
-	//commands = append(commands, rmCertsCommand, rmScriptCommand)
+	rmCertsCommand := Command{Cmd: "rm -r /tmp/konfigadm-trusted-*.pem"}
+	rmScriptCommand := Command{Cmd: "rm -r /tmp/install_certs"}
+	commands = append(commands, rmCertsCommand, rmScriptCommand)
 
 	return commands, files, nil
 }

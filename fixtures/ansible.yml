@@ -1,5 +1,6 @@
 packages:
   - ansible
+  - python #+debian-like
 files:
   /root/playbook.yml: |
     ---
