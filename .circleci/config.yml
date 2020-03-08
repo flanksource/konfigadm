@@ -26,6 +26,8 @@ jobs:
       <<: *test
   "fedora29":
       <<: *test
+  "amazonlinux2":
+      <<: *test
   release:
       <<: *go
       steps:
@@ -48,6 +50,7 @@ workflows:
       - "ubuntu18.04"
       - "debian10"
       - "centos7"
+      - "amazonlinux2"
       # - "fedora:latest"
       - release:
           context: Github
