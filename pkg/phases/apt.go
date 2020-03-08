@@ -52,7 +52,7 @@ func (p AptPackageManager) GetInstalledVersion(pkg string) string {
 	return version
 }
 
-func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName string, name string, gpgKey string) Commands {
+func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) Commands {
 	cmds := &Commands{}
 	if channel == "" {
 		channel = "main"

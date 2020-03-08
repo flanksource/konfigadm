@@ -26,9 +26,9 @@ func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 		}
 
 		log.Tracef("Adding %s\n", repo)
-		if repo.URL != "" {
+		if repo.URL != "" || repo.ExtraArgs["mirrorlist"] != "" {
 			_commands := os.GetPackageManager().
-				AddRepo(repo.URL, repo.Channel, repo.VersionCodeName, repo.Name, repo.GPGKey)
+				AddRepo(repo.URL, repo.Channel, repo.VersionCodeName, repo.Name, repo.GPGKey, repo.ExtraArgs)
 			commands.Append(_commands.WithTags(repo.Flags...))
 		}
 	}
@@ -161,7 +161,7 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 			continue
 		}
 		expandedVersion, _ := utils.SafeExec("echo %s", p.Version)
-		expandedVersion= strings.Replace(expandedVersion, "\n", "", -1)
+		expandedVersion = strings.Replace(expandedVersion, "\n", "", -1)
 		log.Tracef("Verifying package: %s, version: %s => %s", p.Name, p.Version, expandedVersion)
 		installed := os.GetPackageManager().GetInstalledVersion(p.Name)
 		if p.Uninstall {
@@ -176,7 +176,7 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 		} else if p.Version == "" && installed == "" {
 			results.Fail("%s is not installed, any version required", p)
 			verify = false
-		} else if strings.HasPrefix( expandedVersion, installed) || strings.HasPrefix( installed, expandedVersion) {
+		} else if strings.HasPrefix(expandedVersion, installed) || strings.HasPrefix(installed, expandedVersion) {
 			results.Pass("%s is installed with expected version: %s", p, installed)
 		} else {
 			results.Fail("%s is installed, but expected %s, got %s", p.Name, expandedVersion, installed)

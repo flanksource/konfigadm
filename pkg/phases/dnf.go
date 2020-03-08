@@ -51,7 +51,7 @@ func (p DnfPackageManager) GetInstalledVersion(pkg string) string {
 	return ""
 }
 
-func (p DnfPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) Commands {
+func (p DnfPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) Commands {
 	repo := fmt.Sprintf(
 		`[%s]
 name=%s
@@ -62,8 +62,14 @@ enabled=1
 	if gpgKey != "" {
 		repo += fmt.Sprintf(`gpgcheck=1
 repo_gpgcheck=1
-gpgkey=%s`, gpgKey)
+gpgkey=%s
+`, gpgKey)
 	}
+
+	for k, v := range extraArgs {
+		repo += fmt.Sprintf("%s = %s\n", k, v)
+	}
+
 	return NewCommand(fmt.Sprintf(`cat <<EOF >/etc/yum.repos.d/%s.repo
 %s
 EOF`, name, repo))

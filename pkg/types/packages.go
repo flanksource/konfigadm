@@ -27,19 +27,20 @@ func CompareVersions(version string, compareTo string) bool {
 
 //PackageRepo includes the URL for a package repo, GPG key (if applicable) and runtime tags
 type PackageRepo struct {
-	Name            string `yaml:"name,omitempty"`
-	URL             string `yaml:"url,omitempty"`
-	GPGKey          string `yaml:"gpgKey,omitempty"`
-	Channel         string `yaml:"channel,omitempty"`
-	VersionCodeName string `yaml:"versionCodeName,omitempty"`
-	Flags           []Flag `yaml:"tags,omitempty"`
+	Name            string            `yaml:"name,omitempty"`
+	URL             string            `yaml:"url,omitempty"`
+	GPGKey          string            `yaml:"gpgKey,omitempty"`
+	Channel         string            `yaml:"channel,omitempty"`
+	VersionCodeName string            `yaml:"versionCodeName,omitempty"`
+	Flags           []Flag            `yaml:"tags,omitempty"`
+	ExtraArgs       map[string]string `yaml:"extraArgs,omitempty"`
 }
 
 type PackageManager interface {
 	Install(pkg ...string) Commands
 	Uninstall(pkg ...string) Commands
 	Mark(pkg ...string) Commands
-	AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) Commands
+	AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) Commands
 	GetInstalledVersion(pkg string) string
 	CleanupCaches() Commands
 	Update() Commands

@@ -55,6 +55,10 @@ e2e: linux
 .PHONY: e2e-all
 e2e-all: deps linux debian ubuntu ubuntu16 fedora centos
 
+.PHONY: amazonlinux
+amazonlinux: deps
+	IMAGE=quay.io/footloose/amazonlinux2:0.6.3 ./scripts/e2e.sh $(test)
+
 .PHONY: debian9
 debian9: deps
 	IMAGE=jrei/systemd-debian:9 ./scripts/e2e.sh $(test)

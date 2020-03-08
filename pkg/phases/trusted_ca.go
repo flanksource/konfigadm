@@ -48,7 +48,7 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 
 	files[scriptFilename] = File{
 		Content:     scriptFile,
-		Permissions: "700",
+		Permissions: "0700",
 		Owner:       "root",
 	}
 

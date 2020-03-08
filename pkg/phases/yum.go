@@ -12,10 +12,10 @@ import (
 type YumPackageManager struct{}
 
 func (p YumPackageManager) Install(pkg ...string) Commands {
-	arg :=  strings.Join(pkg, " ")
+	arg := strings.Join(pkg, " ")
 	// Yum versions are specified using a -, not a =
-	arg =  strings.Replace(arg, "=", "-",-1)
-	return NewCommand(fmt.Sprintf("yum install -y %s",arg))
+	arg = strings.Replace(arg, "=", "-", -1)
+	return NewCommand(fmt.Sprintf("yum install -y %s", arg))
 }
 
 func (p YumPackageManager) Update() Commands {
@@ -54,18 +54,25 @@ func (p YumPackageManager) GetInstalledVersion(pkg string) string {
 	return ""
 }
 
-func (p YumPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string) Commands {
+func (p YumPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) Commands {
 	repo := fmt.Sprintf(
 		`[%s]
 name=%s
-baseurl=%s
 enabled=1
-`, name, name, url)
+`, name, name)
+
+	if url != "" {
+		repo += fmt.Sprintf("baseurl = %s\n", url)
+	}
 
 	if gpgKey != "" {
 		repo += fmt.Sprintf(`gpgcheck=1
-repo_gpgcheck=1
-gpgkey=%s`, gpgKey)
+gpgkey=%s
+`, gpgKey)
+	}
+
+	for k, v := range extraArgs {
+		repo += fmt.Sprintf("%s = %s\n", k, v)
 	}
 	return NewCommand(fmt.Sprintf(`cat <<EOF >/etc/yum.repos.d/%s.repo
 %s
