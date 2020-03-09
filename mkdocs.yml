@@ -24,6 +24,7 @@ nav:
     - Templates: ./templates.md
     - Sysctl: ./sysctl.md
     - Environment: ./environment.md
+    - Trusted CA: ./trusted_ca.md
   - Primitives:
     - Commands: ./commands.md
     - Files: ./native_files.md
