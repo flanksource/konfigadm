@@ -29,9 +29,9 @@ var SupportedOperatingSystems = OperatingSystemList{
 	Debian,
 	Redhat,
 	Ubuntu,
+	AmazonLinux,
 	RedhatEnterprise,
 	Centos,
-	AmazonLinux,
 	Fedora,
 }
 

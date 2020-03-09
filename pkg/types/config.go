@@ -211,6 +211,8 @@ func (sys *Config) ImportConfig(c2 Config) {
 	if c2.ContainerRuntime != nil {
 		sys.ContainerRuntime = c2.ContainerRuntime
 	}
+	sys.TrustedCA = append(sys.TrustedCA, c2.TrustedCA...)
+	sys.Limits = append(sys.Limits, c2.Limits...)
 	if c2.Kubernetes != nil {
 		sys.Kubernetes = c2.Kubernetes
 	}

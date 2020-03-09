@@ -55,29 +55,33 @@ e2e: linux
 .PHONY: e2e-all
 e2e-all: deps linux debian ubuntu ubuntu16 fedora centos
 
+.PHONY: amazonlinux
+amazonlinux: deps
+	IMAGE=quay.io/footloose/amazonlinux2:0.6.3 ./scripts/e2e.sh $(test)
+
 .PHONY: debian9
 debian9: deps
 	IMAGE=jrei/systemd-debian:9 ./scripts/e2e.sh $(test)
 
 .PHONY: debian
 debian: deps
-	IMAGE=jrei/systemd-debian:latest ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/debian10:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu16
 ubuntu16: deps
-	IMAGE=jrei/systemd-ubuntu:16.04 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/ubuntu16.04:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu
 ubuntu: deps
-	IMAGE=jrei/systemd-ubuntu:18.04 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/ubuntu18.04:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: fedora
 fedora: deps
-	IMAGE=jrei/systemd-fedora:latest ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/fedora29:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: centos
 centos: deps
-	IMAGE=jrei/systemd-centos:7 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/centos7:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: docs
 docs:

@@ -8,22 +8,25 @@ go: &go
 test: &test
   <<: *go
   steps:
-    - setup_remote_docker
+    - setup_remote_docker:
+        version: 18.09.3
     - checkout
     - run: go mod download
-    - run: IMAGE="jrei/systemd-$CIRCLE_JOB" make test integration
+    - run: IMAGE="quay.io/footloose/$CIRCLE_JOB:0.6.3" make test integration
     - store_test_results:
         path: test-output
 jobs:
-  "ubuntu:16.04":
+  "ubuntu16.04":
       <<: *test
-  "ubuntu:18.04":
+  "ubuntu18.04":
       <<: *test
-  "debian:9":
+  "debian10":
       <<: *test
-  "centos:7":
+  "centos7":
       <<: *test
-  "fedora:latest":
+  "fedora29":
+      <<: *test
+  "amazonlinux2":
       <<: *test
   release:
       <<: *go
@@ -38,15 +41,16 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install mkdocs mkdocs-material pymdown-extensions Pygments
-      - run: make docs
+      - run: ./scripts/release-docs.sh
 workflows:
   version: 2
   build:
     jobs:
-      - "ubuntu:16.04"
-      - "ubuntu:18.04"
-      - "debian:9"
-      - "centos:7"
+      - "ubuntu16.04"
+      - "ubuntu18.04"
+      - "debian10"
+      - "centos7"
+      - "amazonlinux2"
       # - "fedora:latest"
       - release:
           context: Github

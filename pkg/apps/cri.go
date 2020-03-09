@@ -78,7 +78,7 @@ func addDockerRepos(sys *Config) {
 		Name:   "docker-ce",
 		URL:    "https://download.docker.com/linux/centos/7/x86_64/stable",
 		GPGKey: "https://download.docker.com/linux/centos/gpg",
-	}, REDHAT_LIKE)
+	}, RHEL, CENTOS)
 
 	sys.AppendPackageRepo(PackageRepo{
 		Name:   "docker-ce",
@@ -86,11 +86,21 @@ func addDockerRepos(sys *Config) {
 		GPGKey: "https://download.docker.com/linux/fedora/gpg",
 	}, FEDORA)
 
+	sys.AppendPackageRepo(PackageRepo{
+		Name:   "amz2extra-docker",
+		GPGKey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-linux-2",
+		ExtraArgs: map[string]string{
+			"mirrorlist": "http://amazonlinux.\\$awsregion.\\$awsdomain/\\$releasever/extras/docker/latest/\\$basearch/mirror.list",
+		},
+	}, AMAZON_LINUX)
+
 }
 
 func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	addDockerRepos(sys)
-	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &REDHAT_LIKE)
+	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &CENTOS)
+	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &REDHAT)
+	sys.AddPackage("containerd device-mapper-persistent-data lvm2 libseccomp", &AMAZON_LINUX)
 	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &FEDORA)
 	sys.AddPackage("containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
@@ -138,7 +148,7 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 				Name:    "docker-ce-cli",
 				Version: fn(version),
 				Mark:    true,
-				Flags:   []Flag{*GetTag(tag)},
+				Flags:   []Flag{*GetTag(tag), NOT_AMAZON_LINUX},
 			})
 		}
 
@@ -146,10 +156,16 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 			Name:    "docker-ce",
 			Version: fn(version),
 			Mark:    true,
-			Flags:   []Flag{*GetTag(tag)},
+			Flags:   []Flag{*GetTag(tag), NOT_AMAZON_LINUX},
 		})
-
 	}
+
+	sys.AppendPackages(nil, Package{
+		Name:    "docker",
+		Version: version + "ce",
+		Mark:    true,
+		Flags:   []Flag{AMAZON_LINUX},
+	})
 
 	sys.AddPackage("device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("device-mapper-persistent-data lvm2", &REDHAT_LIKE)

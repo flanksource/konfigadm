@@ -17,6 +17,7 @@ func init() {
 			phases.Containers,
 			phases.Packages,
 			phases.Services,
+			phases.TrustedCA,
 			phases.Files,
 			phases.CommandsPhase,
 			apps.Cleanup,
