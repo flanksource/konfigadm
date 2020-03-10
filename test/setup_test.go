@@ -126,6 +126,7 @@ var fixtures = []struct {
 	{"containerd.yml"},
 	{"files.yml"},
 	{"kubernetes.yml"},
+	{"ntp.yml"},
 	{"packages.yml"},
 	{"trusted_ca.yml"},
 	// {"sysctl.yml"},

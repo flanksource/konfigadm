@@ -216,4 +216,5 @@ func (sys *Config) ImportConfig(c2 Config) {
 	if c2.Kubernetes != nil {
 		sys.Kubernetes = c2.Kubernetes
 	}
+	sys.NTP = append(sys.NTP, c2.NTP...)
 }

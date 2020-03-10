@@ -140,6 +140,18 @@ func (cfg *Config) AddCommand(cmd string, flags ...*Flag) *Config {
 	return cfg
 }
 
+// AddPostCommand adds a post command to the config
+func (cfg *Config) AddPostCommand(cmd string, flags ...*Flag) *Config {
+	command := Command{Cmd: cmd}
+	for _, flag := range flags {
+		if flag != nil {
+			command.Flags = append(command.Flags, *flag)
+		}
+	}
+	cfg.PostCommands = append(cfg.PostCommands, command)
+	return cfg
+}
+
 //UnmarshalYAML decodes comments into tags
 func (c *Command) UnmarshalYAML(node *yaml.Node) error {
 	c.Cmd = node.Value

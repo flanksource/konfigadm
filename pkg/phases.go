@@ -12,6 +12,7 @@ func init() {
 			phases.Context,
 			apps.Kubernetes,
 			apps.CRI,
+			apps.NTP,
 			phases.Sysctl,
 			phases.Environment,
 			phases.Containers,

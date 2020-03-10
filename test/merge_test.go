@@ -79,3 +79,10 @@ func TestImportThree(t *testing.T) {
 	cloudinit := cfg.ToCloudInit().String()
 	g.Expect(cloudinit).To(gomega.ContainSubstring("kubeadm"))
 }
+
+func TestImportOfNTP(t *testing.T) {
+	cfg, g := NewFixture(t, PATH+"ntp.yml").
+		WithFlags(types.DEBIAN, types.DEBIAN_LIKE, types.UBUNTU).
+		Build()
+	g.Expect(len(cfg.NTP)).To(gomega.Equal(3))
+}

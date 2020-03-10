@@ -1,0 +1,7 @@
+ntp:
+- 0.in.pool.ntp.org
+- 1.in.pool.ntp.org
+- 2.in.pool.ntp.org
+commands:
+- journalctl -xe -u ntp.service
+- systemctl status ntp
