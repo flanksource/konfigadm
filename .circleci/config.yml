@@ -28,6 +28,12 @@ jobs:
       <<: *test
   "amazonlinux2":
       <<: *test
+  lint:
+    <<: *go
+    resource_class: large
+    steps:
+      - checkout
+      - run: ./scripts/golint.sh
   release:
       <<: *go
       steps:
@@ -46,6 +52,7 @@ workflows:
   version: 2
   build:
     jobs:
+      - lint
       - "ubuntu16.04"
       - "ubuntu18.04"
       - "debian10"
