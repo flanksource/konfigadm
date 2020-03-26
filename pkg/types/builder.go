@@ -21,11 +21,11 @@ func (f *ConfigBuilder) WithFlags(flags ...Flag) *ConfigBuilder {
 	return f
 }
 
-func (builder *ConfigBuilder) Build() (*Config, error) {
+func (f *ConfigBuilder) Build() (*Config, error) {
 	cfg := &Config{}
 	cfg.Init()
-	cfg.Context.Flags = builder.flags
-	for _, config := range builder.configs {
+	cfg.Context.Flags = f.flags
+	for _, config := range f.configs {
 		c, err := newConfig(config)
 		if err != nil {
 			log.Fatalf("Error parsing %s: %s", config, err)
@@ -33,7 +33,7 @@ func (builder *ConfigBuilder) Build() (*Config, error) {
 		cfg.ImportConfig(*c)
 	}
 
-	for _, v := range builder.vars {
+	for _, v := range f.vars {
 		if strings.Contains(v, "=") {
 			cfg.Context.Vars[strings.Split(v, "=")[0]] = strings.Split(v, "=")[1]
 		}

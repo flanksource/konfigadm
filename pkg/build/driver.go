@@ -12,19 +12,19 @@ type Driver interface {
 }
 
 func createIso(config *types.Config) (string, error) {
-	cloud_init := config.ToCloudInit()
+	cloudInit := config.ToCloudInit()
 
 	if config.Context.CaptureLogs != "" {
-		cloud_init.Runcmd = append([][]string{[]string{"bash", "-x", "-c", "mkdir /scratch; mount /dev/sdb1 /scratch"}}, cloud_init.Runcmd...)
+		cloudInit.Runcmd = append([][]string{[]string{"bash", "-x", "-c", "mkdir /scratch; mount /dev/sdb1 /scratch"}}, cloudInit.Runcmd...)
 	}
 	if config.Context.CaptureLogs != "" && (config.Cleanup == nil || !*config.Cleanup) {
-		cloud_init.Runcmd = append(cloud_init.Runcmd, []string{"bash", "-x", "-c", strings.Join(CaptureLogCommands(), "; ")})
+		cloudInit.Runcmd = append(cloudInit.Runcmd, []string{"bash", "-x", "-c", strings.Join(CaptureLogCommands(), "; ")})
 	}
 
 	// PowerState is once per instance and cloud-init clean (creating a new instance) fails on ubuntu 18.04:
 	// IsADirectory: /var/lib/cloud/instance
 	//	"cloud_init.PowerState.Mode = "poweroff"
 	// so we append a shutdown manually
-	cloud_init.Runcmd = append(cloud_init.Runcmd, []string{"shutdown", "-h", "now"})
-	return cloudinit.CreateISO("builder", cloud_init.String())
+	cloudInit.Runcmd = append(cloudInit.Runcmd, []string{"shutdown", "-h", "now"})
+	return cloudinit.CreateISO("builder", cloudInit.String())
 }

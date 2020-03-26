@@ -37,7 +37,7 @@ func (q Qemu) Build(image string, config *types.Config) {
 	}
 	if config.Context.CaptureLogs != "" {
 		log.Infof("Coping captured logs to %s\n", config.Context.CaptureLogs)
-		scratch.UnwrapToDir(config.Context.CaptureLogs)
+		scratch.UnwrapToDir(config.Context.CaptureLogs) // nolint: errcheck
 	}
 }
 

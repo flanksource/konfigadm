@@ -3,7 +3,7 @@ package phases
 import (
 	"fmt"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 )
 
 //OS provides an abstraction over different operating systems
@@ -52,7 +52,7 @@ func GetOSForTag(tags ...Flag) (OS, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("Unable to find OS for %s", tags)
+	return nil, fmt.Errorf("unable to find OS for %s", tags)
 }
 
 //Detect returns a list of all compatible operating systems at runtime
@@ -64,5 +64,4 @@ func (l OperatingSystemList) Detect() []OS {
 		}
 	}
 	return list
-
 }

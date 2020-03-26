@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 	log "github.com/sirupsen/logrus"
 )
 
@@ -26,10 +26,9 @@ func (p filesPhase) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 	return commands, files, nil
 }
 
-func (f filesPhase) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+func (p filesPhase) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
 	verify := true
 	for f := range cfg.Files {
-
 		if _, err := os.Stat(f); err != nil {
 			verify = false
 			results.Fail("%s does not exist", f)

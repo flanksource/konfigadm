@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )

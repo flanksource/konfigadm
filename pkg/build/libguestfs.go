@@ -16,7 +16,6 @@ import (
 type Libguestfs struct{}
 
 func (l Libguestfs) Build(image string, cfg *types.Config) {
-
 	_, _, err := cfg.ApplyPhases()
 	if err != nil {
 		log.Fatalf("Error applying phases %s\n", err)
@@ -46,6 +45,8 @@ func (l Libguestfs) Build(image string, cfg *types.Config) {
 		log.Errorf("builder.log: %s\n", utils.SafeRead("builder.log"))
 		log.Fatalf("Failed to run: %s, %s", cmdLine, err)
 	}
-	utils.Exec(fmt.Sprintf("virt-copy-out -a %s /tmp/builder.log .", image))
+	if err := utils.Exec(fmt.Sprintf("virt-copy-out -a %s /tmp/builder.log .", image)); err != nil {
+		log.Fatalf("Failed to run vrt-copy-out %s", err)
+	}
 	log.Infof("builder.log %s\n", utils.SafeRead("builder.log"))
 }

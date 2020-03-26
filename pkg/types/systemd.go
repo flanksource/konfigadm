@@ -1,7 +1,7 @@
 package types
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/utils" // nolint: golint, stylecheck
 )
 
 //Service is a systemd service to be installed and started
@@ -32,7 +32,6 @@ func DefaultSystemdService(name string) SystemD {
 			Description: name,
 		},
 	}
-
 }
 
 // bool and int fields are modelled using interface{} to distinguish between nil (not provided) and empty values

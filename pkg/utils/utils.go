@@ -21,19 +21,19 @@ import (
 )
 
 var (
-	reset        = "\x1b[0m"
-	red          = "\x1b[31m"
-	lightRed     = "\x1b[31;1m"
-	green        = "\x1b[32m"
-	lightGreen   = "\x1b[32;1m"
-	lightBlue    = "\x1b[34;1m"
-	magenta      = "\x1b[35m"
-	lightMagenta = "\x1b[35;1m"
-	cyan         = "\x1b[36m"
-	lightCyan    = "\x1b[36;1m"
-	white        = "\x1b[37;1m"
-	bold         = "\x1b[1m"
-	boldOff      = "\x1b[22m"
+	reset        = "\x1b[0m"    // nolint: unused, varcheck, deadcode
+	red          = "\x1b[31m"   // nolint: unused, varcheck, deadcode
+	lightRed     = "\x1b[31;1m" // nolint: unused, varcheck, deadcode
+	green        = "\x1b[32m"   // nolint: unused, varcheck, deadcode
+	lightGreen   = "\x1b[32;1m" // nolint: unused, varcheck, deadcode
+	lightBlue    = "\x1b[34;1m" // nolint: unused, varcheck, deadcode
+	magenta      = "\x1b[35m"   // nolint: unused, varcheck, deadcode
+	lightMagenta = "\x1b[35;1m" // nolint: unused, varcheck, deadcode
+	cyan         = "\x1b[36m"   // nolint: unused, varcheck, deadcode
+	lightCyan    = "\x1b[36;1m" // nolint: unused, varcheck, deadcode
+	white        = "\x1b[37;1m" // nolint: unused, varcheck, deadcode
+	bold         = "\x1b[1m"    // nolint: unused, varcheck, deadcode
+	boldOff      = "\x1b[22m"   // nolint: unused, varcheck, deadcode
 )
 
 //SafeExec executes the sh script and returns the stdout and stderr, errors will result in a nil return only.
@@ -50,7 +50,6 @@ func SafeExec(sh string, args ...interface{}) (string, bool) {
 		return "", false
 	}
 	return string(data), true
-
 }
 
 //Exec runs the sh script and forwards stderr/stdout to the console
@@ -101,23 +100,22 @@ func ToString(i interface{}) string {
 			s += ToString(v)
 		}
 		return s
-
 	}
 	switch v := i.(type) {
 	case fmt.Stringer:
 		return v.String()
 	case string:
 		return v
-	case interface{}:
-		if v == nil {
-			return ""
-		}
-		return fmt.Sprintf("%v", v)
 	case bool:
 		if v {
 			return "true"
 		}
 		return "false"
+	case interface{}:
+		if v == nil {
+			return ""
+		}
+		return fmt.Sprintf("%v", v)
 	default:
 		// panic(fmt.Sprintf("I don't know about type %T!\n", v))
 	}
@@ -270,11 +268,7 @@ func FileCopy(src string, dst string) error {
 
 func IsTTY() bool {
 	fi, _ := os.Stdout.Stat()
-	if (fi.Mode() & os.ModeCharDevice) == 0 {
-		return false
-	} else {
-		return true
-	}
+	return (fi.Mode() & os.ModeCharDevice) != 0
 }
 
 func Redf(msg string, args ...interface{}) string {
@@ -327,8 +321,8 @@ func Interpolate(arg string, vars interface{}) string {
 		return arg
 	}
 	return buf.String()
-
 }
+
 func InterpolateStrings(arg []string, vars interface{}) []string {
 	out := make([]string, len(arg))
 	for i, e := range arg {
@@ -362,7 +356,7 @@ func GET(url string, args ...interface{}) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	return body, nil
+	return body, err
 }
 
 func Download(url, path string) error {

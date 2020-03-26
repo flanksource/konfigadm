@@ -6,7 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
@@ -126,7 +126,6 @@ func addPackageCommands(sys *Config, commands *Commands) {
 			commands = commands.Append(os.GetPackageManager().Mark(ops.mark...).WithTags(ops.tags...))
 		}
 	}
-
 }
 
 func (p packages) ProcessFlags(sys *Config, flags ...Flag) {

@@ -7,8 +7,8 @@ import (
 	"github.com/flosch/pongo2"
 	log "github.com/sirupsen/logrus"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
-	. "github.com/flanksource/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
+	. "github.com/flanksource/konfigadm/pkg/utils" // nolint: golint, stylecheck
 )
 
 var Context Phase = context{}
@@ -29,6 +29,7 @@ func interpolate(c *SystemContext, s string) string {
 	return interpolateString(s, c.Vars)
 }
 
+// nolint: unused, deadcode
 func interpolateSlice(c *SystemContext, val []string) []string {
 	var out []string
 	for _, v := range val {

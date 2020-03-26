@@ -39,7 +39,7 @@ func (matcher *CommandMatcher) Match(actual interface{}) (success bool, err erro
 			}
 		}
 	default:
-		return false, fmt.Errorf("CommandMatcher matcher expects a SystemConfig or []Config")
+		return false, fmt.Errorf("error: CommandMatcher matcher expects a SystemConfig or []Config")
 	}
 	return false, nil
 }
@@ -59,10 +59,7 @@ func ContainPackage(expected interface{}) types.GomegaMatcher {
 }
 
 type PackageMatcher struct {
-	expected   interface{}
-	commands   []Command
-	filesystem Filesystem
-	err        error
+	expected interface{}
 }
 
 func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err error) {
@@ -73,7 +70,7 @@ func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err erro
 	}
 	_, _, err = sys.ApplyPhases()
 	if err != nil {
-		return false, fmt.Errorf("Error applying phases: %s", err)
+		return false, fmt.Errorf("error applying phases: %s", err)
 	}
 	for _, p := range *sys.Packages {
 		if p.Name == matcher.expected {

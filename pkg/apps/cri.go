@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/flanksource/konfigadm/pkg/phases"
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
@@ -42,7 +42,6 @@ func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
 			verify = false
 			results.Fail("docker ps failed with: %s", out)
 		}
-
 	} else if sys.ContainerRuntime.Type == "containerd" {
 		verify = verify && phases.VerifyService("containerd", results)
 		out, ok := utils.SafeExec("ctr c list")
@@ -93,7 +92,6 @@ func addDockerRepos(sys *Config) {
 			"mirrorlist": "http://amazonlinux.\\$awsregion.\\$awsdomain/\\$releasever/extras/docker/latest/\\$basearch/mirror.list",
 		},
 	}, AMAZON_LINUX)
-
 }
 
 func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
@@ -126,10 +124,9 @@ func init() {
 		codename := "$(lsb_release -cs)"
 		if strings.Contains(version, "18.06") || strings.Contains(version, "18.03") {
 			return fmt.Sprintf("%s~ce~3-0~%s", version, id)
-		} else {
-			// docker versions 18.09+ use a new version syntax
-			return fmt.Sprintf("5:%s~3-0~%s-%s", version, id, codename)
 		}
+		// docker versions 18.09+ use a new version syntax
+		return fmt.Sprintf("5:%s~3-0~%s-%s", version, id, codename)
 	}
 	versioner[DEBIAN.String()] = versioner[UBUNTU.String()]
 }

@@ -1,14 +1,14 @@
 package phases
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 )
 
 var CommandsPhase AllPhases = command{}
 
 type command struct{}
 
-func (p command) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
+func (p command) ApplyPhase(sys *Config, _ *SystemContext) ([]Command, Filesystem, error) {
 	var commands []Command
 	files := Filesystem{}
 	commands = append(commands, sys.PreCommands...)

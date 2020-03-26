@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 )
 
 var Containers Phase = containers{}
@@ -15,7 +15,6 @@ func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 	var commands []Command
 	files := Filesystem{}
 	for _, c := range sys.Containers {
-
 		sys.Services[c.Name()] = Service{
 			Name:      c.Name(),
 			ExecStart: exec(ctx, c),
@@ -24,7 +23,6 @@ func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 		if len(c.Env) > 0 {
 			files["/etc/environment."+c.Name()] = File{Content: toEnvironmentFile(ctx, c)}
 		}
-
 	}
 	return commands, files, nil
 }
@@ -32,7 +30,6 @@ func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, File
 func (p containers) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
 	verify := true
 	for f := range cfg.Files {
-
 		if _, err := os.Stat(f); err != nil {
 			verify = false
 			results.Fail("%s does not exist", f)

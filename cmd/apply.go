@@ -46,7 +46,7 @@ var (
 					}
 					content = c
 				}
-				ioutil.WriteFile(path, []byte(content), os.FileMode(perms))
+				ioutil.WriteFile(path, content, os.FileMode(perms)) // nolint: errcheck
 			}
 
 			for _, cmd := range commands {

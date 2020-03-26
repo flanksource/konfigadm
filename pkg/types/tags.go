@@ -9,32 +9,31 @@ import (
 )
 
 var (
-	flagProcessors   = make([]FlagProcessor, 0)
 	CONTAINER        = Flag{Name: "container"}
 	DEBIAN           = Flag{Name: "debian"}
-	DEBIAN_LIKE      = Flag{Name: "debian-like"}
+	DEBIAN_LIKE      = Flag{Name: "debian-like"} // nolint: golint, stylecheck
 	REDHAT           = Flag{Name: "redhat"}
 	FEDORA           = Flag{Name: "fedora"}
-	REDHAT_LIKE      = Flag{Name: "redhat-like"}
-	AMAZON_LINUX     = Flag{Name: "amazonLinux"}
+	REDHAT_LIKE      = Flag{Name: "redhat-like"} // nolint: golint, stylecheck
+	AMAZON_LINUX     = Flag{Name: "amazonLinux"} // nolint: golint, stylecheck
 	RHEL             = Flag{Name: "rhel"}
 	CENTOS           = Flag{Name: "centos"}
 	UBUNTU           = Flag{Name: "ubuntu"}
 	AWS              = Flag{Name: "aws"}
 	VMWARE           = Flag{Name: "vmware"}
-	NOT_CONTAINER    = Flag{Name: "!container", Negates: []Flag{CONTAINER}}
-	NOT_FEDORA       = Flag{Name: "!fedora", Negates: []Flag{FEDORA}}
-	NOT_DEBIAN       = Flag{Name: "!debian", Negates: []Flag{DEBIAN}}
-	NOT_REDHAT       = Flag{Name: "!redhat", Negates: []Flag{REDHAT}}
-	NOT_DEBIAN_LIKE  = Flag{Name: "!debian", Negates: []Flag{DEBIAN_LIKE}}
-	NOT_REDHAT_LIKE  = Flag{Name: "!redhat", Negates: []Flag{REDHAT_LIKE}}
-	NOT_CENTOS       = Flag{Name: "!centos", Negates: []Flag{CENTOS}}
-	NOT_RHEL         = Flag{Name: "!rhel", Negates: []Flag{RHEL}}
-	NOT_UBUNTU       = Flag{Name: "!ubuntu", Negates: []Flag{UBUNTU}}
-	NOT_AWS          = Flag{Name: "!aws", Negates: []Flag{AWS}}
-	NOT_VMWARE       = Flag{Name: "!vmware", Negates: []Flag{VMWARE}}
-	NOT_AMAZON_LINUX = Flag{Name: "!amazonLinux", Negates: []Flag{AMAZON_LINUX}}
-	FLAG_MAP         = make(map[string]Flag)
+	NOT_CONTAINER    = Flag{Name: "!container", Negates: []Flag{CONTAINER}}      // nolint: golint, stylecheck
+	NOT_FEDORA       = Flag{Name: "!fedora", Negates: []Flag{FEDORA}}            // nolint: golint, stylecheck
+	NOT_DEBIAN       = Flag{Name: "!debian", Negates: []Flag{DEBIAN}}            // nolint: golint, stylecheck
+	NOT_REDHAT       = Flag{Name: "!redhat", Negates: []Flag{REDHAT}}            // nolint: golint, stylecheck
+	NOT_DEBIAN_LIKE  = Flag{Name: "!debian", Negates: []Flag{DEBIAN_LIKE}}       // nolint: golint, stylecheck
+	NOT_REDHAT_LIKE  = Flag{Name: "!redhat", Negates: []Flag{REDHAT_LIKE}}       // nolint: golint, stylecheck
+	NOT_CENTOS       = Flag{Name: "!centos", Negates: []Flag{CENTOS}}            // nolint: golint, stylecheck
+	NOT_RHEL         = Flag{Name: "!rhel", Negates: []Flag{RHEL}}                // nolint: golint, stylecheck
+	NOT_UBUNTU       = Flag{Name: "!ubuntu", Negates: []Flag{UBUNTU}}            // nolint: golint, stylecheck
+	NOT_AWS          = Flag{Name: "!aws", Negates: []Flag{AWS}}                  // nolint: golint, stylecheck
+	NOT_VMWARE       = Flag{Name: "!vmware", Negates: []Flag{VMWARE}}            // nolint: golint, stylecheck
+	NOT_AMAZON_LINUX = Flag{Name: "!amazonLinux", Negates: []Flag{AMAZON_LINUX}} // nolint: golint, stylecheck
+	FLAG_MAP         = make(map[string]Flag)                                     // nolint: golint, stylecheck
 	FLAGS            = []Flag{CONTAINER, DEBIAN, DEBIAN_LIKE, REDHAT, FEDORA, REDHAT_LIKE, AMAZON_LINUX, CENTOS, RHEL, UBUNTU, AWS, VMWARE, NOT_CONTAINER, NOT_FEDORA, NOT_DEBIAN_LIKE, NOT_REDHAT_LIKE, NOT_DEBIAN, NOT_REDHAT, NOT_CENTOS, NOT_RHEL, NOT_UBUNTU, NOT_AWS, NOT_VMWARE, NOT_AMAZON_LINUX}
 )
 
@@ -45,7 +44,7 @@ type Flag struct {
 
 func GetTag(name string) *Flag {
 	for _, tag := range FLAGS {
-		if strings.ToLower(tag.Name) == strings.ToLower(name) {
+		if strings.ToLower(tag.Name) == strings.ToLower(name) { // nolint: staticcheck
 			return &tag
 		}
 	}
@@ -60,7 +59,6 @@ func init() {
 			FLAG_MAP[fmt.Sprintf("+%s", name)] = flag
 		}
 	}
-
 }
 
 func (f Flag) String() string {
@@ -140,15 +138,15 @@ func Marshall(flags []Flag) string {
 }
 
 //MarshalYAML ads tags as comments
-func (t Flag) MarshalYAML() (interface{}, error) {
-	return t.Name, nil
+func (f Flag) MarshalYAML() (interface{}, error) {
+	return f.Name, nil
 }
 
 //UnmarshalYAML decodes comments into tags and parses modifiers for packages
-func (t *Flag) UnmarshalYAML(node *yaml.Node) error {
+func (f *Flag) UnmarshalYAML(node *yaml.Node) error {
 	tag := GetTag(node.Value)
-	t.Name = tag.Name
-	t.Negates = tag.Negates
+	f.Name = tag.Name
+	f.Negates = tag.Negates
 	log.Tracef("Unmarshal %s into %s\n", node.Value, tag)
 	return nil
 }

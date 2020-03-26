@@ -6,18 +6,13 @@ import (
 	"path"
 	"strings"
 
+	. "github.com/flanksource/konfigadm/pkg/build" // nolint: golint, stylecheck
 	"github.com/flanksource/konfigadm/pkg/build/ova"
 	"github.com/flanksource/konfigadm/pkg/types"
-
-	. "github.com/flanksource/konfigadm/pkg/build"
-
 	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
-
 	"github.com/spf13/cobra"
 )
-
-var IMAGE_CACHE string
 
 var drivers = map[string]Driver{
 	"libguestfs": Libguestfs{},
@@ -212,5 +207,4 @@ func init() {
 	Images.PersistentFlags().String("resize", "", "Resize the image")
 	Images.PersistentFlags().String("output-filename", "", "Output filename of image")
 	Images.PersistentFlags().String("output-dir", cwd, "Output directory for new images")
-
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
@@ -34,7 +34,6 @@ func (p services) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 	verify := true
 	for name := range cfg.Services {
 		verify = verify && VerifyService(name, results)
-
 	}
 	return verify
 }
@@ -45,7 +44,6 @@ func VerifyService(name string, results *VerifyResults) bool {
 	stdout = strings.TrimSpace(strings.Split(stdout, "\n")[0])
 	if !ok {
 		results.Fail("%s is %s", name, stdout)
-
 	} else if strings.Contains(stdout, "active (running)") {
 		results.Pass("%s is  %s", name, stdout)
 		return true

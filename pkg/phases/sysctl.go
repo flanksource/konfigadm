@@ -5,9 +5,8 @@ import (
 	"os"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
-
-	. "github.com/flanksource/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
+	. "github.com/flanksource/konfigadm/pkg/utils" // nolint: golint, stylecheck
 )
 
 var Sysctl Phase = sysctl{}

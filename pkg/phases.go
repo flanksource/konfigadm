@@ -7,6 +7,7 @@ import (
 )
 
 func init() {
+	// nolint: errcheck
 	types.Dig.Provide(func() *[]types.Phase {
 		return &[]types.Phase{
 			phases.Context,

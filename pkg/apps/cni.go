@@ -1,7 +1,7 @@
 package apps
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 )
 
 var CNI Phase = cni{}
@@ -9,6 +9,5 @@ var CNI Phase = cni{}
 type cni struct{}
 
 func (k cni) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-
 	return []Command{}, Filesystem{}, nil
 }

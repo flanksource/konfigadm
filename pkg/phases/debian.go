@@ -3,11 +3,12 @@ package phases
 import (
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 var (
+	// nolint: unused, deadcode, varcheck
 	tmpFolders = []string{
 		"/root/.bash_history",
 		"/home/${SSH_USER}/.bash_history",
@@ -17,6 +18,7 @@ var (
 		"/var/lib/dhcp/*",
 		"/tmp/*",
 	}
+	// nolint: unused, deadcode, varcheck
 	tmpFiles = []string{
 		"/var/log/lastlog",
 		"/var/log/wtmp",

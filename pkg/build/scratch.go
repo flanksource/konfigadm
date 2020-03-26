@@ -24,7 +24,7 @@ func NewScratch() Scratch {
 	if runtime.GOOS == "darwin" {
 		scratch = &DarwinScratch{}
 	}
-	scratch.Create()
+	scratch.Create() // nolint: errcheck
 	return scratch
 }
 func (s *DarwinScratch) GetImg() string {
@@ -41,12 +41,12 @@ func (s *DarwinScratch) Create() error {
 }
 
 func (s *DarwinScratch) UnwrapToDir(dir string) error {
-	os.MkdirAll(dir, 0755)
+	os.MkdirAll(dir, 0755) // nolint: errcheck
 	mount, _ := ioutil.TempDir("", "mount")
 	if err := utils.Exec("hdiutil attach -mountpoint %s  %s ", mount, s.img); err != nil {
 		return err
 	}
-	defer utils.Exec("hdiutil detach %s", mount)
+	defer utils.Exec("hdiutil detach %s", mount) // nolint: errcheck
 	return utils.Exec("cp -r %s/* %s", mount, dir)
 }
 

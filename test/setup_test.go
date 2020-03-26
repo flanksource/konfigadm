@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/onsi/gomega"
 	. "github.com/onsi/gomega"
 	"github.com/ory/dockertest"
 	yaml "gopkg.in/yaml.v3"
@@ -51,7 +50,7 @@ func (c *Container) Exec(args ...string) (string, error) {
 	if err != nil {
 		return string(data), err
 	}
-	cmd.Wait()
+	cmd.Wait() // nolint: errcheck
 	if !cmd.ProcessState.Success() {
 		return string(data), errors.New("Failed")
 	}
@@ -60,7 +59,6 @@ func (c *Container) Exec(args ...string) (string, error) {
 
 //newContainer creates a new systemd based container and returns the container id
 func newContainer() (*Container, error) {
-
 	volumes := []string{
 		fmt.Sprintf("%s:%s", cwdVol, cwd),
 		"/sys/fs/cgroup:/sys/fs/cgroup",
@@ -88,14 +86,15 @@ func newContainer() (*Container, error) {
 	}, nil
 }
 
+// nolint: deadcode, unused
 func check(t *testing.T, err error) {
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func setup(t *testing.T) (*gomega.WithT, *Container) {
-	g := gomega.NewGomegaWithT(t)
+func setup(t *testing.T) (*WithT, *Container) {
+	g := NewGomegaWithT(t)
 	container, err := newContainer()
 	if err != nil {
 		t.Fatal(err)
@@ -129,17 +128,6 @@ var fixtures = []struct {
 	{"packages.yml"},
 	{"trusted_ca.yml"},
 	// {"sysctl.yml"},
-}
-
-type konfigadm struct {
-}
-
-func (c konfigadm) Verify(config ...string) bool {
-	return false
-}
-
-func (c konfigadm) Apply(config ...string) bool {
-	return false
 }
 
 func TestYamlRoundTrip(t *testing.T) {
@@ -183,7 +171,6 @@ func TestFull(t *testing.T) {
 				os.Stderr.WriteString(stdout + "\n")
 				return stdout
 			}, "30s", "3s").Should(ContainSubstring("0 failed"))
-
 		})
 	}
 }

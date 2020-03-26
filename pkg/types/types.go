@@ -270,12 +270,13 @@ func (c *VerifyResults) Done() {
 func (c *VerifyResults) Pass(msg string, args ...interface{}) {
 	c.PassCount++
 	fmt.Println(utils.Greenf(" [pass] "+msg, args...))
-
 }
+
 func (c *VerifyResults) Fail(msg string, args ...interface{}) {
 	c.FailCount++
 	fmt.Println(utils.Redf(" [fail] "+msg, args...))
 }
+
 func (c *VerifyResults) Skip(msg string, args ...interface{}) {
 	c.SkipCount++
 	fmt.Println(utils.LightCyanf(" [skip] "+msg, args...))

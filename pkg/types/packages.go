@@ -97,9 +97,7 @@ func (cfg *Config) AddPackageRepo(url string, gpg string, flag Flag) *Config {
 
 //AppendPackageRepo appends a new package repository to the list
 func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...Flag) *Config {
-	for _, flag := range flags {
-		repo.Flags = append(repo.Flags, flag)
-	}
+	repo.Flags = append(repo.Flags, flags...)
 	if repo.Channel == "" {
 		repo.Channel = "main"
 	}
@@ -118,6 +116,7 @@ func (p Package) MarshalYAML() (interface{}, error) {
 	}, nil
 }
 
+// nolint: unparam
 func parsePackage(name string, p *Package) *Package {
 	if strings.HasPrefix(name, "!") {
 		p.Name = name[1:]
@@ -150,7 +149,7 @@ func (p *Package) UnmarshalYAML(node *yaml.Node) error {
 		if FLAG, ok := FLAG_MAP[flag]; ok {
 			p.Flags = append(p.Flags, FLAG)
 		} else {
-			return fmt.Errorf("Unknown flag: %s", flag)
+			return fmt.Errorf("unknown flag: %s", flag)
 		}
 	}
 	return nil

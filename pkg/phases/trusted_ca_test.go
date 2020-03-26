@@ -14,7 +14,7 @@ func TestTrustedCA(t *testing.T) {
 	wd, _ := os.Getwd()
 	err := os.Chdir("../..")
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	defer os.Chdir(wd)
+	defer os.Chdir(wd) // nolint: errcheck
 	files, commands, err := cfg.ApplyPhases()
 	g.Expect(err).ToNot(gomega.HaveOccurred())
 	g.Expect(files).To(gomega.HaveLen(4))

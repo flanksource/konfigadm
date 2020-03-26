@@ -68,7 +68,6 @@ func TestImportKubernetesWithCommand(t *testing.T) {
 	count := strings.Count(cfg.ToCloudInit().String(), "echo 1.14.1 > /etc/kubernetes_version")
 	g.Expect(count).To(gomega.BeEquivalentTo(1))
 	g.Expect(*cfg.Packages).NotTo(gomega.BeEmpty())
-
 }
 
 func TestImportThree(t *testing.T) {

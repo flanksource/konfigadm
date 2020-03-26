@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	_ "github.com/flanksource/konfigadm/pkg"
+	_ "github.com/flanksource/konfigadm/pkg" // nolint: golint, stylecheck
 	"github.com/flanksource/konfigadm/pkg/phases"
 	"github.com/flanksource/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
@@ -51,7 +51,6 @@ func GetConfig(cmd *cobra.Command, args []string) *types.Config {
 		} else {
 			log.Fatalf("Unknown flag %s", name)
 		}
-
 	}
 
 	log.Infof("Using tags: %s\n", flags)
@@ -65,5 +64,4 @@ func GetConfig(cmd *cobra.Command, args []string) *types.Config {
 		panic(nil)
 	}
 	return cfg
-
 }

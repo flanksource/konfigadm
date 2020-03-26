@@ -3,7 +3,7 @@ package phases_test
 import (
 	"testing"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint, stylecheck
 )
 
 func init() {
@@ -19,7 +19,6 @@ func TestPackageDebian(t *testing.T) {
 	g.Expect(cfg).To(ContainPackage("netcat-openbsd"))
 	g.Expect(cfg).NotTo(ContainPackage("nmap-netcat"))
 	g.Expect(cfg).NotTo(ContainPackage("nano"))
-
 }
 
 func TestPackageUbuntu(t *testing.T) {
@@ -27,7 +26,6 @@ func TestPackageUbuntu(t *testing.T) {
 	g.Expect(cfg).To(ContainPackage("netcat-openbsd"))
 	g.Expect(cfg).NotTo(ContainPackage("nmap-netcat"))
 	g.Expect(cfg).To(ContainPackage("nano"))
-
 }
 
 func TestPackageRedhat(t *testing.T) {
