@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	yaml "gopkg.in/yaml.v3"
+	"github.com/flanksource/yaml"
 )
 
 //Package includes the package name, modifiers (mark, uninstall) and runtime tags

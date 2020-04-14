@@ -3,7 +3,7 @@ package cloudinit
 import (
 	"encoding/base64"
 
-	"gopkg.in/yaml.v3"
+	"github.com/flanksource/yaml"
 )
 
 func (init CloudInit) String() string {

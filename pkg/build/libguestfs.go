@@ -8,9 +8,9 @@ import (
 
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
+	"github.com/flanksource/yaml"
 	"github.com/mitchellh/colorstring"
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
 )
 
 type Libguestfs struct{}

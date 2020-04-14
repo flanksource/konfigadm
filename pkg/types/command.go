@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/flanksource/yaml"
 	log "github.com/sirupsen/logrus"
-	yaml "gopkg.in/yaml.v3"
 )
 
 //Command encapsulates a command and the tags for which it is applicable

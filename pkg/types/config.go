@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	cloudinit "github.com/flanksource/konfigadm/pkg/cloud-init"
+	"github.com/flanksource/yaml"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
-	yaml "gopkg.in/yaml.v3"
 )
 
 var (
