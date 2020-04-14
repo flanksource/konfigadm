@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/flanksource/yaml"
-	"github.com/onsi/gomega"
 	. "github.com/onsi/gomega"
 	"github.com/ory/dockertest"
 )
