@@ -152,7 +152,7 @@ func newConfig(config string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	if strings.HasSuffix(config, "yml") {
+	if strings.HasSuffix(config, "yml") || strings.HasSuffix(config, "yaml") {
 		err = yaml.Unmarshal(data, &c)
 	} else {
 		return nil, fmt.Errorf("Unknown file type: %s", config)
