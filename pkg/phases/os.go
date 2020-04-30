@@ -35,6 +35,15 @@ var SupportedOperatingSystems = OperatingSystemList{
 	Fedora,
 }
 
+var OperatingSystems = map[string]OS{
+	"ubuntu":      Ubuntu,
+	"debian":      Debian,
+	"redhat":      Redhat,
+	"amazonLinux": AmazonLinux,
+	"centos":      Centos,
+	"fedora":      Fedora,
+}
+
 //BaseOperatingSystems is the list of base distributions that are supported, which is currently only debian and redhat
 var BaseOperatingSystems = OperatingSystemList{
 	Debian,

@@ -28,7 +28,6 @@ func (builder *ConfigBuilder) Build() (*Config, error) {
 	cfg.Init()
 	cfg.Context.Flags = builder.flags
 	for _, config := range builder.configs {
-		logger.Infof(config)
 		if config == "" {
 			continue
 		}
