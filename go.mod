@@ -8,14 +8,13 @@ require (
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/flanksource/yaml v0.0.0-20200325175021-f76146a3718a
+	github.com/flanksource/commons v1.3.0
 	github.com/flosch/pongo2 v0.0.0-20181225140029-79872a7b2769
-	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/juju/errors v0.0.0-20190207033735-e65537c515d7 // indirect
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
-	github.com/onsi/gomega v1.5.0
+	github.com/onsi/gomega v1.9.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
@@ -25,6 +24,7 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3 // indirect
 	go.uber.org/dig v1.7.0
+	gopkg.in/flanksource/yaml.v3 v3.0.3
 )
 
 replace (
