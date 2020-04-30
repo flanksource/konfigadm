@@ -104,7 +104,7 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &FEDORA)
 	sys.AddPackage("containerd.io", &DEBIAN_LIKE)
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
-	sys.AddCommand("systemctl enable containerd && systemctl restart containerd")
+	sys.AddCommand("systemctl enable containerd || true && systemctl restart containerd || true")
 	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
 	for _, image := range sys.ContainerRuntime.Images {
 		sys.AddCommand(fmt.Sprintf("crictl pull %s", image))
@@ -169,7 +169,7 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 
 	sys.AddPackage("device-mapper-persistent-data lvm2", &FEDORA)
 	sys.AddPackage("device-mapper-persistent-data lvm2", &REDHAT_LIKE)
-	sys.AddCommand("systemctl enable docker && systemctl start docker")
+	sys.AddCommand("systemctl enable docker || true && systemctl start docker || true")
 
 	for _, image := range sys.ContainerRuntime.Images {
 		sys.AddCommand(fmt.Sprintf("docker pull %s", image))
