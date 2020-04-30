@@ -1,8 +1,10 @@
 package types
 
 import (
-	"log"
 	"strings"
+
+	"github.com/flanksource/commons/logger"
+	"gopkg.in/flanksource/yaml.v3"
 )
 
 type ConfigBuilder struct {
@@ -26,9 +28,16 @@ func (builder *ConfigBuilder) Build() (*Config, error) {
 	cfg.Init()
 	cfg.Context.Flags = builder.flags
 	for _, config := range builder.configs {
+		logger.Infof(config)
+		if config == "" {
+			continue
+		}
 		c, err := newConfig(config)
 		if err != nil {
-			log.Fatalf("Error parsing %s: %s", config, err)
+			logger.Fatalf("Error parsing %s: %s", config, err)
+		} else {
+			data, _ := yaml.Marshal(c)
+			logger.Tracef("\n%s\n", string(data))
 		}
 		cfg.ImportConfig(*c)
 	}

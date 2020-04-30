@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/flanksource/yaml"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/flanksource/yaml.v3"
 )
 
 //Command encapsulates a command and the tags for which it is applicable
@@ -59,6 +59,15 @@ func (c *Commands) AddDependency(commands ...string) *Commands {
 	return c
 }
 
+func contains(commands []Command, command string) bool {
+	for _, cmd := range commands {
+		if cmd.Cmd == command {
+			return true
+		}
+	}
+	return false
+}
+
 func (c Commands) GetCommands() []Command {
 	if c.dependencies == nil && c.commands == nil {
 		return []Command{}
@@ -96,7 +105,12 @@ func (c1 *Commands) Append(c2 Commands) *Commands {
 func (c *Commands) Merge() []Command {
 	commands := []Command{}
 	if c.dependencies != nil {
-		commands = append(commands, *c.dependencies...)
+		for _, cmd := range *c.dependencies {
+			if contains(commands, cmd.Cmd) {
+				continue
+			}
+			commands = append(commands, cmd)
+		}
 	}
 	if c.commands != nil {
 		commands = append(commands, *c.commands...)

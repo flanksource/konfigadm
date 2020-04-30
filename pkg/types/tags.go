@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/flanksource/yaml"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/flanksource/yaml.v3"
 )
 
 var (
@@ -162,7 +162,7 @@ func FilterFlags(commands []Command, flags ...Flag) []Command {
 		if len(cmd.Flags) == 0 || MatchesAny(flags, cmd.Flags) {
 			minified = append(minified, cmd)
 		} else {
-			log.Debugf("%s with tags %s does not match any constraints %s\n", cmd, cmd.Flags, flags)
+			log.Tracef("%s with tags %s does not match any constraints %s", cmd, cmd.Flags, flags)
 		}
 	}
 	return minified
@@ -177,7 +177,7 @@ func FilterFilesystemByFlags(files Filesystem, flags ...Flag) Filesystem {
 		if len(file.Flags) == 0 || MatchesAny(flags, file.Flags) {
 			filtered[path] = file
 		} else {
-			log.Debugf("%s with tags %s does not match any constraints %s\n", path, file.Flags, flags)
+			log.Tracef("%s with tags %s does not match any constraints %s", path, file.Flags, flags)
 		}
 	}
 	return filtered
