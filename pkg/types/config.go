@@ -39,6 +39,9 @@ func (sys *Config) Verify(results *VerifyResults) bool {
 }
 
 func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
+	if len(sys.AppliedCommands) > 0 || len(sys.AppliedFiles) > 0 {
+		return sys.AppliedFiles, sys.AppliedCommands, nil
+	}
 	var Phases *[]Phase
 	err := Dig.Invoke(func(_phases *[]Phase) {
 		Phases = _phases
@@ -80,6 +83,9 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	log.Tracef("Files before filtering: %s\n", GetKeys(files))
 	files = FilterFilesystemByFlags(files, sys.Context.Flags...)
 	log.Tracef("Files after filtering: %s\n", GetKeys(files))
+	// save the results for subsequent calls to ApplyPhases
+	sys.AppliedCommands = commands
+	sys.AppliedFiles = files
 	return files, commands, nil
 }
 
@@ -121,6 +127,9 @@ func ToScript(commands []Command) string {
 }
 
 func (sys *Config) Init() {
+	if sys.Context != nil {
+		return
+	}
 	sys.Services = make(map[string]Service)
 	if sys.Extra == nil {
 		sys.Extra = &cloudinit.CloudInit{}

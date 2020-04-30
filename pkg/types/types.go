@@ -182,6 +182,8 @@ type Certificate string
 
 //Config is the logical model after runtime tags have been applied
 type Config struct {
+	AppliedFiles    Filesystem `yaml:"-"`
+	AppliedCommands []Command  `yaml:"-"`
 
 	/** Primitive elements are what all native and operator commands eventually compile down into **/
 
