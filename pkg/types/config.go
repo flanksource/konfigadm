@@ -1,16 +1,18 @@
 package types
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	goos "os"
+	"path/filepath"
 	"reflect"
 	"strings"
 
 	cloudinit "github.com/flanksource/konfigadm/pkg/cloud-init"
-	"github.com/flanksource/yaml"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
+	"gopkg.in/flanksource/yaml.v3"
 )
 
 var (
@@ -50,7 +52,7 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 		log.Fatal(err)
 	}
 	for _, phase := range *Phases {
-		log.Tracef("Processing flags %s(%s)", reflect.TypeOf(phase).Name(), sys.Context.Flags)
+		// log.Tracef("Processing flags %s(%s)", reflect.TypeOf(phase).Name(), sys.Context.Flags)
 		switch v := phase.(type) {
 		case ProcessFlagsPhase:
 			v.ProcessFlags(sys, sys.Context.Flags...)
@@ -75,12 +77,12 @@ func (sys *Config) ApplyPhases() (Filesystem, []Command, error) {
 	commands = append(commands, sys.Commands...)
 	commands = append(commands, sys.PostCommands...)
 
-	log.Tracef("Commands before filtering %+v\n", commands)
+	// log.Tracef("Commands before filtering %+v\n", commands)
 	//Apply tag filters on any output commands
 	commands = FilterFlags(commands, sys.Context.Flags...)
 	log.Tracef("Commands after filtering %+v\n", commands)
 
-	log.Tracef("Files before filtering: %s\n", GetKeys(files))
+	// log.Tracef("Files before filtering: %s\n", GetKeys(files))
 	files = FilterFilesystemByFlags(files, sys.Context.Flags...)
 	log.Tracef("Files after filtering: %s\n", GetKeys(files))
 	// save the results for subsequent calls to ApplyPhases
@@ -115,6 +117,29 @@ func (sys *Config) ToCloudInit() cloudinit.CloudInit {
 	cloud.AddFile(fmt.Sprintf("/usr/bin/%s.sh", konfigadm), ToScript(commands))
 	cloud.AddCommand(fmt.Sprintf("/usr/bin/%s.sh", konfigadm))
 	return *cloud
+}
+
+func (sys *Config) ToBash() (string, error) {
+	cloud := sys.Extra
+	log.Tracef("Extra: %+v", cloud)
+
+	files, commands, err := sys.ApplyPhases()
+	if err != nil {
+		return "", err
+	}
+
+	bash := ""
+	for path, content := range files {
+		bash += fmt.Sprintf("mkdir -p %s && ", filepath.Dir(path))
+		bash += fmt.Sprintf("echo %s | base64 -d > %s\n", base64.StdEncoding.EncodeToString([]byte(content.Content)), path)
+		if content.Permissions != "" {
+			bash += fmt.Sprintf("chmod %s %s\n", content.Permissions, path)
+		}
+	}
+	for _, cmd := range commands {
+		bash += fmt.Sprintf("%s\n", cmd.Cmd)
+	}
+	return bash, nil
 }
 
 //ToScript returns a bash script of all the commands that can be run directly
@@ -161,6 +186,7 @@ func newConfig(config string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Tracef(string(data))
 	if strings.HasSuffix(config, "yml") || strings.HasSuffix(config, "yaml") {
 		err = yaml.Unmarshal(data, &c)
 	} else {

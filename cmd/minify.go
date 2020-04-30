@@ -5,10 +5,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/flanksource/yaml"
 	"github.com/spf13/cobra"
+	"gopkg.in/flanksource/yaml.v3"
 )
 
+var primitive bool
+var bash bool
 var (
 	Minify = cobra.Command{
 		Use:   "minify",
@@ -20,13 +22,19 @@ var (
 			if err != nil {
 				log.Fatalf("Error applying phases %s\n", err)
 			}
-			primitive, _ := cmd.Flags().GetBool("primitive")
+
 			if primitive {
 				data, _ := yaml.Marshal(map[string]interface{}{
 					"filesystem": fs,
 					"commands":   commands,
 				})
 				fmt.Println(string(data))
+			} else if bash {
+				if out, err := cfg.ToBash(); err != nil {
+					log.Fatalf("Error converting to bas: %v", err)
+				} else {
+					fmt.Println(out)
+				}
 			} else {
 				data, _ := yaml.Marshal(cfg)
 				fmt.Println(string(data))
@@ -37,5 +45,6 @@ var (
 )
 
 func init() {
-	Minify.Flags().Bool("primitive", false, "Minify down to primitive level of commands and files only")
+	Minify.Flags().BoolVar(&primitive, "primitive", false, "Minify down to primitive level of commands and files only")
+	Minify.Flags().BoolVar(&bash, "bash", false, "Export a single bash file with base64 encoded files")
 }
