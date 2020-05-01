@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/flanksource/commons/logger"
+	"github.com/flanksource/commons/net"
 	"github.com/flanksource/konfigadm/pkg/phases"
 	. "github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
+	"github.com/flanksource/konfigadm/resources"
 )
 
 var CRI Phase = cri{}
@@ -14,7 +17,7 @@ var CRI Phase = cri{}
 type cri struct{}
 
 func (c cri) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	if sys.ContainerRuntime == nil {
+	if sys.ContainerRuntime.Type == "" {
 		return []Command{}, Filesystem{}, nil
 	}
 
@@ -29,7 +32,7 @@ func (c cri) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 
 func (c cri) Verify(sys *Config, results *VerifyResults, flags ...Flag) bool {
 	verify := true
-	if sys.ContainerRuntime == nil {
+	if sys.ContainerRuntime.Type == "" {
 		return true
 	}
 
@@ -96,20 +99,43 @@ func addDockerRepos(sys *Config) {
 
 }
 
+var containerdChecksumCache = map[string]string{
+	"1.3.4": "61e65c9589e5abfded1daa353e6dfb4b8c2436199bbc5507fc45809a3bb80c1d  containerd-1.3.4.linux-amd64.tar.gz",
+	"1.3.3": "b76d54ca86b69871266c29d0f1ad56f37892ab4879b82d34909ab94918b83d16  containerd-1.3.3.linux-amd64.tar.gz",
+}
+
 func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	addDockerRepos(sys)
-	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &CENTOS)
-	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &REDHAT)
-	sys.AddPackage("containerd device-mapper-persistent-data lvm2 libseccomp", &AMAZON_LINUX)
-	sys.AddPackage("containerd.io device-mapper-persistent-data lvm2 libseccomp", &FEDORA)
-	sys.AddPackage("containerd.io", &DEBIAN_LIKE)
+	fs := Filesystem{}
+	fs["/etc/systemd/system/containerd.service"] = File{Content: resources.ContainerdService}
+	sys.AddPackage("device-mapper-persistent-data lvm2 libseccomp", &REDHAT_LIKE)
+	sys.AddPackage("libseccomp2", &DEBIAN_LIKE)
+	if sys.ContainerRuntime.Version == "" {
+		sys.ContainerRuntime.Version = "1.3.3"
+	}
+	sys.ContainerRuntime.Version = strings.TrimPrefix(sys.ContainerRuntime.Version, "v")
+	checksum, checksumFound := containerdChecksumCache[sys.ContainerRuntime.Version]
+	if !checksumFound {
+		checksumB, err := net.GET(fmt.Sprintf("https://github.com/containerd/containerd/releases/download/v%s/containerd-%s.linux-amd64.tar.gz.sha256sum", sys.ContainerRuntime.Version, sys.ContainerRuntime.Version))
+		if err != nil {
+			logger.Warnf("Failed to get checksum for containerd: %s", err)
+		} else {
+			checksum = strings.TrimSpace(string(checksumB))
+		}
+
+	}
+	sys.AddTarPackage(TarPackage{
+		URL:          fmt.Sprintf("https://github.com/containerd/containerd/releases/download/v%s/containerd-%s.linux-amd64.tar.gz", sys.ContainerRuntime.Version, sys.ContainerRuntime.Version),
+		Checksum:     checksum,
+		ChecksumType: "sha256",
+		Destination:  "/usr/local",
+	})
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
-	sys.AddCommand("systemctl enable containerd || true && systemctl restart containerd || true")
-	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
+	sys.AddCommand("systemctl enable containerd || true && systemctl restart containerd ")
+
 	for _, image := range sys.ContainerRuntime.Images {
 		sys.AddCommand(fmt.Sprintf("crictl pull %s", image))
 	}
-	return []Command{}, Filesystem{}, nil
+	return []Command{}, fs, nil
 }
 
 var versioner map[string]func(version string) string = make(map[string]func(version string) string)

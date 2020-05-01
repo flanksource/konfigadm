@@ -244,7 +244,7 @@ func (sys *Config) ImportConfig(c2 Config) {
 	pkgs := append(*sys.Packages, *c2.Packages...)
 	sys.Packages = &pkgs
 	sys.Timezone = c2.Timezone
-	if c2.ContainerRuntime != nil {
+	if c2.ContainerRuntime.Type != "" {
 		sys.ContainerRuntime = c2.ContainerRuntime
 	}
 	sys.TrustedCA = append(sys.TrustedCA, c2.TrustedCA...)
