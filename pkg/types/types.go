@@ -207,10 +207,11 @@ type Config struct {
 	Templates        map[string]string    `yaml:"templates,omitempty"`
 	Sysctls          map[string]string    `yaml:"sysctls,omitempty"`
 	Packages         *[]Package           `yaml:"packages,omitempty"`
+	TarPackages      []TarPackage         `yaml:"tar_packages,omitempty"`
 	PackageRepos     *[]PackageRepo       `yaml:"package_repos,omitempty"`
 	Images           []string             `yaml:"images,omitempty"`
 	Containers       []Container          `yaml:"containers,omitempty"`
-	ContainerRuntime *ContainerRuntime    `yaml:"container_runtime,omitempty"`
+	ContainerRuntime ContainerRuntime     `yaml:"container_runtime,omitempty"`
 	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`
 	Environment      map[string]string    `yaml:"environment,omitempty"`
 	Timezone         string               `yaml:"timezone,omitempty"`
@@ -224,6 +225,15 @@ type Config struct {
 	Users            []User               `yaml:"users,omitempty"`
 	Cleanup          *bool                `yaml:"cleanup,omitempty"`
 	Context          *SystemContext       `yaml:"-"`
+}
+
+type TarPackage struct {
+	URL          string `yaml:"url,omitempty"`
+	Checksum     string `yaml:"checksum,omitempty"`
+	ChecksumType string `yaml:"checksum_type,omitempty"`
+	Binary       string `yaml:"binary,omitempty"`
+	Destination  string `yaml:"destination,omitempty"`
+	Flags        []Flag `yaml:"flags,omitempty"`
 }
 
 type Applier interface {

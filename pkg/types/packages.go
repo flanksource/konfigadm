@@ -83,6 +83,13 @@ func (cfg *Config) AddPackage(names string, flag *Flag) *Config {
 	return cfg
 }
 
+//AddTarPackage is a helper function to add new packages
+func (cfg *Config) AddTarPackage(pkg TarPackage, flags ...Flag) *Config {
+	pkg.Flags = flags
+	cfg.TarPackages = append(cfg.TarPackages, pkg)
+	return cfg
+}
+
 //AddPackageRepo is a helper function to add new packages repos
 func (cfg *Config) AddPackageRepo(url string, gpg string, flag Flag) *Config {
 	pkg := PackageRepo{

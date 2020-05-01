@@ -238,6 +238,7 @@ func (sys *Config) ImportConfig(c2 Config) {
 
 	sys.Containers = append(sys.Containers, c2.Containers...)
 	sys.Images = append(sys.Images, c2.Images...)
+	sys.TarPackages = append(sys.TarPackages, c2.TarPackages...)
 	pkgRepos := append(*sys.PackageRepos, *c2.PackageRepos...)
 	sys.PackageRepos = &pkgRepos
 	pkgs := append(*sys.Packages, *c2.Packages...)
