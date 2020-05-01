@@ -37,7 +37,7 @@ install:
 	mv konfigadm /usr/local/bin/konfigadm
 
 .PHONY: test
-test: deps
+test: deps pack
 	mkdir -p test-output
 	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic | tee unit.out
 	cat unit.out | go2xunit --fail -output test-output/unit.xml
