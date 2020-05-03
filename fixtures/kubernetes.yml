@@ -1,4 +1,4 @@
 kubernetes:
   version: 1.18.0
 commands:
-  - echo  1.18.0 > /etc/kubernetes_version
+  - echo 1.18.0 > /etc/kubernetes_version
