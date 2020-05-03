@@ -32,6 +32,10 @@ func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesy
 			commands.Append(_commands.WithTags(repo.Flags...))
 		}
 	}
+	if len(sys.TarPackages) > 0 {
+		sys.AddPackage("tar", nil)
+		sys.AddPackage("wget", nil)
+	}
 	addPackageCommands(sys, &commands)
 
 	for _, tar := range sys.TarPackages {
