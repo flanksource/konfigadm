@@ -1,8 +1,7 @@
 container_runtime:
-  type: containerd
-  version: 1.3.3
+  type: docker
 containers:
-  - image: "docker.io/consul:1.3.1"
+  - image: "docker.io/library/consul:1.3.1"
     args: agent -ui -bootstrap -server
     docker_args: --net=host {% if not private_dns | is_empty %}--dns={{private_dns}}{% endif %}
     env:

@@ -55,7 +55,7 @@ func (p containers) Verify(cfg *Config, results *VerifyResults, flags ...Flag) b
 
 func toEnvironmentFile(ctx *SystemContext, c Container) string {
 	s := ""
-	for k, v := range interpolateMap(ctx, c.Env) {
+	for k, v := range c.Env {
 		s += fmt.Sprintf("%s=%s\n", k, v)
 	}
 	return s
@@ -78,5 +78,5 @@ func exec(sys *Config, c Container) string {
 		exec += fmt.Sprintf(" -p %d:%d", p.Port, p.Target)
 	}
 
-	return fmt.Sprintf("%s run --rm --name %s %s %s %s", sys.ContainerRuntime.GetCLI(), c.Name(), exec, c.Image, interpolate(sys.Context, c.Args))
+	return fmt.Sprintf("%s run --rm --name %s %s %s %s", sys.ContainerRuntime.GetCLI(), c.Name(), exec, c.Image, c.Args)
 }
