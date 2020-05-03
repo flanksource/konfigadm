@@ -30,6 +30,10 @@ var (
 type ubuntu struct {
 }
 
+func (u ubuntu) String() string {
+	return "ubuntu"
+}
+
 func (u ubuntu) GetPackageManager() PackageManager {
 	return AptPackageManager{}
 }
@@ -47,6 +51,10 @@ func (u ubuntu) GetVersionCodeName() string {
 }
 
 type debian struct {
+}
+
+func (d debian) String() string {
+	return "debian"
 }
 
 func (d debian) GetPackageManager() PackageManager {

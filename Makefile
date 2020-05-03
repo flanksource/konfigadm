@@ -12,19 +12,18 @@ clean:
 
 .PHONY: deps
 deps:
-	GO111MODULE=off which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
-
-
+	which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
+	which esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
 .PHONY: linux
-linux:
+linux: pack
 	GOOS=linux GOARCH=386 go build -o ./.bin/$(NAME) -ldflags "-X \"main.version=$(VERSION)\""  main.go
 
 .PHONY: darwin
-darwin:
+darwin: pack
 	GOOS=darwin go build -o ./.bin/$(NAME)_osx -ldflags "-X \"main.version=$(VERSION)\""  main.go
 
 .PHONY: windows
-windows:
+windows: pack
 	GOOS=windows go build -o ./.bin/$(NAME).exe -ldflags "-X \"main.version=$(VERSION)\""  main.go
 
 .PHONY: compress
@@ -38,7 +37,7 @@ install:
 	mv konfigadm /usr/local/bin/konfigadm
 
 .PHONY: test
-test: deps
+test: deps pack
 	mkdir -p test-output
 	go test -v ./pkg/... ./cmd/... -race -coverprofile=coverage.txt -covermode=atomic | tee unit.out
 	cat unit.out | go2xunit --fail -output test-output/unit.xml
@@ -88,3 +87,12 @@ docs:
 	git remote add docs "https://$(GH_TOKEN)@github.com/flanksource/konfigadm.git"
 	git fetch docs && git fetch docs gh-pages:gh-pages
 	mkdocs gh-deploy -v --remote-name docs -m "Deployed {sha} with MkDocs version: {version} [ci skip]"
+
+
+.PHONY: pack
+pack:
+	esc --prefix resources/ --ignore "static.go"  -o resources/static.go --pkg resources resources
+
+.PHONY: test-env
+test-env:
+	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $(PWD):$(PWD) -w $(PWD)  --rm -it quay.io/footloose/debian10:0.6.3 /lib/systemd/systemd

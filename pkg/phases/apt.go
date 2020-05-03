@@ -70,7 +70,7 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 	}
 
 	if strings.HasPrefix(uri, "https://") {
-		cmds = cmds.AddDependency("test  -e /usr/share/doc/apt-transport-https || apt-get install -y apt-transport-https")
+		cmds = cmds.AddDependency("test -e /usr/share/doc/apt-transport-https || apt-get install -y apt-transport-https")
 	}
 	cmds = cmds.
 		AddDependency("which curl 2>&1 > /dev/null || apt-get install -y curl")

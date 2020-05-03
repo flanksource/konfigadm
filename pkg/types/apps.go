@@ -10,6 +10,13 @@ type ContainerRuntime struct {
 	Images []string `yaml:"images,omitempty"`
 }
 
+func (cri ContainerRuntime) GetCLI() string {
+	if cri.Type == "containerd" {
+		return "/usr/local/bin/ctr"
+	}
+	return "/usr/bin/docker"
+}
+
 //KubernetesSpec installs the packages and configures the system for kubernetes, it does not actually bootstrap and configure kubernetes itself
 //Use kubeadm in a `command` to actually configure and start kubernetes
 type KubernetesSpec struct {

@@ -9,7 +9,6 @@ import (
 func init() {
 	types.Dig.Provide(func() *[]types.Phase {
 		return &[]types.Phase{
-			phases.Context,
 			apps.Kubernetes,
 			apps.CRI,
 			phases.Sysctl,

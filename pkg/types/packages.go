@@ -36,6 +36,10 @@ type PackageRepo struct {
 	ExtraArgs       map[string]string `yaml:"extraArgs,omitempty"`
 }
 
+func (p PackageRepo) String() string {
+	return p.Name
+}
+
 type PackageManager interface {
 	Install(pkg ...string) Commands
 	Uninstall(pkg ...string) Commands
@@ -80,6 +84,13 @@ func (cfg *Config) AddPackage(names string, flag *Flag) *Config {
 		pkgs := append(*cfg.Packages, pkg)
 		cfg.Packages = &pkgs
 	}
+	return cfg
+}
+
+//AddTarPackage is a helper function to add new packages
+func (cfg *Config) AddTarPackage(pkg TarPackage, flags ...Flag) *Config {
+	pkg.Flags = flags
+	cfg.TarPackages = append(cfg.TarPackages, pkg)
 	return cfg
 }
 
