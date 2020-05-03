@@ -95,4 +95,4 @@ pack:
 
 .PHONY: test-env
 test-env:
-	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $PWD:$PWD -w $PWD  --rm -it quay.io/footloose/ubuntu18.04:0.6.3 /lib/systemd/systemd
+	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $(PWD):$(PWD) -w $(PWD)  --rm -it quay.io/footloose/debian10:0.6.3 /lib/systemd/systemd
