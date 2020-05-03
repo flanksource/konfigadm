@@ -186,10 +186,11 @@ func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, err
 		})
 	}
 
+	// Amazon Linux has a non-standard mechanism for installing with limited support
+	// for specific docker versions
 	sys.AppendPackages(nil, Package{
 		Name:    "docker",
-		Version: version + "ce",
-		Mark:    true,
+		Version: "",
 		Flags:   []Flag{AMAZON_LINUX},
 	})
 
