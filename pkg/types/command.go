@@ -59,9 +59,9 @@ func (c *Commands) AddDependency(commands ...string) *Commands {
 	return c
 }
 
-func contains(commands []Command, command string) bool {
+func contains(commands []Command, other Command) bool {
 	for _, cmd := range commands {
-		if cmd.Cmd == command {
+		if cmd.Cmd == other.Cmd && MatchesAny(cmd.Flags, other.Flags) {
 			return true
 		}
 	}
@@ -106,7 +106,7 @@ func (c *Commands) Merge() []Command {
 	commands := []Command{}
 	if c.dependencies != nil {
 		for _, cmd := range *c.dependencies {
-			if contains(commands, cmd.Cmd) {
+			if contains(commands, cmd) {
 				continue
 			}
 			commands = append(commands, cmd)
@@ -119,24 +119,25 @@ func (c *Commands) Merge() []Command {
 }
 
 func (c Commands) WithTags(tags ...Flag) Commands {
+	new := Commands{commands: &[]Command{}, dependencies: &[]Command{}}
 	if c.commands != nil {
-		commands := *c.commands
-		for i, command := range commands {
+		commands := *new.commands
+		for _, command := range *c.commands {
 			command.Flags = tags
-			commands[i] = command
+			commands = append(commands, command)
 		}
-		c.commands = &commands
+		new.commands = &commands
 	}
 
 	if c.dependencies != nil {
-		dependencies := *c.dependencies
-		for i, command := range dependencies {
+		dependencies := *new.dependencies
+		for _, command := range *c.dependencies {
 			command.Flags = tags
-			dependencies[i] = command
+			dependencies = append(dependencies, command)
 		}
-		c.dependencies = &dependencies
+		new.dependencies = &dependencies
 	}
-	return c
+	return new
 }
 
 func (c Command) String() string {

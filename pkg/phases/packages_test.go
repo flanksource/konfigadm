@@ -1,9 +1,12 @@
 package phases_test
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/flanksource/konfigadm/pkg/phases"
 	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/onsi/gomega"
 )
 
 func init() {
@@ -11,6 +14,22 @@ func init() {
 }
 
 func TestPackageRuntimeFlag(t *testing.T) {
+
+}
+
+func TestFlagsToOS(t *testing.T) {
+	g := gomega.NewWithT(t)
+	fixtures := map[string]string{
+		"ubuntu": "ubuntu",
+		"debian": "debian",
+	}
+
+	for tag, os := range fixtures {
+		matchedTag := GetTag(tag)
+		g.Expect(matchedTag.String()).To(gomega.Equal(tag))
+		matchedOs, _ := phases.GetOSForTag(*GetTag(tag))
+		g.Expect(fmt.Sprintf("%s", matchedOs)).To(gomega.Equal(os))
+	}
 
 }
 

@@ -36,6 +36,10 @@ type PackageRepo struct {
 	ExtraArgs       map[string]string `yaml:"extraArgs,omitempty"`
 }
 
+func (p PackageRepo) String() string {
+	return p.Name
+}
+
 type PackageManager interface {
 	Install(pkg ...string) Commands
 	Uninstall(pkg ...string) Commands

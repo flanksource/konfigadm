@@ -86,11 +86,12 @@ func addPackageCommands(sys *Config, commands *Commands) {
 	// TODO merge compatible tags, e.g. ubuntu and debian-like tags can be included in the same command
 	var managers = make(map[string]packageOperations)
 
-	// handle case 1) tags specified
+	// handle case 1) tags not specified
 	for _, p := range *sys.Packages {
 		if len(p.Flags) == 0 {
 			continue
 		}
+
 		var ops packageOperations
 		var ok bool
 		if ops, ok = managers[getKeyFromTags(p.Flags...)]; !ok {
@@ -108,7 +109,7 @@ func addPackageCommands(sys *Config, commands *Commands) {
 		managers[getKeyFromTags(p.Flags...)] = ops
 	}
 
-	// handle case 2) tags not specified
+	// handle case 2) tags specified
 	for _, os := range BaseOperatingSystems {
 		for _, p := range *sys.Packages {
 			if len(p.Flags) > 0 {
