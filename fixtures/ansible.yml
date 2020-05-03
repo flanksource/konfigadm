@@ -1,10 +1,9 @@
 package_repos:
-  -
-    name: epel # amazonLinux
+  - name: epel
     url: "http://download.fedoraproject.org/pub/epel/7/\\$basearch"
     gpgKey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
     tags:
-      - "amazonLinux"
+      - "redhat-like"
 packages:
   - ansible
   - python #+debian-like
