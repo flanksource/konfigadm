@@ -10,10 +10,8 @@ require (
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/flanksource/commons v1.3.0
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/juju/errors v0.0.0-20190207033735-e65537c515d7 // indirect
-	github.com/lib/pq v1.1.1 // indirect
+	github.com/flanksource/commons v1.3.5
+	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/onsi/gomega v1.9.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
@@ -22,10 +20,8 @@ require (
 	github.com/ory/dockertest v3.3.4+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/cobra v0.0.3
-	github.com/spf13/pflag v1.0.3 // indirect
+	github.com/spf13/cobra v0.0.5
 	go.uber.org/dig v1.7.0
-	gopkg.in/flanksource/yaml.v3 v3.0.3
+	gopkg.in/flanksource/yaml.v3 v3.1.0
+	gotest.tools v2.2.0+incompatible // indirect
 )
-
-replace gopkg.in/hairyhenderson/yaml.v2 => github.com/maxaudron/yaml v0.0.0-20190411130442-27c13492fe3c
