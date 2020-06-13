@@ -162,7 +162,9 @@ type User struct {
 	//      use <default_username> instead. This option only disables cloud
 	//      provided public-keys. An error will be raised if ssh_authorized_keys
 	//      or ssh_import_id is provided for the same user.
-	SSHRedirectUser bool `yaml:"ssh_redirect_user,omitempty"`
+	SSHRedirectUser bool   `yaml:"ssh_redirect_user,omitempty"`
+	Shell           string `yaml:"shell,omitempty"`
+	UID             string `yaml:"uid,omitempty"`
 }
 
 //File is a primitive representing a single file

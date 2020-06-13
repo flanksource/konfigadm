@@ -19,6 +19,7 @@ func init() {
 			phases.TrustedCA,
 			phases.Files,
 			phases.CommandsPhase,
+			phases.Users,
 			apps.Cleanup,
 		}
 	})
