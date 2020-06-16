@@ -26,11 +26,11 @@ func TestTrustedCA(t *testing.T) {
 	g.Expect(file0.Content).To(gomega.Equal(string(data)))
 	file1 := files["/tmp/konfigadm-trusted-1.pem"]
 	g.Expect(file1.Content).To(gomega.Equal(""))
-	g.Expect(file1.ContentFromURL).To(gomega.Equal("https://dl.cacerts.digicert.com/CybertrustGlobalRoot.crt.pem"))
+	g.Expect(file1.ContentFromURL).To(gomega.Equal("https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem"))
 	file2 := files["/tmp/konfigadm-trusted-2.pem"]
 	g.Expect(file2.Content).To(gomega.Equal(string(cfg.TrustedCA[2])))
 
-	g.Expect(commands).To(gomega.HaveLen(5))
+	g.Expect(commands).To(gomega.HaveLen(5))\
 	g.Expect(commands[0].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-0.pem"))
 	g.Expect(commands[1].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-1.pem"))
 	g.Expect(commands[2].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-2.pem"))
