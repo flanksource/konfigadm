@@ -30,7 +30,7 @@ func TestTrustedCA(t *testing.T) {
 	file2 := files["/tmp/konfigadm-trusted-2.pem"]
 	g.Expect(file2.Content).To(gomega.Equal(string(cfg.TrustedCA[2])))
 
-	g.Expect(commands).To(gomega.HaveLen(5))\
+	g.Expect(commands).To(gomega.HaveLen(5))
 	g.Expect(commands[0].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-0.pem"))
 	g.Expect(commands[1].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-1.pem"))
 	g.Expect(commands[2].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-2.pem"))
