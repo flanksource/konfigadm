@@ -5,7 +5,7 @@ packages:
   - which #+centos
 ca:
   - "fixtures/files/example-k8s-ca.pem"
-  - "https://dl.cacerts.digicert.com/CybertrustGlobalRoot.crt.pem"
+  - "https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem"
   - |
     -----BEGIN CERTIFICATE-----
     MIIC0jCCAbqgAwIBAgIII8NXV0sAYCAwDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
