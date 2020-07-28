@@ -10,6 +10,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
+        env:
+          OVFTOOL_LOCATION: ${{secrets.OVFTOOL_LOCATION}}
         with:
           name: flanksource/konfigadm
           username: ${{ secrets.DOCKER_USERNAME }}
