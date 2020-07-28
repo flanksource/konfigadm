@@ -109,6 +109,7 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	fs["/etc/systemd/system/containerd.service"] = File{Content: resources.ContainerdService}
 	sys.AddPackage("device-mapper-persistent-data lvm2 libseccomp", &REDHAT_LIKE)
 	sys.AddPackage("libseccomp2", &DEBIAN_LIKE)
+	sys.AddPackage("runc", &DEBIAN_LIKE)
 	if sys.ContainerRuntime.Version == "" {
 		sys.ContainerRuntime.Version = "1.3.3"
 	}
