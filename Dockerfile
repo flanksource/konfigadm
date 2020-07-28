@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:bionic
 ARG SYSTOOLS_VERSION=3.6
 
 RUN apt-get update && \
