@@ -1,4 +1,4 @@
-repo_url: https://github.com/moshloop/konfigadm/
+repo_url: https://github.com/flanksource/konfigadm/
 repo_name: Konfigadm
 site_name: Konfigadm
 theme: material
@@ -15,16 +15,16 @@ nav:
   - Tags: ./tags.md
   - Integration: ./integration.md
   - Apps:
-    - Containers: ./containers.md
-    - CRI: ./cri.md
-    - Kubernetes: ./k8s.md
+      - Containers: ./containers.md
+      - CRI: ./cri.md
+      - Kubernetes: ./k8s.md
   - Native:
-    - Packages: ./packages.md
-    - Files: ./files.md
-    - Templates: ./templates.md
-    - Sysctl: ./sysctl.md
-    - Environment: ./environment.md
-    - Trusted CA: ./trusted_ca.md
+      - Packages: ./packages.md
+      - Files: ./files.md
+      - Templates: ./templates.md
+      - Sysctl: ./sysctl.md
+      - Environment: ./environment.md
+      - Trusted CA: ./trusted_ca.md
   - Primitives:
-    - Commands: ./commands.md
-    - Files: ./native_files.md
+      - Commands: ./commands.md
+      - Files: ./native_files.md

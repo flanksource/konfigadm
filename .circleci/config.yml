@@ -17,31 +17,17 @@ test: &test
         path: test-output
 jobs:
   "ubuntu16.04":
-      <<: *test
+    <<: *test
   "ubuntu18.04":
-      <<: *test
+    <<: *test
   "debian10":
-      <<: *test
+    <<: *test
   "centos7":
-      <<: *test
+    <<: *test
   "fedora29":
-      <<: *test
+    <<: *test
   "amazonlinux2":
-      <<: *test
-  release:
-      <<: *go
-      steps:
-        - checkout
-        - setup_remote_docker
-        - run: go mod download
-        - run: ./scripts/release.sh
-  docs:
-    docker:
-      - image: circleci/python:3.7
-    steps:
-      - checkout
-      - run: sudo pip install mkdocs mkdocs-material pymdown-extensions Pygments
-      - run: ./scripts/release-docs.sh
+    <<: *test
 workflows:
   version: 2
   build:
@@ -52,8 +38,3 @@ workflows:
       - "centos7"
       - "amazonlinux2"
       # - "fedora:latest"
-      - release:
-          context: Github
-      - docs:
-          context: Github
-

@@ -1,7 +1,8 @@
 NAME:=konfigadm
+NETLIFY_ID:=822e0cb8-b16a-430f-a25c-bebeec0c33d0
 
 ifeq ($(VERSION),)
-VERSION := $(shell git describe --tags)
+VERSION=$(shell git describe --tags  --long)$(shell date +"%H%M%S")
 endif
 
 all: test integration
@@ -14,6 +15,7 @@ clean:
 deps:
 	which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
 	which esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
+
 .PHONY: linux
 linux: pack
 	GOOS=linux GOARCH=386 go build -o ./.bin/$(NAME) -ldflags "-X \"main.version=$(VERSION)\""  main.go
@@ -28,12 +30,13 @@ windows: pack
 
 .PHONY: compress
 compress:
-	which upx 2>&1 >  /dev/null  || (sudo apt-get update && sudo apt-get install -y upx-ucl)
+	# upx 3.95 has issues compressing darwin binaries - https://github.com/upx/upx/issues/301
+	which upx 2>&1 >  /dev/null  || (sudo apt-get update && sudo apt-get install -y xz-utils && wget -nv -O upx.tar.xz https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz; tar xf upx.tar.xz; mv upx-3.96-amd64_linux/upx /usr/bin )
 	upx ./.bin/$(NAME) ./.bin/$(NAME)_osx ./.bin/$(NAME).exe
 
 .PHONY: install
 install:
-	go build -ldflags '-X main.version=$(VERSION)-$(shell date +%Y%m%d%M%H%M%S)' -o konfigadm
+	go build -ldflags '-X main.version=$(VERSION)' -o konfigadm
 	mv konfigadm /usr/local/bin/konfigadm
 
 .PHONY: test
@@ -82,12 +85,19 @@ fedora: deps
 centos: deps
 	IMAGE=quay.io/footloose/centos7:0.6.3 ./scripts/e2e.sh $(test)
 
+.PHONY: centos8
+centos8: deps
+	IMAGE=quay.io/footloose/centos8:latest ./scripts/e2e.sh $(test)
+
 .PHONY: docs
 docs:
-	git remote add docs "https://$(GH_TOKEN)@github.com/flanksource/konfigadm.git"
-	git fetch docs && git fetch docs gh-pages:gh-pages
-	mkdocs gh-deploy -v --remote-name docs -m "Deployed {sha} with MkDocs version: {version} [ci skip]"
+	which mkdocs 2>&1 > /dev/null || pip install mkdocs mkdocs-material
+	mkdocs build -d build/docs
 
+.PHONY: deploy-docs
+deploy-docs: docs
+	which netlify 2>&1 > /dev/null || sudo npm install -g netlify-cli
+	netlify deploy --site $(NETLIFY_ID) --prod --dir build/docs
 
 .PHONY: pack
 pack:
