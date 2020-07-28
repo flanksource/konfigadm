@@ -1,17 +1,8 @@
 #!/bin/bash
-if [[ "$CIRCLE_PR_NUMBER" != "" ]]; then
-  echo Skipping release of a PR build
-  exit 0
-fi
-NAME=$(basename $(git remote get-url origin | sed 's/\.git//'))
-GITHUB_USER=$(basename $(dirname $(git remote get-url origin | sed 's/\.git//')))
-GITHUB_USER=${GITHUB_USER##*:}
-TAG=$(git describe --tags --abbrev=0 --exact-match)
-SNAPSHOT=false
-if [[ "$TAG" == "" ]];  then
-  TAG=$(git describe --tags --exclude "*-g*")
-  SNAPSHOT=true
-fi
+GITHUB_USER=$(echo $GITHUB_REPOSITORY | cut -d/ -f1)
+NAME=$(echo $GITHUB_REPOSITORY | cut -d/ -f2)
+TAG=$(echo $GITHUB_REF | sed 's|refs/tags/||')
+
 
 VERSION="v$TAG built $(date)"
 
@@ -35,12 +26,3 @@ echo Uploading ${NAME}_osx
 github-release upload -R -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME}_osx -f .bin/${NAME}_osx
 echo Uploading ${NAME}.exe
 github-release upload -R -u $GITHUB_USER -r ${NAME} --tag $TAG -n ${NAME}_osx -f .bin/${NAME}.exe
-
-echo Building docker image
-
-
-docker build . --build-arg OVFTOOL_LOCATION=${OVFTOOL_LOCATION} -t $GITHUB_USER/$NAME:$TAG --build-arg KONFIGADM_VERSION=$TAG
-
-echo Pushing docker image
-docker login --username $DOCKER_LOGIN --password $DOCKER_PASS
-docker push $GITHUB_USER/$NAME:$TAG
