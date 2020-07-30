@@ -7,8 +7,8 @@ import (
 
 var images = map[string]Image{
 	"ubuntu2004": Image{
-		Url:            "https://cloud-images.ubuntu.com/releases/20.04/release-{{.version}}/ubuntu-20.04-server-cloudimg-amd64.img",
-		DefaultVersion: "20200720",
+		Url:            "https://cloud-images.ubuntu.com/releases/focal/release-{{.version}}/ubuntu-20.04-server-cloudimg-amd64.img",
+		DefaultVersion: "20200529.1",
 		Tags:           []types.Flag{types.UBUNTU, types.DEBIAN_LIKE},
 	},
 	"ubuntu1804": Image{
