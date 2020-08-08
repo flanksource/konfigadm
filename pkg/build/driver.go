@@ -1,6 +1,7 @@
 package build
 
 import (
+	"fmt"
 	"strings"
 
 	cloudinit "github.com/flanksource/konfigadm/pkg/cloud-init"
@@ -9,6 +10,7 @@ import (
 
 type Driver interface {
 	Build(image string, cfg *types.Config)
+	Test(image string, cfg *types.Config, privateKeyFile string) error
 }
 
 func createIso(config *types.Config) (string, error) {
@@ -26,5 +28,19 @@ func createIso(config *types.Config) (string, error) {
 	//	"cloud_init.PowerState.Mode = "poweroff"
 	// so we append a shutdown manually
 	cloud_init.Runcmd = append(cloud_init.Runcmd, []string{"shutdown", "-h", "now"})
+	return cloudinit.CreateISO("builder", cloud_init.String())
+}
+
+func createTestIso(config *types.Config) (string, error) {
+	cloud_init := config.ToCloudInit()
+
+	if config.Context.CaptureLogs != "" {
+		cloud_init.Runcmd = append([][]string{[]string{"bash", "-x", "-c", "mkdir /scratch; mount /dev/sdb1 /scratch"}}, cloud_init.Runcmd...)
+	}
+	if config.Context.CaptureLogs != "" && (config.Cleanup == nil || !*config.Cleanup) {
+		cloud_init.Runcmd = append(cloud_init.Runcmd, []string{"bash", "-x", "-c", strings.Join(CaptureLogCommands(), "; ")})
+	}
+
+	fmt.Printf("Cloud init: \n%s\n", cloud_init)
 	return cloudinit.CreateISO("builder", cloud_init.String())
 }
