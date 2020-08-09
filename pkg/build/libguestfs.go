@@ -9,6 +9,7 @@ import (
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 	"github.com/mitchellh/colorstring"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/flanksource/yaml.v3"
 )
@@ -48,4 +49,8 @@ func (l Libguestfs) Build(image string, cfg *types.Config) {
 	}
 	utils.Exec(fmt.Sprintf("virt-copy-out -a %s /tmp/builder.log .", image))
 	log.Infof("builder.log %s\n", utils.SafeRead("builder.log"))
+}
+
+func (l Libguestfs) Test(image string, cfg *types.Config, privateKeyFile string, template string) error {
+	return errors.New("Not implemented")
 }

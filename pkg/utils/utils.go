@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -17,7 +18,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/flanksource/commons/ssh"
+	"github.com/flanksource/commons/utils"
+	"github.com/helloyi/go-sshclient"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	cryptossh "golang.org/x/crypto/ssh"
 )
 
 var (
@@ -59,6 +65,22 @@ func Exec(sh string, args ...interface{}) error {
 	cmd := exec.Command("bash", "-c", fmt.Sprintf(sh, args...))
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("%s failed with %s", sh, err)
+	}
+
+	if !cmd.ProcessState.Success() {
+		return fmt.Errorf("%s failed to run", sh)
+	}
+	return nil
+}
+
+//Exec runs the sh script and forwards stderr/stdout to the console
+func ExecNoOutput(sh string, args ...interface{}) error {
+	log.Debugf("exec: "+sh, args...)
+	cmd := exec.Command("bash", "-c", fmt.Sprintf(sh, args...))
 
 	err := cmd.Run()
 	if err != nil {
@@ -415,4 +437,102 @@ func RandomString(length int) string {
 	}
 
 	return string(token)
+}
+
+func GenerateSSHKeys(prefix string) (string, string, error) {
+	tempsshKey, err := ssh.NewPrivatePublicKeyPair(2048)
+	if err != nil {
+		return "", "", errors.Wrap(err, "failed to generate private/public key pair")
+	}
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", "", errors.Wrap(err, "failed to get user home directory")
+	}
+	keyName := fmt.Sprintf("%s-%s", prefix, utils.RandomKey(6))
+	privateKeyFilename := path.Join(homeDir, ".ssh", keyName)
+	publicKeyFilename := fmt.Sprintf("%s.pub", privateKeyFilename)
+
+	if err := EnsureSSHDir(); err != nil {
+		return "", "", errors.Wrap(err, "failed to ensure ssh directory")
+	}
+
+	if err := ioutil.WriteFile(privateKeyFilename, tempsshKey.Private, 0600); err != nil {
+		return "", "", errors.Wrap(err, "failed to write ssh private key")
+	}
+	if err := ioutil.WriteFile(publicKeyFilename, tempsshKey.Public, 0644); err != nil {
+		return "", "", errors.Wrap(err, "failed to write ssh public key")
+	}
+
+	return publicKeyFilename, privateKeyFilename, nil
+}
+
+func EnsureSSHDir() error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return errors.Wrap(err, "failed to get user home directory")
+	}
+	sshDir := path.Join(homeDir, ".ssh")
+	if _, err := os.Stat(sshDir); os.IsNotExist(err) {
+		if err := os.Mkdir(sshDir, 0700); err != nil {
+			return errors.Wrapf(err, "failed to create ssh directory: %s", sshDir)
+		}
+	} else if err != nil {
+		return errors.Wrap(err, "failed to create list ssh directory")
+	}
+	return nil
+}
+
+func RunSSHCommand(host, user, privateKeyFile, cmd string) ([]byte, error) {
+	client, err := sshClient(host, user, privateKeyFile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create ssh client")
+	}
+	defer client.Close()
+
+	if output, err := client.Cmd(cmd).Output(); err != nil {
+		return output, errors.Wrapf(err, "failed to run command '%s'", cmd)
+	} else {
+		return output, nil
+	}
+}
+
+func RunSSHScript(host, user, privateKeyFile, script string) ([]byte, error) {
+	client, err := sshClient(host, user, privateKeyFile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create ssh client")
+	}
+	defer client.Close()
+
+	if output, err := client.Script(script).SmartOutput(); err != nil {
+		return output, errors.Wrapf(err, "failed to run script: %s", script)
+	} else {
+		return output, nil
+	}
+}
+
+func sshClient(host, user, privateKeyFile string) (*sshclient.Client, error) {
+	key, err := ioutil.ReadFile(privateKeyFile)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read private key")
+	}
+
+	signer, err := cryptossh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse private key")
+	}
+
+	config := &cryptossh.ClientConfig{
+		User: user,
+		Auth: []cryptossh.AuthMethod{
+			cryptossh.PublicKeys(signer),
+		},
+		HostKeyCallback: cryptossh.HostKeyCallback(func(hostname string, remote net.Addr, key cryptossh.PublicKey) error { return nil }),
+		Timeout:         5 * time.Second,
+	}
+
+	client, err := sshclient.Dial("tcp", host, config)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to dial ssh: %s@%s", user, host)
+	}
+	return client, nil
 }

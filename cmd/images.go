@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/flanksource/konfigadm/pkg/build/ova"
 	"github.com/flanksource/konfigadm/pkg/types"
+	"github.com/pkg/errors"
 
 	. "github.com/flanksource/konfigadm/pkg/build"
 
@@ -107,6 +109,51 @@ func buildImage(image string) string {
 	return image
 }
 
+func testImage(image, templateFile string) error {
+	if templateFile == "" {
+		return errors.New("template file cannot be empty")
+	}
+	templateBytes, err := ioutil.ReadFile(templateFile)
+	if err != nil {
+		return errors.Wrap(err, "failed to read template file")
+	}
+	template := string(templateBytes)
+
+	publicKeyFile, privateKeyFile, err := utils.GenerateSSHKeys("konfigadm-test")
+	if err != nil {
+		log.Fatalf("Failed to generate ssh keys: %v", err)
+	}
+
+	defer os.Remove(publicKeyFile)
+	defer os.Remove(privateKeyFile)
+
+	publicKey, err := ioutil.ReadFile(publicKeyFile)
+	if err != nil {
+		log.Fatalf("Failed to read public key: %v", err)
+	}
+	publicKeyString := strings.Trim(string(publicKey), "\n")
+
+	cfg.Commands = []types.Command{
+		{
+			Cmd: "mkdir -p /root/.ssh",
+		},
+		{
+			Cmd: "chmod 700 /root/.ssh",
+		},
+		{
+			Cmd: fmt.Sprintf("echo '%s' >> /root/.ssh/authorized_keys", publicKeyString),
+		},
+		{
+			Cmd: "chown root:root /root/.ssh/authorized_keys",
+		},
+		{
+			Cmd: "chmod 600 /root/.ssh/authorized_keys",
+		},
+	}
+
+	return driver.Test(image, cfg, privateKeyFile, template)
+}
+
 var (
 	//Images command
 	Images = cobra.Command{
@@ -196,6 +243,49 @@ var (
 			fmt.Println(image)
 		},
 	}
+
+	test = cobra.Command{
+		Use:   "test",
+		Short: "Test an image",
+		Args:  cobra.MinimumNArgs(0),
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			driverName, _ = cmd.Flags().GetString("driver")
+			outputDir, _ = cmd.Flags().GetString("output-dir")
+			outputFilename, _ = cmd.Flags().GetString("output-filename")
+			outputFormat, _ = cmd.Flags().GetString("output-format")
+			resize, _ = cmd.Flags().GetString("resize")
+			image, _ = cmd.Flags().GetString("image")
+			inline, _ = cmd.Flags().GetBool("inline")
+			captureLogs, _ = cmd.Flags().GetString("capture-logs")
+			imageVersion := ""
+			if strings.Contains(image, ":") {
+				imageVersion = strings.Split(image, ":")[1]
+				image = strings.Split(image, ":")[0]
+			}
+
+			if val, ok := images[image]; ok {
+				alias = &val
+				alias.Version = imageVersion
+				log.Infof("%s is an alias for %s", image, alias)
+				image = alias.GetURL()
+			}
+			cfg = GetConfig(cmd, args)
+			if driverName != "" {
+				var ok bool
+				if driver, ok = drivers[driverName]; !ok {
+					log.Fatalf("Invalid driver name: %s ", driverName)
+				}
+			}
+			cfg.Context.CaptureLogs = captureLogs
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			template, _ := cmd.Flags().GetString("template")
+			if err := testImage(image, template); err != nil {
+				log.Fatalf("Tests failed: %v", err)
+			}
+			log.Infof("Tests passed !!!")
+		},
+	}
 )
 
 func init() {
@@ -204,7 +294,8 @@ func init() {
 
 	convert.Flags().String("name", "", "Name of the template")
 	convert.Flags().String("format", "ova", "Target format for conversion")
-	Images.AddCommand(&list, &build, &upload, &convert)
+	test.Flags().String("template", "", "Goss test template")
+	Images.AddCommand(&list, &build, &upload, &convert, &test)
 	Images.PersistentFlags().String("image", "", "A local or remote path to a disk image")
 	Images.PersistentFlags().Bool("inline", false, "If true do not make a copy of the image and work on it directly")
 	Images.PersistentFlags().String("capture-logs", "", "Attach a scratch drive to copy logs onto for debugging purposes ")
