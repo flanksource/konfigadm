@@ -51,6 +51,6 @@ func (l Libguestfs) Build(image string, cfg *types.Config) {
 	log.Infof("builder.log %s\n", utils.SafeRead("builder.log"))
 }
 
-func (l Libguestfs) Test(image string, cfg *types.Config, privateKeyFile string) error {
+func (l Libguestfs) Test(image string, cfg *types.Config, privateKeyFile string, template string) error {
 	return errors.New("Not implemented")
 }

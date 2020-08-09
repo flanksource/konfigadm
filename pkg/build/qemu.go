@@ -46,7 +46,7 @@ func (q Qemu) Build(image string, config *types.Config) {
 	}
 }
 
-func (q Qemu) Test(image string, config *types.Config, privateKeyFile string) error {
+func (q Qemu) Test(image string, config *types.Config, privateKeyFile string, template string) error {
 	var scratch Scratch
 	if config.Context.CaptureLogs != "" {
 		log.Infof("Using scratch directory / disk")
@@ -112,19 +112,14 @@ func (q Qemu) Test(image string, config *types.Config, privateKeyFile string) er
 		}
 	}()
 
-	script := `
+	scriptTemplate := `
 wget https://github.com/aelsabbahy/goss/releases/download/v0.3.13/goss-linux-amd64 -O /usr/bin/goss
 chmod +x /usr/bin/goss
 cat <<EOF > goss.yaml
-service:
-  dockerd:
-    enabled: false
-    running: false
-  kubelet:
-    enabled: true
-    running: false
+%s
 EOF
-	`
+`
+	script := fmt.Sprintf(scriptTemplate, template)
 
 	output, err := utils.RunSSHScript(sshHost, sshUser, privateKeyFile, script)
 	if output != nil {

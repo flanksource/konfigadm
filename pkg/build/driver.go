@@ -10,7 +10,7 @@ import (
 
 type Driver interface {
 	Build(image string, cfg *types.Config)
-	Test(image string, cfg *types.Config, privateKeyFile string) error
+	Test(image string, cfg *types.Config, privateKeyFile string, template string) error
 }
 
 func createIso(config *types.Config) (string, error) {

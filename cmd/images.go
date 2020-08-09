@@ -9,6 +9,7 @@ import (
 
 	"github.com/flanksource/konfigadm/pkg/build/ova"
 	"github.com/flanksource/konfigadm/pkg/types"
+	"github.com/pkg/errors"
 
 	. "github.com/flanksource/konfigadm/pkg/build"
 
@@ -108,7 +109,16 @@ func buildImage(image string) string {
 	return image
 }
 
-func testImage(image string) error {
+func testImage(image, templateFile string) error {
+	if templateFile == "" {
+		return errors.New("template file cannot be empty")
+	}
+	templateBytes, err := ioutil.ReadFile(templateFile)
+	if err != nil {
+		return errors.Wrap(err, "failed to read template file")
+	}
+	template := string(templateBytes)
+
 	publicKeyFile, privateKeyFile, err := utils.GenerateSSHKeys("konfigadm-test")
 	if err != nil {
 		log.Fatalf("Failed to generate ssh keys: %v", err)
@@ -141,7 +151,7 @@ func testImage(image string) error {
 		},
 	}
 
-	return driver.Test(image, cfg, privateKeyFile)
+	return driver.Test(image, cfg, privateKeyFile, template)
 }
 
 var (
@@ -269,7 +279,8 @@ var (
 			cfg.Context.CaptureLogs = captureLogs
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := testImage(image); err != nil {
+			template, _ := cmd.Flags().GetString("template")
+			if err := testImage(image, template); err != nil {
 				log.Fatalf("Tests failed: %v", err)
 			}
 			log.Infof("Tests passed !!!")
@@ -283,6 +294,7 @@ func init() {
 
 	convert.Flags().String("name", "", "Name of the template")
 	convert.Flags().String("format", "ova", "Target format for conversion")
+	test.Flags().String("template", "", "Goss test template")
 	Images.AddCommand(&list, &build, &upload, &convert, &test)
 	Images.PersistentFlags().String("image", "", "A local or remote path to a disk image")
 	Images.PersistentFlags().Bool("inline", false, "If true do not make a copy of the image and work on it directly")
