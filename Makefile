@@ -55,34 +55,38 @@ e2e: linux
 	./scripts/e2e.sh $(test)
 
 .PHONY: e2e-all
-e2e-all: deps linux debian ubuntu ubuntu16 fedora centos
+e2e-all: deps linux debian ubuntu20 ubuntu18 ubuntu16 fedora centos
 
-.PHONY: amazonlinux
-amazonlinux: deps
+.PHONY: amazonlinux2
+amazonlinux2: deps
 	IMAGE=quay.io/footloose/amazonlinux2:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: debian9
 debian9: deps
 	IMAGE=jrei/systemd-debian:9 ./scripts/e2e.sh $(test)
 
-.PHONY: debian
-debian: deps
+.PHONY: debian10
+debian10: deps
 	IMAGE=quay.io/footloose/debian10:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu16
 ubuntu16: deps
 	IMAGE=quay.io/footloose/ubuntu16.04:0.6.3 ./scripts/e2e.sh $(test)
 
-.PHONY: ubuntu
-ubuntu: deps
+.PHONY: ubuntu18
+ubuntu18: deps
 	IMAGE=quay.io/footloose/ubuntu18.04:0.6.3 ./scripts/e2e.sh $(test)
 
-.PHONY: fedora
-fedora: deps
+.PHONY: ubuntu20
+ubuntu20: deps
+	IMAGE=docker.io/flanksource/ubuntu:20.04 ./scripts/e2e.sh $(test)
+
+.PHONY: fedora29
+fedora29: deps
 	IMAGE=quay.io/footloose/fedora29:0.6.3 ./scripts/e2e.sh $(test)
 
-.PHONY: centos
-centos: deps
+.PHONY: centos7
+centos7: deps
 	IMAGE=quay.io/footloose/centos7:0.6.3 ./scripts/e2e.sh $(test)
 
 .PHONY: centos8
