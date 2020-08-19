@@ -163,7 +163,7 @@ func init() {
 
 func (c cri) Docker(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
 	addDockerRepos(sys)
-	version := "19.03.2"
+	version := "19.03.12"
 	if sys.ContainerRuntime.Version != "" {
 		version = sys.ContainerRuntime.Version
 	}
