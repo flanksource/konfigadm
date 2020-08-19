@@ -6,7 +6,6 @@ package_repos:
       - "redhat-like"
 packages:
   - ansible
-  - python #+debian-like
 files:
   /root/playbook.yml: |
     ---
