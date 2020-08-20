@@ -33,7 +33,6 @@ func (p ansible) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 			Permissions: "0600",
 			Owner:       "root",
 		}
-		commands = append(commands, Command{Cmd: fmt.Sprintf("ansible-playbook -i 'localhost, ' %s", filename)})
 		sys.AddCommand(fmt.Sprintf("ansible-playbook -i 'localhost, ' %s", filename))
 	}
 	return commands, files, nil
