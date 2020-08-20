@@ -216,6 +216,7 @@ type Config struct {
 	ContainerRuntime ContainerRuntime     `yaml:"container_runtime,omitempty"`
 	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`
 	Environment      map[string]string    `yaml:"environment,omitempty"`
+	AnsiblePlaybooks []string             `yaml:"ansiblePlaybooks,omitempty"`
 	Timezone         string               `yaml:"timezone,omitempty"`
 	NTP              []string             `yaml:"ntp,omitempty"`
 	DNS              []string             `yaml:"dns,omitempty"`
@@ -236,6 +237,12 @@ type TarPackage struct {
 	Binary       string `yaml:"binary,omitempty"`
 	Destination  string `yaml:"destination,omitempty"`
 	Flags        []Flag `yaml:"flags,omitempty"`
+}
+
+type AnsiblePlaybook string
+
+func (p AnsiblePlaybook) String() string {
+	return string(p)
 }
 
 type Applier interface {

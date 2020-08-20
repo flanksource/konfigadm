@@ -14,6 +14,7 @@ func init() {
 			phases.Sysctl,
 			phases.Environment,
 			phases.Containers,
+			phases.Ansible,
 			phases.Packages,
 			phases.Services,
 			phases.TrustedCA,
