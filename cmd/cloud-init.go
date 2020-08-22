@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	//CloudInit exports the configuration in cloud-init format
 	CloudInit = cobra.Command{
 		Use:   "cloud-init",
 		Short: "Exports the configuration in cloud-init format",

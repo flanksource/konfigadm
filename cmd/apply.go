@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	//Apply the configuration to the local machine
 	Apply = cobra.Command{
 		Use:   "apply",
 		Short: "Apply the configuration to the local machine",
@@ -46,7 +47,9 @@ var (
 					}
 					content = c
 				}
-				ioutil.WriteFile(path, []byte(content), os.FileMode(perms))
+				if err := ioutil.WriteFile(path, []byte(content), os.FileMode(perms)); err != nil {
+					log.Fatalf("Failed to write file: %s", err)
+				}
 			}
 
 			for _, cmd := range commands {

@@ -1,7 +1,7 @@
 package apps
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 )
 
 var CNI Phase = cni{}

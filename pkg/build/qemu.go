@@ -42,7 +42,9 @@ func (q Qemu) Build(image string, config *types.Config) {
 	}
 	if config.Context.CaptureLogs != "" {
 		log.Infof("Coping captured logs to %s\n", config.Context.CaptureLogs)
-		scratch.UnwrapToDir(config.Context.CaptureLogs)
+		if err = scratch.UnwrapToDir(config.Context.CaptureLogs); err != nil {
+			log.Fatalf("Failed to Unwrap: %s", err)
+		}
 	}
 }
 
@@ -66,7 +68,7 @@ func (q Qemu) Test(image string, config *types.Config, privateKeyFile string, te
 		return errors.Wrap(err, "failed to create temporary file for test image")
 	}
 	if err := files.Copy(image, tempfile.Name()); err != nil {
-		return errors.Wrapf(err, "failed to copy %s to %s: %v", image, tempfile.Name())
+		return errors.Wrapf(err, "failed to copy %s to %s", image, tempfile.Name())
 	}
 
 	defer os.Remove(tempfile.Name())
@@ -84,7 +86,9 @@ func (q Qemu) Test(image string, config *types.Config, privateKeyFile string, te
 		}
 		if config.Context.CaptureLogs != "" {
 			log.Infof("Coping captured logs to %s\n", config.Context.CaptureLogs)
-			scratch.UnwrapToDir(config.Context.CaptureLogs)
+			if err = scratch.UnwrapToDir(config.Context.CaptureLogs); err != nil {
+				log.Errorf("Failed to Unwrap to dit: %s", err)
+			}
 		}
 	}()
 

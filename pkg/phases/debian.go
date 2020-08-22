@@ -3,26 +3,11 @@ package phases
 import (
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 var (
-	tmpFolders = []string{
-		"/root/.bash_history",
-		"/home/${SSH_USER}/.bash_history",
-		"/dev/.udev/",
-		"/lib/udev/rules.d/75-persistent-net-generator.rules",
-		"/var/lib/dhcp3/*",
-		"/var/lib/dhcp/*",
-		"/tmp/*",
-	}
-	tmpFiles = []string{
-		"/var/log/lastlog",
-		"/var/log/wtmp",
-		"/var/log/btmp",
-		"/etc/machine-id",
-	}
 	Ubuntu = ubuntu{}
 	Debian = debian{}
 )

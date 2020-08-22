@@ -27,19 +27,11 @@ import (
 )
 
 var (
-	reset        = "\x1b[0m"
-	red          = "\x1b[31m"
-	lightRed     = "\x1b[31;1m"
-	green        = "\x1b[32m"
-	lightGreen   = "\x1b[32;1m"
-	lightBlue    = "\x1b[34;1m"
-	magenta      = "\x1b[35m"
-	lightMagenta = "\x1b[35;1m"
-	cyan         = "\x1b[36m"
-	lightCyan    = "\x1b[36;1m"
-	white        = "\x1b[37;1m"
-	bold         = "\x1b[1m"
-	boldOff      = "\x1b[22m"
+	reset      = "\x1b[0m"
+	red        = "\x1b[31m"
+	green      = "\x1b[32m"
+	lightGreen = "\x1b[32;1m"
+	lightCyan  = "\x1b[36;1m"
 )
 
 //SafeExec executes the sh script and returns the stdout and stderr, errors will result in a nil return only.
@@ -130,16 +122,16 @@ func ToString(i interface{}) string {
 		return v.String()
 	case string:
 		return v
-	case interface{}:
-		if v == nil {
-			return ""
-		}
-		return fmt.Sprintf("%v", v)
 	case bool:
 		if v {
 			return "true"
 		}
 		return "false"
+	case interface{}:
+		if v == nil {
+			return ""
+		}
+		return fmt.Sprintf("%v", v)
 	default:
 		// panic(fmt.Sprintf("I don't know about type %T!\n", v))
 	}
@@ -292,11 +284,7 @@ func FileCopy(src string, dst string) error {
 
 func IsTTY() bool {
 	fi, _ := os.Stdout.Stat()
-	if (fi.Mode() & os.ModeCharDevice) == 0 {
-		return false
-	} else {
-		return true
-	}
+	return (fi.Mode() & os.ModeCharDevice) != 0
 }
 
 func Redf(msg string, args ...interface{}) string {
@@ -380,11 +368,11 @@ func GET(url string, args ...interface{}) ([]byte, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	return body, nil
+	return body, err
 }
 
 func Download(url, path string) error {
@@ -489,11 +477,11 @@ func RunSSHCommand(host, user, privateKeyFile, cmd string) ([]byte, error) {
 	}
 	defer client.Close()
 
-	if output, err := client.Cmd(cmd).Output(); err != nil {
+	output, err := client.Cmd(cmd).Output()
+	if err != nil {
 		return output, errors.Wrapf(err, "failed to run command '%s'", cmd)
-	} else {
-		return output, nil
 	}
+	return output, nil
 }
 
 func RunSSHScript(host, user, privateKeyFile, script string) ([]byte, error) {
@@ -503,11 +491,11 @@ func RunSSHScript(host, user, privateKeyFile, script string) ([]byte, error) {
 	}
 	defer client.Close()
 
-	if output, err := client.Script(script).SmartOutput(); err != nil {
+	output, err := client.Script(script).SmartOutput()
+	if err != nil {
 		return output, errors.Wrapf(err, "failed to run script: %s", script)
-	} else {
-		return output, nil
 	}
+	return output, nil
 }
 
 func sshClient(host, user, privateKeyFile string) (*sshclient.Client, error) {

@@ -1,7 +1,7 @@
 package phases
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 

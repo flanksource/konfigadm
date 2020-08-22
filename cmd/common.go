@@ -3,17 +3,13 @@ package cmd
 import (
 	"os"
 
-	_ "github.com/flanksource/konfigadm/pkg"
 	"github.com/flanksource/konfigadm/pkg/phases"
 	"github.com/flanksource/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func GetConfigWithImage(cmd *cobra.Command, args []string, image Image) *types.Config {
-	return nil
-}
-
+//GetConfig gets config
 func GetConfig(cmd *cobra.Command, args []string) *types.Config {
 	configs, err := cmd.Flags().GetStringSlice("config")
 	if err != nil {
@@ -24,7 +20,7 @@ func GetConfig(cmd *cobra.Command, args []string) *types.Config {
 		log.Fatalf("%s", err)
 	}
 
-	flags := []types.Flag{}
+	var flags []types.Flag
 
 	if alias != nil {
 		flags = append(flags, alias.Tags...)

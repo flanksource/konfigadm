@@ -3,7 +3,7 @@ package phases
 import (
 	"fmt"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 )
 
 //OS provides an abstraction over different operating systems

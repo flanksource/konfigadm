@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 )
 
 var Containers Phase = containers{}

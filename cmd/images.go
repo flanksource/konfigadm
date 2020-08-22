@@ -11,7 +11,7 @@ import (
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/pkg/errors"
 
-	. "github.com/flanksource/konfigadm/pkg/build"
+	. "github.com/flanksource/konfigadm/pkg/build" // nolint: golint
 
 	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var IMAGE_CACHE string
+var ImageCache string
 
 var drivers = map[string]Driver{
 	"libguestfs": Libguestfs{},

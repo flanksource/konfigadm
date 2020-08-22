@@ -1,7 +1,7 @@
 package types
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/utils"
+	. "github.com/flanksource/konfigadm/pkg/utils" // nolint: golint
 )
 
 //Service is a systemd service to be installed and started

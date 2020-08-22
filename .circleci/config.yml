@@ -5,6 +5,11 @@ go: &go
   docker:
     - image: circleci/golang:1.13
   working_directory: /go/src/github.com/moshloop/konfigadm
+  steps:
+    - checkout
+    - command -v  golangci-lint > /dev/null || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+    - golangci-lint run ./... --enable golint --timeout 2m0s
+
 test: &test
   <<: *go
   steps:

@@ -3,7 +3,7 @@ package apps
 import (
 	"github.com/flanksource/konfigadm/pkg/build"
 	"github.com/flanksource/konfigadm/pkg/phases"
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 )
 
 var Cleanup Phase = cleanup{}

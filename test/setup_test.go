@@ -51,7 +51,9 @@ func (c *Container) Exec(args ...string) (string, error) {
 	if err != nil {
 		return string(data), err
 	}
-	cmd.Wait()
+	if err = cmd.Wait(); err != nil {
+		return string(data), err
+	}
 	if !cmd.ProcessState.Success() {
 		return string(data), errors.New("Failed")
 	}
@@ -86,12 +88,6 @@ func newContainer() (*Container, error) {
 		id:        container.Container.ID,
 		container: container,
 	}, nil
-}
-
-func check(t *testing.T, err error) {
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func setup(t *testing.T) (*gomega.WithT, *Container) {
@@ -129,17 +125,6 @@ var fixtures = []struct {
 	{"packages.yml"},
 	{"trusted_ca.yml"},
 	// {"sysctl.yml"},
-}
-
-type konfigadm struct {
-}
-
-func (c konfigadm) Verify(config ...string) bool {
-	return false
-}
-
-func (c konfigadm) Apply(config ...string) bool {
-	return false
 }
 
 func TestYamlRoundTrip(t *testing.T) {

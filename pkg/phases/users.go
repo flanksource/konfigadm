@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 )
 
 var Users Phase = users{}
