@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/flanksource/konfigadm/pkg/utils"
@@ -46,7 +47,19 @@ var (
 					}
 					content = c
 				}
-				ioutil.WriteFile(path, []byte(content), os.FileMode(perms))
+
+				dirMode := perms + 111
+				dirName := filepath.Dir(path)
+				if _, serr := os.Stat(dirName); serr != nil {
+					merr := os.MkdirAll(dirName, os.FileMode(dirMode))
+					if merr != nil {
+						log.Errorf("Failed to mkdir %s: %v", utils.Redf(dirName), err)
+					}
+				}
+
+				if err := ioutil.WriteFile(path, []byte(content), os.FileMode(perms)); err != nil {
+					log.Errorf("Failed to write file %s: %v", utils.Redf(path), err)
+				}
 			}
 
 			for _, cmd := range commands {

@@ -216,6 +216,7 @@ type Config struct {
 	ContainerRuntime ContainerRuntime     `yaml:"container_runtime,omitempty"`
 	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`
 	Environment      map[string]string    `yaml:"environment,omitempty"`
+	Ansible          []Ansible            `yaml:"ansible,omitempty"`
 	Timezone         string               `yaml:"timezone,omitempty"`
 	NTP              []string             `yaml:"ntp,omitempty"`
 	DNS              []string             `yaml:"dns,omitempty"`
@@ -293,4 +294,11 @@ func (c *VerifyResults) Fail(msg string, args ...interface{}) {
 func (c *VerifyResults) Skip(msg string, args ...interface{}) {
 	c.SkipCount++
 	fmt.Println(utils.LightCyanf(" [skip] "+msg, args...))
+}
+
+type Ansible struct {
+	Version      string `yaml:"version,omitempty"`
+	Workspace    string `yaml:"workspace,omitempty"`
+	PlaybookPath string `yaml:"playbookPath,omitempty"`
+	Playbook     string `yaml:"playbook,omitempty"`
 }
