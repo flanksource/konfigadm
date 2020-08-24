@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	. "github.com/flanksource/konfigadm/pkg/types" // nolint: golint
 )
 
 var AnsiblePhase Phase = ansible{}
