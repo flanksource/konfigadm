@@ -125,6 +125,16 @@ var fixtures = []struct {
 	// {"sysctl.yml"},
 }
 
+type konfigadm struct {
+}
+
+func (c konfigadm) Verify(config ...string) bool {
+	return false
+}
+
+func (c konfigadm) Apply(config ...string) bool {
+	return false
+}
 func TestYamlRoundTrip(t *testing.T) {
 	for _, f := range fixtures {
 		t.Run(f.in, func(t *testing.T) {
