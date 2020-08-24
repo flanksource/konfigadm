@@ -13,12 +13,18 @@ test: &test
         version: 18.09.3
     - checkout
     - run: go mod download
-    - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
-    - run: golangci-lint run ./... --enable golint
     - run: make test linux "$CIRCLE_JOB"
     - store_test_results:
         path: test-output
 jobs:
+  lint:
+    docker:
+      - image: circleci/golang:1.13
+    working_directory: /go/src/github.com/moshloop/konfigadm
+    steps:
+      - checkout
+      - run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+      - run: golangci-lint run ./... --enable golint
   "ubuntu16":
     <<: *test
   "ubuntu18":
@@ -37,6 +43,7 @@ workflows:
   version: 2
   build:
     jobs:
+      - lint
       - "ubuntu16"
       - "ubuntu18"
       - "ubuntu20"
