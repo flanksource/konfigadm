@@ -51,9 +51,7 @@ func (c *Container) Exec(args ...string) (string, error) {
 	if err != nil {
 		return string(data), err
 	}
-	if err = cmd.Wait(); err != nil {
-		return string(data), err
-	}
+	cmd.Wait() // nolint: errcheck
 	if !cmd.ProcessState.Success() {
 		return string(data), errors.New("Failed")
 	}
