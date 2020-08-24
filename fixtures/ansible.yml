@@ -1,29 +1,28 @@
-pre_commands:
-  - echo pre
-commands:
-  - echo command
 post_commands:
-  - echo post
   - "[[ \"$(cat /tmp/ansible-playbook.txt)\" == \"hello world\" ]]" 
   - "[[ \"$(cat /tmp/ansible-playbook2.txt)\" == \"hello world2\" ]]" 
-ansiblePlaybooks:
-  - |
-    ---
-    - name: This is a hello-world example
-      hosts: all
-      connection: local
-      tasks:
-        - name: Create a file called '/tmp/ansible-playbook.txt'
-          copy:
-            content: hello world
-            dest: /tmp/ansible-playbook.txt
-  - |
-    ---
-    - name: This is a hello-world example2
-      hosts: all
-      connection: local
-      tasks:
-        - name: Create a file called '/tmp/ansible-playbook2.txt'
-          copy:
-            content: hello world2
-            dest: /tmp/ansible-playbook2.txt
+ansible:
+  - workspace: /tmp/ansible-playbooks
+    playbookPath: test1.yml
+    playbook: |
+      ---
+      - name: This is a hello-world example
+        hosts: all
+        connection: local
+        tasks:
+          - name: Create a file called '/tmp/ansible-playbook.txt'
+            copy:
+              content: hello world
+              dest: /tmp/ansible-playbook.txt
+  - workspace: /tmp/ansible-playbooks
+    playbookPath: test2.yml
+    playbook: |
+      ---
+      - name: This is a hello-world example2
+        hosts: all
+        connection: local
+        tasks:
+          - name: Create a file called '/tmp/ansible-playbook2.txt'
+            copy:
+              content: hello world2
+              dest: /tmp/ansible-playbook2.txt

@@ -249,7 +249,7 @@ func (sys *Config) ImportConfig(c2 Config) {
 	}
 	sys.TrustedCA = append(sys.TrustedCA, c2.TrustedCA...)
 	sys.Limits = append(sys.Limits, c2.Limits...)
-	sys.AnsiblePlaybooks = append(sys.AnsiblePlaybooks, c2.AnsiblePlaybooks...)
+	sys.Ansible = append(sys.Ansible, c2.Ansible...)
 	if c2.Kubernetes != nil {
 		sys.Kubernetes = c2.Kubernetes
 	}

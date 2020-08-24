@@ -7,7 +7,7 @@ import (
 	. "github.com/flanksource/konfigadm/pkg/types"
 )
 
-var Ansible Phase = ansible{}
+var AnsiblePhase Phase = ansible{}
 
 type ansible struct{}
 
@@ -15,25 +15,29 @@ func (p ansible) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 	var commands []Command
 	files := Filesystem{}
 
-	if len(sys.AnsiblePlaybooks) > 0 {
-		sys.AddPackage("ansible", nil)
-		sys.AddPackage("python", &DEBIAN)
+	if len(sys.Ansible) > 0 {
+		sys.AppendPackages(nil, Package{
+			Name: "ansible",
+		})
+		sys.AppendPackages(nil, Package{
+			Name:  "python",
+			Flags: []Flag{DEBIAN},
+		})
 		sys.AppendPackageRepo(PackageRepo{
-			Name:   "docker-ce",
+			Name:   "epel",
 			URL:    "http://download.fedoraproject.org/pub/epel/7/\\$basearch",
 			GPGKey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7",
 		}, REDHAT_LIKE)
 	}
 
-	for i, playbook := range sys.AnsiblePlaybooks {
-		playbookName := fmt.Sprintf("playbook-%d.yml", i)
-		filename := path.Join("/tmp", "ansible-playbooks", playbookName)
+	for _, playbook := range sys.Ansible {
+		filename := path.Join(playbook.Workspace, playbook.PlaybookPath)
 		files[filename] = File{
-			Content:     string(playbook),
+			Content:     string(playbook.Playbook),
 			Permissions: "0600",
 			Owner:       "root",
 		}
-		sys.AddCommand(fmt.Sprintf("ansible-playbook -i 'localhost, ' %s", filename))
+		sys.AddCommand(fmt.Sprintf("cd %s && ansible-playbook -i 'localhost, ' %s", playbook.Workspace, playbook.PlaybookPath))
 	}
 	return commands, files, nil
 }

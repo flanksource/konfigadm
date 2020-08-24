@@ -216,7 +216,7 @@ type Config struct {
 	ContainerRuntime ContainerRuntime     `yaml:"container_runtime,omitempty"`
 	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`
 	Environment      map[string]string    `yaml:"environment,omitempty"`
-	AnsiblePlaybooks []string             `yaml:"ansiblePlaybooks,omitempty"`
+	Ansible          []Ansible            `yaml:"ansible,omitempty"`
 	Timezone         string               `yaml:"timezone,omitempty"`
 	NTP              []string             `yaml:"ntp,omitempty"`
 	DNS              []string             `yaml:"dns,omitempty"`
@@ -237,12 +237,6 @@ type TarPackage struct {
 	Binary       string `yaml:"binary,omitempty"`
 	Destination  string `yaml:"destination,omitempty"`
 	Flags        []Flag `yaml:"flags,omitempty"`
-}
-
-type AnsiblePlaybook string
-
-func (p AnsiblePlaybook) String() string {
-	return string(p)
 }
 
 type Applier interface {
@@ -300,4 +294,11 @@ func (c *VerifyResults) Fail(msg string, args ...interface{}) {
 func (c *VerifyResults) Skip(msg string, args ...interface{}) {
 	c.SkipCount++
 	fmt.Println(utils.LightCyanf(" [skip] "+msg, args...))
+}
+
+type Ansible struct {
+	Version      string `yaml:"version,omitempty"`
+	Workspace    string `yaml:"workspace,omitempty"`
+	PlaybookPath string `yaml:"playbookPath,omitempty"`
+	Playbook     string `yaml:"playbook,omitempty"`
 }
