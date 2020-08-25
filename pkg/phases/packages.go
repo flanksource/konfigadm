@@ -7,17 +7,17 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
-var Packages AllPhases = packages{}
+var Packages types.AllPhases = packages{}
 
 type packages struct{}
 
-func (p packages) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	commands := Commands{}
-	files := Filesystem{}
+func (p packages) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	commands := types.Commands{}
+	files := types.Filesystem{}
 
 	for _, repo := range *sys.PackageRepos {
 		var os OS
@@ -65,7 +65,7 @@ type packageOperations struct {
 	install   []string
 	uninstall []string
 	mark      []string
-	tags      []Flag
+	tags      []types.Flag
 }
 
 func appendStrings(slice []string, s string) []string {
@@ -77,11 +77,11 @@ func appendStrings(slice []string, s string) []string {
 	return newSlice
 }
 
-func getKeyFromTags(tags ...Flag) string {
+func getKeyFromTags(tags ...types.Flag) string {
 	return fmt.Sprintf("%s", tags)
 }
 
-func addPackageCommands(sys *Config, commands *Commands) {
+func addPackageCommands(sys *types.Config, commands *types.Commands) {
 	// package installation can have 2 scenarios:
 	// 1) tags specified and we know the package manager
 	// 2) tags not specified, so we need to add tagged commands for each base operating system
@@ -154,25 +154,25 @@ func addPackageCommands(sys *Config, commands *Commands) {
 
 }
 
-func (p packages) ProcessFlags(sys *Config, flags ...Flag) {
-	minified := []Package{}
+func (p packages) ProcessFlags(sys *types.Config, flags ...types.Flag) {
+	minified := []types.Package{}
 	for _, pkg := range *sys.Packages {
-		if MatchAll(flags, pkg.Flags) {
+		if types.MatchAll(flags, pkg.Flags) {
 			minified = append(minified, pkg)
 		}
 	}
 	sys.Packages = &minified
 
-	minifiedRepos := []PackageRepo{}
+	minifiedRepos := []types.PackageRepo{}
 	for _, repo := range *sys.PackageRepos {
-		if MatchesAny(flags, repo.Flags) {
+		if types.MatchesAny(flags, repo.Flags) {
 			minifiedRepos = append(minifiedRepos, repo)
 		}
 	}
 	sys.PackageRepos = &minifiedRepos
 }
 
-func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+func (p packages) Verify(cfg *types.Config, results *types.VerifyResults, flags ...types.Flag) bool {
 	verify := true
 	var os OS
 	var err error
@@ -182,7 +182,7 @@ func (p packages) Verify(cfg *Config, results *VerifyResults, flags ...Flag) boo
 	}
 
 	for _, p := range *cfg.Packages {
-		if !MatchesAny(flags, p.Flags) {
+		if !types.MatchesAny(flags, p.Flags) {
 			continue
 		}
 		expandedVersion, _ := utils.SafeExec("echo %s", p.Version)

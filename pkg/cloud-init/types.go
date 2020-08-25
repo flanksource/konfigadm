@@ -106,9 +106,9 @@ type Apt struct {
 	// there is a shortcut for those. Those get automatically translated into the
 	// correct Acquire::*::Proxy statements.
 	Proxy      string `yaml:"proxy,omitempty"`
-	HttpProxy  string `yaml:"http_proxy,omitempty"`
-	FtpProxy   string `yaml:"ftp_proxy,omitempty"`
-	HttpsProxy string `yaml:"https_proxy,omitempty"`
+	HTTPProxy  string `yaml:"http_proxy,omitempty"`
+	FTPProxy   string `yaml:"ftp_proxy,omitempty"`
+	HTTPSProxy string `yaml:"https_proxy,omitempty"`
 	// 'source' entries in apt-sources that match this python regex
 	// expression will be passed to add-apt-repository
 	// default:  '^[\w-]+:\w'
@@ -326,7 +326,7 @@ type Puppet struct {
 }
 
 type Phonehome struct {
-	Url string `yaml:"url,omitempty"`
+	URL string `yaml:"url,omitempty"`
 	// [ pub_key_dsa, pub_key_rsa, pub_key_ecdsa, instance_id ]
 	Post  []string `yaml:"post,omitempty"`
 	Tries int      `yaml:"tries,omitempty"`

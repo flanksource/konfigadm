@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	_ "github.com/flanksource/konfigadm/pkg"
+	_ "github.com/flanksource/konfigadm/pkg" // nolint: golint
 	"github.com/flanksource/konfigadm/pkg/phases"
 	"github.com/flanksource/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"

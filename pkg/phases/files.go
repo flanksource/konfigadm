@@ -1,32 +1,31 @@
 package phases
 
 import (
+	"github.com/flanksource/konfigadm/pkg/types"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
-
-	. "github.com/flanksource/konfigadm/pkg/types"
-	log "github.com/sirupsen/logrus"
 )
 
-var Files Phase = filesPhase{}
+var Files types.Phase = filesPhase{}
 
 type filesPhase struct{}
 
-func (p filesPhase) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	var commands []Command
-	files := make(map[string]File)
+func (p filesPhase) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	var commands []types.Command
+	files := make(map[string]types.File)
 	for k, v := range sys.Filesystem {
 		files[k] = v
 	}
 
 	for k, v := range sys.Files {
-		files[k] = File{Content: Lookup(v)}
+		files[k] = types.File{Content: Lookup(v)}
 	}
 
 	return commands, files, nil
 }
 
-func (f filesPhase) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+func (p filesPhase) Verify(cfg *types.Config, results *types.VerifyResults, flags ...types.Flag) bool {
 	verify := true
 	for f := range cfg.Files {
 

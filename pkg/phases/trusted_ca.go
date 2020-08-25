@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -31,13 +31,13 @@ var (
 	}
 )
 
-var TrustedCA Phase = trustedCA{}
+var TrustedCA types.Phase = trustedCA{}
 
 type trustedCA struct{}
 
-func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	files := Filesystem{}
-	commands := make([]Command, len(sys.TrustedCA))
+func (p trustedCA) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	files := types.Filesystem{}
+	commands := make([]types.Command, len(sys.TrustedCA))
 
 	if len(sys.TrustedCA) == 0 {
 		return commands, files, nil
@@ -46,7 +46,7 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 	scriptFilename := "/tmp/install_certs"
 	scriptFile := installCertificatesScript()
 
-	files[scriptFilename] = File{
+	files[scriptFilename] = types.File{
 		Content:     scriptFile,
 		Permissions: "0700",
 		Owner:       "root",
@@ -62,17 +62,17 @@ func (p trustedCA) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Files
 
 		files[tmpFile] = *file
 		cmd := fmt.Sprintf("%s %s", scriptFilename, tmpFile)
-		commands[i] = Command{Cmd: cmd}
+		commands[i] = types.Command{Cmd: cmd}
 	}
 
-	rmCertsCommand := Command{Cmd: "rm -r /tmp/konfigadm-trusted-*.pem"}
-	rmScriptCommand := Command{Cmd: "rm -r /tmp/install_certs"}
+	rmCertsCommand := types.Command{Cmd: "rm -r /tmp/konfigadm-trusted-*.pem"}
+	rmScriptCommand := types.Command{Cmd: "rm -r /tmp/install_certs"}
 	commands = append(commands, rmCertsCommand, rmScriptCommand)
 
 	return commands, files, nil
 }
 
-func (p trustedCA) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+func (p trustedCA) Verify(cfg *types.Config, results *types.VerifyResults, flags ...types.Flag) bool {
 	if len(cfg.TrustedCA) == 0 {
 		return true
 	}
@@ -126,7 +126,7 @@ func (p trustedCA) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bo
 	return verify
 }
 
-func findCertificateInFiles(results *VerifyResults, certName string, certBytes string) bool {
+func findCertificateInFiles(results *types.VerifyResults, certName string, certBytes string) bool {
 	found := false
 	for _, fp := range caCertificateFiles {
 		filePath := fmt.Sprintf(fp, certName)
@@ -143,14 +143,14 @@ func findCertificateInFiles(results *VerifyResults, certName string, certBytes s
 	return found
 }
 
-func certificateToPem(certificate string) (*File, error) {
+func certificateToPem(certificate string) (*types.File, error) {
 	if strings.HasPrefix(certificate, certificateHeader) {
-		file := &File{Content: certificate}
+		file := &types.File{Content: certificate}
 		return file, nil
 	}
 
 	if strings.HasPrefix(certificate, "http") || strings.HasPrefix(certificate, "https") {
-		file := &File{ContentFromURL: certificate}
+		file := &types.File{ContentFromURL: certificate}
 		return file, nil
 	}
 
@@ -164,7 +164,7 @@ func certificateToPem(certificate string) (*File, error) {
 		return nil, errors.Wrapf(err, "failed to read certificate %s from disk", certificate)
 	}
 
-	file := &File{Content: string(body)}
+	file := &types.File{Content: string(body)}
 	return file, nil
 }
 

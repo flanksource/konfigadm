@@ -15,7 +15,7 @@ import (
 func CreateISO(hostname string, userData string) (string, error) {
 	dir, err := ioutil.TempDir("", "cloudinit")
 	cwd, _ := os.Getwd()
-	defer os.Chdir(cwd)
+	defer os.Chdir(cwd) //nolint: errcheck
 	if err := os.Chdir(dir); err != nil {
 		return "", fmt.Errorf("Failed to chdir %v", err)
 	}

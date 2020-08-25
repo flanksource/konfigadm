@@ -1,7 +1,7 @@
 package types
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/utils"
+	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 //Service is a systemd service to be installed and started
@@ -14,9 +14,9 @@ type Service struct {
 }
 
 func (sys SystemD) ToUnitFile() string {
-	return "[Unit]\n" + StructToIni(sys.Unit) + "\n" +
-		"[Service]\n" + StructToIni(sys.Service) + "\n" +
-		"[Install]\n" + StructToIni(sys.Install)
+	return "[Unit]\n" + utils.StructToIni(sys.Unit) + "\n" +
+		"[Service]\n" + utils.StructToIni(sys.Service) + "\n" +
+		"[Install]\n" + utils.StructToIni(sys.Install)
 }
 
 func DefaultSystemdService(name string) SystemD {
@@ -70,7 +70,6 @@ type SystemdUnit struct {
 	ConditionFirstBoot          string      `yaml:"condition_first_boot,omitempty"`
 	ConditionHost               string      `yaml:"condition_host,omitempty"`
 	ConditionKernelCommandLine  string      `yaml:"condition_kernel_command_line,omitempty"`
-	ConditionNeedsUpdate        string      `yaml:"condition_needs_update,omitempty"`
 	ConditionPathExists         string      `yaml:"condition_path_exists,omitempty"`
 	ConditionPathExistsGlob     string      `yaml:"condition_path_exists_glob,omitempty"`
 	ConditionPathIsDirectory    string      `yaml:"condition_path_is_directory,omitempty"`
@@ -86,6 +85,7 @@ type SystemdUnit struct {
 	IgnoreOnIsolate             interface{} `validate:"bool" yaml:"ignore_on_isolate,omitempty"`
 	JobTimeoutAction            string      `yaml:"job_timeout_action,omitempty"`
 	JobTimeoutRebootArgument    string      `yaml:"job_timeout_reboot_argument,omitempty"`
+	ConditionNeedsUpdate        string      `yaml:"condition_needs_update,omitempty"`
 	JobTimeoutSec               string      `yaml:"job_timeout_sec,omitempty"`
 	JoinsNamespaceOf            string      `yaml:"joins_namespace_of,omitempty"`
 	//reboot-immediate, poweroff, poweroff-force or poweroff-immediates

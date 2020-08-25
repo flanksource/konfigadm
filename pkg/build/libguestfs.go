@@ -47,7 +47,10 @@ func (l Libguestfs) Build(image string, cfg *types.Config) {
 		log.Errorf("builder.log: %s\n", utils.SafeRead("builder.log"))
 		log.Fatalf("Failed to run: %s, %s", cmdLine, err)
 	}
-	utils.Exec(fmt.Sprintf("virt-copy-out -a %s /tmp/builder.log .", image))
+	if err := utils.Exec(fmt.Sprintf("virt-copy-out -a %s /tmp/builder.log .", image)); err != nil {
+		log.Errorf("builder.log: %s\n", utils.SafeRead("builder.log"))
+		log.Fatalf("Failed to run: virt-copy-out -a %s /tmp/builder.log . %s", image, err)
+	}
 	log.Infof("builder.log %s\n", utils.SafeRead("builder.log"))
 }
 

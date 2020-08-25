@@ -81,25 +81,25 @@ func (c Commands) GetCommands() []Command {
 	return append(*c.dependencies, *c.commands...)
 }
 
-func (c1 *Commands) Append(c2 Commands) *Commands {
+func (c *Commands) Append(c2 Commands) *Commands {
 	var cmdSlice []Command
 	var depSlice []Command
-	if c1.commands == nil {
-		c1.commands = &[]Command{}
+	if c.commands == nil {
+		c.commands = &[]Command{}
 	}
 
 	if c2.commands != nil {
-		cmdSlice = append(*c1.commands, *c2.commands...)
-		c1.commands = &cmdSlice
+		cmdSlice = append(*c.commands, *c2.commands...)
+		c.commands = &cmdSlice
 	}
-	if c1.dependencies == nil {
-		c1.dependencies = &[]Command{}
+	if c.dependencies == nil {
+		c.dependencies = &[]Command{}
 	}
 	if c2.dependencies != nil {
-		depSlice = append(*c1.dependencies, *c2.dependencies...)
-		c1.dependencies = &depSlice
+		depSlice = append(*c.dependencies, *c2.dependencies...)
+		c.dependencies = &depSlice
 	}
-	return c1
+	return c
 }
 
 func (c *Commands) Merge() []Command {

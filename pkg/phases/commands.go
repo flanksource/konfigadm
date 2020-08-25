@@ -1,16 +1,16 @@
 package phases
 
 import (
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 )
 
-var CommandsPhase AllPhases = command{}
+var CommandsPhase types.AllPhases = command{}
 
 type command struct{}
 
-func (p command) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	var commands []Command
-	files := Filesystem{}
+func (p command) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	var commands []types.Command
+	files := types.Filesystem{}
 	commands = append(commands, sys.PreCommands...)
 	commands = append(commands, sys.Commands...)
 	commands = append(commands, sys.PostCommands...)
@@ -20,8 +20,8 @@ func (p command) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesys
 
 	return commands, files, nil
 }
-func (p command) ProcessFlags(sys *Config, flags ...Flag) {
-	sys.PreCommands = FilterFlags(sys.PreCommands, flags...)
-	sys.Commands = FilterFlags(sys.Commands, flags...)
-	sys.PostCommands = FilterFlags(sys.PostCommands, flags...)
+func (p command) ProcessFlags(sys *types.Config, flags ...types.Flag) {
+	sys.PreCommands = types.FilterFlags(sys.PreCommands, flags...)
+	sys.Commands = types.FilterFlags(sys.Commands, flags...)
+	sys.PostCommands = types.FilterFlags(sys.PostCommands, flags...)
 }

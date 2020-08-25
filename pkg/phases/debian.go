@@ -3,26 +3,11 @@ package phases
 import (
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
 var (
-	tmpFolders = []string{
-		"/root/.bash_history",
-		"/home/${SSH_USER}/.bash_history",
-		"/dev/.udev/",
-		"/lib/udev/rules.d/75-persistent-net-generator.rules",
-		"/var/lib/dhcp3/*",
-		"/var/lib/dhcp/*",
-		"/tmp/*",
-	}
-	tmpFiles = []string{
-		"/var/log/lastlog",
-		"/var/log/wtmp",
-		"/var/log/btmp",
-		"/etc/machine-id",
-	}
 	Ubuntu = ubuntu{}
 	Debian = debian{}
 )
@@ -34,12 +19,12 @@ func (u ubuntu) String() string {
 	return "ubuntu"
 }
 
-func (u ubuntu) GetPackageManager() PackageManager {
+func (u ubuntu) GetPackageManager() types.PackageManager {
 	return AptPackageManager{}
 }
 
-func (u ubuntu) GetTags() []Flag {
-	return []Flag{UBUNTU, DEBIAN_LIKE}
+func (u ubuntu) GetTags() []types.Flag {
+	return []types.Flag{types.UBUNTU, types.DEBIAN_LIKE}
 }
 
 func (u ubuntu) DetectAtRuntime() bool {
@@ -57,12 +42,12 @@ func (d debian) String() string {
 	return "debian"
 }
 
-func (d debian) GetPackageManager() PackageManager {
+func (d debian) GetPackageManager() types.PackageManager {
 	return AptPackageManager{}
 }
 
-func (d debian) GetTags() []Flag {
-	return []Flag{DEBIAN, DEBIAN_LIKE}
+func (d debian) GetTags() []types.Flag {
+	return []types.Flag{types.DEBIAN, types.DEBIAN_LIKE}
 }
 
 func (d debian) DetectAtRuntime() bool {

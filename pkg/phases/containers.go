@@ -4,32 +4,32 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 )
 
-var Containers Phase = containers{}
+var Containers types.Phase = containers{}
 
 type containers struct{}
 
-func (p containers) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	var commands []Command
-	files := Filesystem{}
+func (p containers) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	var commands []types.Command
+	files := types.Filesystem{}
 	for _, c := range sys.Containers {
 
-		sys.Services[c.Name()] = Service{
+		sys.Services[c.Name()] = types.Service{
 			Name:      c.Name(),
 			ExecStart: exec(sys, c),
-			Extra:     DefaultSystemdService(c.Name()),
+			Extra:     types.DefaultSystemdService(c.Name()),
 		}
 		if len(c.Env) > 0 {
-			files["/etc/environment."+c.Name()] = File{Content: toEnvironmentFile(ctx, c)}
+			files["/etc/environment."+c.Name()] = types.File{Content: toEnvironmentFile(ctx, c)}
 		}
 
 	}
 	return commands, files, nil
 }
 
-func (p containers) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+func (p containers) Verify(cfg *types.Config, results *types.VerifyResults, flags ...types.Flag) bool {
 	verify := true
 	for f := range cfg.Files {
 
@@ -53,7 +53,7 @@ func (p containers) Verify(cfg *Config, results *VerifyResults, flags ...Flag) b
 	return verify
 }
 
-func toEnvironmentFile(ctx *SystemContext, c Container) string {
+func toEnvironmentFile(ctx *types.SystemContext, c types.Container) string {
 	s := ""
 	for k, v := range c.Env {
 		s += fmt.Sprintf("%s=%s\n", k, v)
@@ -61,7 +61,7 @@ func toEnvironmentFile(ctx *SystemContext, c Container) string {
 	return s
 }
 
-func exec(sys *Config, c Container) string {
+func exec(sys *types.Config, c types.Container) string {
 	exec := c.DockerOpts
 	if len(c.Env) > 0 {
 		exec += fmt.Sprintf(" --env-file /etc/environment.%s", c.Name())
