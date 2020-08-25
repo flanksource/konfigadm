@@ -13,14 +13,14 @@ type ConfigBuilder struct {
 	flags   []Flag
 }
 
-func (f *ConfigBuilder) WithVars(vars ...string) *ConfigBuilder {
-	f.vars = vars
-	return f
+func (builder *ConfigBuilder) WithVars(vars ...string) *ConfigBuilder {
+	builder.vars = vars
+	return builder
 }
 
-func (f *ConfigBuilder) WithFlags(flags ...Flag) *ConfigBuilder {
-	f.flags = flags
-	return f
+func (builder *ConfigBuilder) WithFlags(flags ...Flag) *ConfigBuilder {
+	builder.flags = flags
+	return builder
 }
 
 func (builder *ConfigBuilder) Build() (*Config, error) {

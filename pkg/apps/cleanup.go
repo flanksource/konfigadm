@@ -3,16 +3,16 @@ package apps
 import (
 	"github.com/flanksource/konfigadm/pkg/build"
 	"github.com/flanksource/konfigadm/pkg/phases"
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 )
 
-var Cleanup Phase = cleanup{}
+var Cleanup types.Phase = cleanup{}
 
 type cleanup struct{}
 
-func (c cleanup) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	fs := Filesystem{}
-	cmds := Commands{}
+func (c cleanup) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	fs := types.Filesystem{}
+	cmds := types.Commands{}
 
 	if sys.Cleanup == nil || !*sys.Cleanup {
 		return cmds.GetCommands(), fs, nil

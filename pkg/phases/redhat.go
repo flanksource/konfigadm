@@ -3,7 +3,7 @@ package phases
 import (
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
@@ -18,12 +18,12 @@ var (
 type redhat struct {
 }
 
-func (r redhat) GetPackageManager() PackageManager {
+func (r redhat) GetPackageManager() types.PackageManager {
 	return YumPackageManager{}
 }
 
-func (r redhat) GetTags() []Flag {
-	return []Flag{REDHAT, REDHAT_LIKE}
+func (r redhat) GetTags() []types.Flag {
+	return []types.Flag{types.REDHAT, types.REDHAT_LIKE}
 }
 
 func (r redhat) DetectAtRuntime() bool {
@@ -38,12 +38,12 @@ func (r redhat) GetVersionCodeName() string {
 type fedora struct {
 }
 
-func (r fedora) GetPackageManager() PackageManager {
+func (r fedora) GetPackageManager() types.PackageManager {
 	return DnfPackageManager{}
 }
 
-func (r fedora) GetTags() []Flag {
-	return []Flag{FEDORA}
+func (r fedora) GetTags() []types.Flag {
+	return []types.Flag{types.FEDORA}
 }
 
 func (r fedora) DetectAtRuntime() bool {
@@ -57,12 +57,12 @@ func (r fedora) GetVersionCodeName() string {
 type centos struct {
 }
 
-func (c centos) GetPackageManager() PackageManager {
+func (c centos) GetPackageManager() types.PackageManager {
 	return YumPackageManager{}
 }
 
-func (c centos) GetTags() []Flag {
-	return []Flag{CENTOS, REDHAT_LIKE}
+func (c centos) GetTags() []types.Flag {
+	return []types.Flag{types.CENTOS, types.REDHAT_LIKE}
 }
 
 func (c centos) DetectAtRuntime() bool {
@@ -76,12 +76,12 @@ func (c centos) GetVersionCodeName() string {
 type rhel struct {
 }
 
-func (r rhel) GetPackageManager() PackageManager {
+func (r rhel) GetPackageManager() types.PackageManager {
 	return YumPackageManager{}
 }
 
-func (r rhel) GetTags() []Flag {
-	return []Flag{RHEL, REDHAT_LIKE}
+func (r rhel) GetTags() []types.Flag {
+	return []types.Flag{types.RHEL, types.REDHAT_LIKE}
 }
 
 func (r rhel) DetectAtRuntime() bool {
@@ -95,12 +95,12 @@ func (r rhel) GetVersionCodeName() string {
 type amazonLinux struct {
 }
 
-func (a amazonLinux) GetPackageManager() PackageManager {
+func (a amazonLinux) GetPackageManager() types.PackageManager {
 	return YumPackageManager{}
 }
 
-func (a amazonLinux) GetTags() []Flag {
-	return []Flag{AMAZON_LINUX, REDHAT_LIKE}
+func (a amazonLinux) GetTags() []types.Flag {
+	return []types.Flag{types.AMAZON_LINUX, types.REDHAT_LIKE}
 }
 
 func (a amazonLinux) DetectAtRuntime() bool {

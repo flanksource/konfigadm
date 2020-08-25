@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,24 +14,24 @@ import (
 type AptPackageManager struct {
 }
 
-func (p AptPackageManager) Install(pkg ...string) Commands {
-	return NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
+func (p AptPackageManager) Install(pkg ...string) types.Commands {
+	return types.NewCommand("DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends " + strings.Join(utils.ReplaceAllInSlice(pkg, "==", "="), " "))
 }
 
-func (p AptPackageManager) Uninstall(pkg ...string) Commands {
-	return NewCommand("apt-get purge -y " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
+func (p AptPackageManager) Uninstall(pkg ...string) types.Commands {
+	return types.NewCommand("apt-get purge -y " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
 }
 
-func (p AptPackageManager) Mark(pkg ...string) Commands {
-	return NewCommand("apt-mark hold " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
+func (p AptPackageManager) Mark(pkg ...string) types.Commands {
+	return types.NewCommand("apt-mark hold " + strings.Join(utils.SplitAllInSlice(pkg, "=", 0), " "))
 }
 
 func (p AptPackageManager) ListInstalled() string {
 	return "dpkg --get-selections"
 }
 
-func (p AptPackageManager) Update() Commands {
-	return NewCommand("apt-get update")
+func (p AptPackageManager) Update() types.Commands {
+	return types.NewCommand("apt-get update")
 }
 
 func (p AptPackageManager) GetInstalledVersion(pkg string) string {
@@ -52,8 +52,8 @@ func (p AptPackageManager) GetInstalledVersion(pkg string) string {
 	return version
 }
 
-func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) Commands {
-	cmds := &Commands{}
+func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) types.Commands {
+	cmds := &types.Commands{}
 	if channel == "" {
 		channel = "main"
 	}
@@ -84,7 +84,7 @@ func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName s
 	return *cmds.Add(fmt.Sprintf("echo deb [arch=amd64] %s %s %s > /etc/apt/sources.list.d/%s.list", uri, versionCodeName, channel, name))
 }
 
-func (p AptPackageManager) CleanupCaches() Commands {
-	set := Commands{}
+func (p AptPackageManager) CleanupCaches() types.Commands {
+	set := types.Commands{}
 	return *set.Add("apt-get -y autoremove --purge", "apt-get -y clean", "apt-get -y autoclean")
 }

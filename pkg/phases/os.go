@@ -3,7 +3,7 @@ package phases
 import (
 	"fmt"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 )
 
 //OS provides an abstraction over different operating systems
@@ -13,10 +13,10 @@ type OS interface {
 	GetVersionCodeName() string
 
 	//GetPackageManager returns the packagemanager used by the OS
-	GetPackageManager() PackageManager
+	GetPackageManager() types.PackageManager
 
 	//GetTags returns all the tags to which this OS applies
-	GetTags() []Flag
+	GetTags() []types.Flag
 
 	//DetectAtRuntime will detect if it is compatible with the current running OS
 	DetectAtRuntime() bool
@@ -51,7 +51,7 @@ var BaseOperatingSystems = OperatingSystemList{
 	Fedora,
 }
 
-func GetOSForTag(tags ...Flag) (OS, error) {
+func GetOSForTag(tags ...types.Flag) (OS, error) {
 	for _, t := range tags {
 		for _, os := range SupportedOperatingSystems {
 			for _, tag := range os.GetTags() {
