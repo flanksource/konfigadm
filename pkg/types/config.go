@@ -161,6 +161,7 @@ func (sys *Config) Init() {
 	}
 	sys.Environment = make(map[string]string)
 	sys.Files = make(map[string]string)
+	sys.RuntimeFiles = make(map[string]string)
 	sys.Filesystem = make(map[string]File)
 	sys.Templates = make(map[string]string)
 	sys.Sysctls = make(map[string]string)
@@ -219,6 +220,9 @@ func (sys *Config) ImportConfig(c2 Config) {
 
 	for k, v := range c2.Files {
 		sys.Files[k] = v
+	}
+	for k, v := range c2.RuntimeFiles {
+		sys.RuntimeFiles[k] = v
 	}
 	for k, v := range c2.Filesystem {
 		sys.Filesystem[k] = v

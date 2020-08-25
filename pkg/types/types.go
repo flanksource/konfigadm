@@ -202,6 +202,10 @@ type Config struct {
 	// Both the destination and lookup path can be expressions
 	Files map[string]string `yaml:"files,omitempty"`
 
+	//RuntimeFiles
+	// TODO: add docs
+	RuntimeFiles map[string]string `yaml:"runtimeFiles,omitempty"`
+
 	//Templates is a map of destination path to template lookup path
 	// The lookup path is relative to where konfigadm is run from, not relative to the config file
 	// Templates are compiled via a Jinja (Ansible-like) rendered into primitive filesystem objects

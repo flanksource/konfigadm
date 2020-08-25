@@ -22,6 +22,10 @@ func (p filesPhase) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 		files[k] = types.File{Content: Lookup(v)}
 	}
 
+	for k, v := range sys.RuntimeFiles {
+		files[k] = types.File{ContentFromURL: v}
+	}
+
 	return commands, files, nil
 }
 
@@ -29,6 +33,15 @@ func (p filesPhase) Verify(cfg *types.Config, results *types.VerifyResults, flag
 	verify := true
 	for f := range cfg.Files {
 
+		if _, err := os.Stat(f); err != nil {
+			verify = false
+			results.Fail("%s does not exist", f)
+		} else {
+			results.Pass("%s exists", f)
+		}
+	}
+
+	for f := range cfg.RuntimeFiles {
 		if _, err := os.Stat(f); err != nil {
 			verify = false
 			results.Fail("%s does not exist", f)

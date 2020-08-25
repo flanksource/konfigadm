@@ -41,6 +41,15 @@ func (p containers) Verify(cfg *types.Config, results *types.VerifyResults, flag
 		}
 	}
 
+	for f := range cfg.RuntimeFiles {
+		if _, err := os.Stat(f); err != nil {
+			verify = false
+			results.Fail("%s does not exist", f)
+		} else {
+			results.Pass("%s exists", f)
+		}
+	}
+
 	for f := range cfg.Templates {
 		if _, err := os.Stat(f); err != nil {
 			verify = false
