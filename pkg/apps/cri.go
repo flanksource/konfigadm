@@ -133,6 +133,7 @@ func (c cri) Containerd(sys *Config, ctx *SystemContext) ([]Command, Filesystem,
 	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
 	sys.AddCommand("systemctl enable containerd || true && systemctl restart containerd ")
 	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
+	sys.AddCommand("export CONTAINER_RUNTIME_ENDPOINT=unix:///var/run/containerd/containerd.sock")
 	for _, image := range sys.ContainerRuntime.Images {
 		sys.AddCommand(fmt.Sprintf("crictl pull %s", image))
 	}
