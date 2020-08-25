@@ -200,7 +200,7 @@ func newConfig(config string) (*Config, error) {
 func (sys Config) String() {
 }
 
-//ImportConfig merges to configs together, everything but containerRuntime and Kubernetes configs are merged
+//ImportConfig merges two configs together, everything but containerRuntime and Kubernetes configs are merged
 func (sys *Config) ImportConfig(c2 Config) {
 	if c2.Extra != nil {
 		if strings.TrimSpace(fmt.Sprintf("%+v", sys.Extra)) == "{}" {
