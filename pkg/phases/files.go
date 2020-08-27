@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-
 	"github.com/flanksource/konfigadm/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
 
+// Files: Var defining the FilePhase
 var Files types.Phase = filesPhase{}
 
 type filesPhase struct{}
