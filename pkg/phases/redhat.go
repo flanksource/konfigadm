@@ -37,6 +37,19 @@ func (r redhat) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
 }
 
+func (r redhat) GetKernelPackageNames(version string) (string, string) {
+	return YumPackageManager{}.GetKernelPackageNames(version)
+}
+
+func (r redhat) UpdateDefaultKernel(version string) types.Commands {
+	return GrubbyManager{}.UpdateDefaultKernel(version)
+}
+
+func (r redhat) ReadDefaultKernel() string {
+	readkernel, _ := GrubbyManager{}.ReadDefaultKernel()
+	return readkernel
+}
+
 type fedora struct {
 }
 
@@ -65,6 +78,19 @@ func (r fedora) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
 }
 
+func (r fedora) GetKernelPackageNames(version string) (string, string) {
+	return DnfPackageManager{}.GetKernelPackageNames(version)
+}
+
+func (r fedora) UpdateDefaultKernel(version string) types.Commands {
+	return GrubbyManager{}.UpdateDefaultKernel(version)
+}
+
+func (r fedora) ReadDefaultKernel() string {
+	readkernel, _ := GrubbyManager{}.ReadDefaultKernel()
+	return readkernel
+}
+
 type centos struct {
 }
 
@@ -89,6 +115,19 @@ func (c centos) DetectAtRuntime() bool {
 
 func (c centos) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
+}
+
+func (c centos) GetKernelPackageNames(version string) (string, string) {
+	return YumPackageManager{}.GetKernelPackageNames(version)
+}
+
+func (c centos) UpdateDefaultKernel(version string) types.Commands {
+	return GrubbyManager{}.UpdateDefaultKernel(version)
+}
+
+func (c centos) ReadDefaultKernel() string {
+	readkernel, _ := GrubbyManager{}.ReadDefaultKernel()
+	return readkernel
 }
 
 type rhel struct {
@@ -117,6 +156,19 @@ func (r rhel) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
 }
 
+func (r rhel) GetKernelPackageNames(version string) (string, string) {
+	return YumPackageManager{}.GetKernelPackageNames(version)
+}
+
+func (r rhel) UpdateDefaultKernel(version string) types.Commands {
+	return GrubbyManager{}.UpdateDefaultKernel(version)
+}
+
+func (r rhel) ReadDefaultKernel() string {
+	readkernel, _ := GrubbyManager{}.ReadDefaultKernel()
+	return readkernel
+}
+
 type amazonLinux struct {
 }
 
@@ -134,4 +186,17 @@ func (a amazonLinux) DetectAtRuntime() bool {
 
 func (a amazonLinux) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
+}
+
+func (a amazonLinux) GetKernelPackageNames(version string) (string, string) {
+	return YumPackageManager{}.GetKernelPackageNames(version)
+}
+
+func (a amazonLinux) UpdateDefaultKernel(version string) types.Commands {
+	return GrubbyManager{}.UpdateDefaultKernel(version)
+}
+
+func (a amazonLinux) ReadDefaultKernel() string {
+	readkernel, _ := GrubbyManager{}.ReadDefaultKernel()
+	return readkernel
 }

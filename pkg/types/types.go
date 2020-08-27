@@ -212,6 +212,7 @@ type Config struct {
 	TarPackages      []TarPackage         `yaml:"tar_packages,omitempty"`
 	PackageRepos     *[]PackageRepo       `yaml:"package_repos,omitempty"`
 	Images           []string             `yaml:"images,omitempty"`
+	Kernel           *[]KernelInput       `yaml:"kernel,omitempty"`
 	Containers       []Container          `yaml:"containers,omitempty"`
 	ContainerRuntime ContainerRuntime     `yaml:"container_runtime,omitempty"`
 	Kubernetes       *KubernetesSpec      `yaml:"kubernetes,omitempty"`

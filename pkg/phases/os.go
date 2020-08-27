@@ -20,6 +20,15 @@ type OS interface {
 
 	//DetectAtRuntime will detect if it is compatible with the current running OS
 	DetectAtRuntime() bool
+
+	// Returns the names of the kernel and kernel header packages
+	GetKernelPackageNames(version string) (string, string)
+
+	// Calls the version specific grub config logic
+	UpdateDefaultKernel(version string) types.Commands
+
+	// Check whether defaul kernel matches specific version
+	ReadDefaultKernel() string
 }
 
 type OperatingSystemList []OS

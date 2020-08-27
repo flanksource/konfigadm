@@ -16,6 +16,7 @@ func init() {
 			phases.Environment,
 			phases.Containers,
 			phases.AnsiblePhase,
+			phases.Kernel,
 			phases.Packages,
 			phases.Services,
 			phases.TrustedCA,

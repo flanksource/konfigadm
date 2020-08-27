@@ -166,6 +166,7 @@ func (sys *Config) Init() {
 	sys.Sysctls = make(map[string]string)
 	sys.PackageRepos = &[]PackageRepo{}
 	sys.Packages = &[]Package{}
+	sys.Kernel = &[]KernelInput{}
 	sys.Context = &SystemContext{
 		Name: konfigadm,
 		Vars: make(map[string]interface{}),
@@ -244,6 +245,7 @@ func (sys *Config) ImportConfig(c2 Config) {
 	pkgs := append(*sys.Packages, *c2.Packages...)
 	sys.Packages = &pkgs
 	sys.Timezone = c2.Timezone
+	sys.Kernel = c2.Kernel
 	if c2.ContainerRuntime.Type != "" {
 		sys.ContainerRuntime = c2.ContainerRuntime
 	}
