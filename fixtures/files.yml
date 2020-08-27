@@ -1,3 +1,5 @@
 files:
   # we copy in a copy of our self
   /etc/test: "../../fixtures/files.yml"
+  # Copy file from url
+  /etc/testurl: "http://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem"
