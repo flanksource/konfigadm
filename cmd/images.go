@@ -11,7 +11,7 @@ import (
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/pkg/errors"
 
-	. "github.com/flanksource/konfigadm/pkg/build"
+	builds "github.com/flanksource/konfigadm/pkg/build"
 
 	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -19,18 +19,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var IMAGE_CACHE string
+var IMAGE_CACHE string // nolint: golint
 
-var drivers = map[string]Driver{
-	"libguestfs": Libguestfs{},
-	"qemu":       Qemu{},
+var drivers = map[string]builds.Driver{
+	"libguestfs": builds.Libguestfs{},
+	"qemu":       builds.Qemu{},
 }
 
 var driverName, outputDir, outputFilename, resize, image, outputFormat, captureLogs string
 var inline bool
 var alias *Image
 var cfg *types.Config
-var driver Driver
+var driver builds.Driver
 
 func copyImage(image string) string {
 	cachedImage := image

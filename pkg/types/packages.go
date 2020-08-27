@@ -108,9 +108,7 @@ func (cfg *Config) AddPackageRepo(url string, gpg string, flag Flag) *Config {
 
 //AppendPackageRepo appends a new package repository to the list
 func (cfg *Config) AppendPackageRepo(repo PackageRepo, flags ...Flag) *Config {
-	for _, flag := range flags {
-		repo.Flags = append(repo.Flags, flag)
-	}
+	repo.Flags = append(repo.Flags, flags...)
 	if repo.Channel == "" {
 		repo.Channel = "main"
 	}

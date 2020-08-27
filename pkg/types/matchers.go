@@ -59,10 +59,7 @@ func ContainPackage(expected interface{}) types.GomegaMatcher {
 }
 
 type PackageMatcher struct {
-	expected   interface{}
-	commands   []Command
-	filesystem Filesystem
-	err        error
+	expected interface{}
 }
 
 func (matcher *PackageMatcher) Match(actual interface{}) (success bool, err error) {

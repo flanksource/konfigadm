@@ -23,7 +23,7 @@ RUN alias curl="curl -k" && curl https://sdk.cloud.google.com | bash -s --  --di
 RUN wget --no-check-certificate https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz && \
   tar -C /usr/local -xzf go1.13.1.linux-amd64.tar.gz && \
   rm go1.13.1.linux-amd64.tar.gz
-RUN  pip install awscli azure-cli sshtunnel==0.1.3
+RUN  pip install awscli azure-cli==2.10.1 sshtunnel==0.1.3
 
 ARG OVFTOOL_LOCATION
 RUN wget $OVFTOOL_LOCATION && \

@@ -4,32 +4,32 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 type YumPackageManager struct{}
 
-func (p YumPackageManager) Install(pkg ...string) Commands {
+func (p YumPackageManager) Install(pkg ...string) types.Commands {
 	arg := strings.Join(pkg, " ")
 	// Yum versions are specified using a -, not a =
 	arg = strings.Replace(arg, "=", "-", -1)
-	return NewCommand(fmt.Sprintf("yum install -y %s", arg))
+	return types.NewCommand(fmt.Sprintf("yum install -y %s", arg))
 }
 
-func (p YumPackageManager) Update() Commands {
-	return Commands{}
+func (p YumPackageManager) Update() types.Commands {
+	return types.Commands{}
 }
-func (p YumPackageManager) Uninstall(pkg ...string) Commands {
-	return NewCommand(fmt.Sprintf("yum remove -y %s", strings.Join(pkg, " ")))
+func (p YumPackageManager) Uninstall(pkg ...string) types.Commands {
+	return types.NewCommand(fmt.Sprintf("yum remove -y %s", strings.Join(pkg, " ")))
 }
-func (p YumPackageManager) Mark(pkg ...string) Commands {
-	return Commands{}
+func (p YumPackageManager) Mark(pkg ...string) types.Commands {
+	return types.Commands{}
 }
 
-func (p YumPackageManager) CleanupCaches() Commands {
-	return Commands{}
+func (p YumPackageManager) CleanupCaches() types.Commands {
+	return types.Commands{}
 }
 
 func (p YumPackageManager) GetInstalledVersion(pkg string) string {
@@ -54,7 +54,7 @@ func (p YumPackageManager) GetInstalledVersion(pkg string) string {
 	return ""
 }
 
-func (p YumPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) Commands {
+func (p YumPackageManager) AddRepo(url string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) types.Commands {
 	repo := fmt.Sprintf(
 		`[%s]
 name=%s
@@ -74,7 +74,7 @@ gpgkey=%s
 	for k, v := range extraArgs {
 		repo += fmt.Sprintf("%s = %s\n", k, v)
 	}
-	return NewCommand(fmt.Sprintf(`cat <<EOF >/etc/yum.repos.d/%s.repo
+	return types.NewCommand(fmt.Sprintf(`cat <<EOF >/etc/yum.repos.d/%s.repo
 %s
 EOF`, name, repo))
 }

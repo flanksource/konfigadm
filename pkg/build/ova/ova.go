@@ -110,7 +110,9 @@ func Create(name, image string, properties map[string]string) (string, error) {
 	vmdk := path.Join(dir, base+".vmdk")
 	ovf := path.Join(dir, base+".ova")
 	vmx := path.Join(dir, base+".vmx")
-	ioutil.WriteFile(vmx, []byte(getVmx(name, path.Base(vmdk), properties)), 0644)
+	if err := ioutil.WriteFile(vmx, []byte(getVmx(name, path.Base(vmdk), properties)), 0644); err != nil {
+		return "", err
+	}
 
 	if !strings.HasSuffix(image, ".vmdk") {
 		if runtime.GOOS == "Darwin" {
@@ -131,7 +133,9 @@ func Create(name, image string, properties map[string]string) (string, error) {
 
 func Import(name, ova, network string) error {
 	tmp, _ := ioutil.TempFile("", "options*.json")
-	tmp.WriteString(getOptions(network))
+	if _, err := tmp.WriteString(getOptions(network)); err != nil {
+		return err
+	}
 	if !log.IsLevelEnabled(log.TraceLevel) {
 		defer os.Remove(tmp.Name())
 	}

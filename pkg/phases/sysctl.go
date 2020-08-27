@@ -5,39 +5,39 @@ import (
 	"os"
 	"strings"
 
-	. "github.com/flanksource/konfigadm/pkg/types"
+	"github.com/flanksource/konfigadm/pkg/types"
 
-	. "github.com/flanksource/konfigadm/pkg/utils"
+	"github.com/flanksource/konfigadm/pkg/utils"
 )
 
-var Sysctl Phase = sysctl{}
+var Sysctl types.Phase = sysctl{}
 
 type sysctl struct{}
 
-func (p sysctl) ApplyPhase(sys *Config, ctx *SystemContext) ([]Command, Filesystem, error) {
-	var commands []Command
-	files := Filesystem{}
+func (p sysctl) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]types.Command, types.Filesystem, error) {
+	var commands []types.Command
+	files := types.Filesystem{}
 
 	if len(sys.Sysctls) > 0 {
 		filename := fmt.Sprintf("/etc/sysctl.d/100-%s.conf", sys.Context.Name)
-		files[filename] = File{Content: MapToIni(sys.Sysctls)}
+		files[filename] = types.File{Content: utils.MapToIni(sys.Sysctls)}
 	}
 
 	for k, v := range sys.Sysctls {
 		// make sysctl application errors warnings
-		commands = append(commands, Command{Cmd: fmt.Sprintf("sysctl -w %s=%s || true", k, v)})
+		commands = append(commands, types.Command{Cmd: fmt.Sprintf("sysctl -w %s=%s || true", k, v)})
 	}
 	return commands, files, nil
 }
 
-func (p sysctl) Verify(cfg *Config, results *VerifyResults, flags ...Flag) bool {
+func (p sysctl) Verify(cfg *types.Config, results *types.VerifyResults, flags ...types.Flag) bool {
 	verify := true
 	for k, v := range cfg.Sysctls {
 		if os.Getenv("container") != "" {
 			results.Skip("sysctl[%s]: cannot test inside a container", k)
 			continue
 		}
-		value := SafeRead("/proc/sys" + strings.Replace(k, ".", "/", -1))
+		value := utils.SafeRead("/proc/sys" + strings.Replace(k, ".", "/", -1))
 		if value == v {
 			results.Pass("sysctl[%s]: %s", k, v)
 		} else {
