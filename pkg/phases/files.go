@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//"Files variable defining the FilePhase"
+// Files variable defining the FilePhase
 var Files types.Phase = filesPhase{}
 
 type filesPhase struct{}
