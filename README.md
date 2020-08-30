@@ -12,7 +12,7 @@
   <a href="#compatibility">Compatibility</a> •
   <a href="DESIGN.md">Design</a> •
   <a href="https://github.com/moshloop/konfigadm-images/releases">Prebuilt Images</a> •
-  <a href="https://www.moshloop.com/konfigadm"> Full Documentation </a>
+  <a href="https://konfigadm.docs.flanksource.com/"> Full Documentation </a>
 </p>
 
 `konfigadm` is a declarative configuration management tool and image builder focused on bootstrapping nodes for container based environments.
