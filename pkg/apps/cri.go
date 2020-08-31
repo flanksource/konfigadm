@@ -108,6 +108,7 @@ func (c cri) Containerd(sys *types.Config, ctx *types.SystemContext) ([]types.Co
 	fs := types.Filesystem{}
 	fs["/etc/systemd/system/containerd.service"] = types.File{Content: resources.ContainerdService}
 	sys.AddPackage("device-mapper-persistent-data lvm2 libseccomp", &types.REDHAT_LIKE)
+	sys.AddPackage("lvm2 libseccomp", &types.PHOTON)
 	sys.AddPackage("libseccomp2", &types.DEBIAN_LIKE)
 	sys.AddPackage("runc", &types.DEBIAN_LIKE)
 	if sys.ContainerRuntime.Version == "" {
@@ -146,6 +147,7 @@ func init() {
 	fn := func(version string) string { return version }
 	versioner[types.FEDORA.String()] = fn
 	versioner[types.REDHAT_LIKE.String()] = fn
+	versioner[types.PHOTON.String()] = fn
 	versioner[types.UBUNTU.String()] = func(version string) string {
 		if strings.Contains(version, "~") {
 			return version
@@ -175,7 +177,7 @@ func (c cri) Docker(sys *types.Config, ctx *types.SystemContext) ([]types.Comman
 				Name:    "docker-ce-cli",
 				Version: fn(version),
 				Mark:    true,
-				Flags:   []types.Flag{*types.GetTag(tag), types.NOT_AMAZON_LINUX},
+				Flags:   []types.Flag{*types.GetTag(tag), types.NOT_AMAZON_LINUX, types.NOT_PHOTON},
 			})
 		}
 
@@ -183,7 +185,7 @@ func (c cri) Docker(sys *types.Config, ctx *types.SystemContext) ([]types.Comman
 			Name:    "docker-ce",
 			Version: fn(version),
 			Mark:    true,
-			Flags:   []types.Flag{*types.GetTag(tag), types.NOT_AMAZON_LINUX},
+			Flags:   []types.Flag{*types.GetTag(tag), types.NOT_AMAZON_LINUX, types.NOT_PHOTON},
 		})
 	}
 
@@ -192,16 +194,21 @@ func (c cri) Docker(sys *types.Config, ctx *types.SystemContext) ([]types.Comman
 	sys.AppendPackages(nil, types.Package{
 		Name:    "docker",
 		Version: "",
-		Flags:   []types.Flag{types.AMAZON_LINUX},
+		Flags:   []types.Flag{types.AMAZON_LINUX, types.PHOTON},
 	})
-
+	fs := types.Filesystem{}
+	fs["/etc/docker/daemon.json"] = types.File{
+		Content: resources.VfsStorageDriver,
+		Flags:   []types.Flag{types.PHOTON},
+	}
 	sys.AddPackage("device-mapper-persistent-data lvm2", &types.FEDORA)
 	sys.AddPackage("device-mapper-persistent-data lvm2", &types.REDHAT_LIKE)
+	sys.AddPackage("lvm2 iptables", &types.PHOTON)
 	sys.AddCommand("systemctl enable docker || true && systemctl start docker || true")
 
 	for _, image := range sys.ContainerRuntime.Images {
 		sys.AddCommand(fmt.Sprintf("docker pull %s", image))
 	}
 
-	return []types.Command{}, types.Filesystem{}, nil
+	return []types.Command{}, fs, nil
 }

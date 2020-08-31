@@ -20,7 +20,9 @@ var (
 	CENTOS           = Flag{Name: "centos"}
 	UBUNTU           = Flag{Name: "ubuntu"}
 	AWS              = Flag{Name: "aws"}
+	PHOTON           = Flag{Name: "photon"}
 	VMWARE           = Flag{Name: "vmware"}
+	NOT_PHOTON       = Flag{Name: "!photon", Negates: []Flag{PHOTON}}            // nolint: golint
 	NOT_CONTAINER    = Flag{Name: "!container", Negates: []Flag{CONTAINER}}      // nolint: golint
 	NOT_FEDORA       = Flag{Name: "!fedora", Negates: []Flag{FEDORA}}            // nolint: golint
 	NOT_DEBIAN       = Flag{Name: "!debian", Negates: []Flag{DEBIAN}}            // nolint: golint
@@ -34,7 +36,7 @@ var (
 	NOT_VMWARE       = Flag{Name: "!vmware", Negates: []Flag{VMWARE}}            // nolint: golint
 	NOT_AMAZON_LINUX = Flag{Name: "!amazonLinux", Negates: []Flag{AMAZON_LINUX}} // nolint: golint
 	FLAG_MAP         = make(map[string]Flag)                                     // nolint: golint
-	FLAGS            = []Flag{CONTAINER, DEBIAN, DEBIAN_LIKE, REDHAT, FEDORA, REDHAT_LIKE, AMAZON_LINUX, CENTOS, RHEL, UBUNTU, AWS, VMWARE, NOT_CONTAINER, NOT_FEDORA, NOT_DEBIAN_LIKE, NOT_REDHAT_LIKE, NOT_DEBIAN, NOT_REDHAT, NOT_CENTOS, NOT_RHEL, NOT_UBUNTU, NOT_AWS, NOT_VMWARE, NOT_AMAZON_LINUX}
+	FLAGS            = []Flag{CONTAINER, DEBIAN, DEBIAN_LIKE, REDHAT, FEDORA, REDHAT_LIKE, AMAZON_LINUX, CENTOS, RHEL, UBUNTU, PHOTON, AWS, VMWARE, NOT_CONTAINER, NOT_FEDORA, NOT_PHOTON, NOT_DEBIAN_LIKE, NOT_REDHAT_LIKE, NOT_DEBIAN, NOT_REDHAT, NOT_CENTOS, NOT_RHEL, NOT_UBUNTU, NOT_AWS, NOT_VMWARE, NOT_AMAZON_LINUX}
 )
 
 type Flag struct {

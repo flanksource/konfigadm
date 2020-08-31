@@ -33,6 +33,7 @@ var SupportedOperatingSystems = OperatingSystemList{
 	RedhatEnterprise,
 	Centos,
 	Fedora,
+	Photon,
 }
 
 var OperatingSystems = map[string]OS{
@@ -42,6 +43,7 @@ var OperatingSystems = map[string]OS{
 	"amazonLinux": AmazonLinux,
 	"centos":      Centos,
 	"fedora":      Fedora,
+	"photon":      Photon,
 }
 
 //BaseOperatingSystems is the list of base distributions that are supported, which is currently only debian and redhat
@@ -49,6 +51,7 @@ var BaseOperatingSystems = OperatingSystemList{
 	Debian,
 	Redhat,
 	Fedora,
+	Photon,
 }
 
 func GetOSForTag(tags ...types.Flag) (OS, error) {

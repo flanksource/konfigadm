@@ -9,8 +9,10 @@ package_repos:
 packages:
   - device-mapper-persistent-data #+centos
   - lvm2  #+centos
+  - lvm2 #+photon
   - socat
   - tar
+  - netcat #+photon
   - nano #ubuntu
   - netcat-openbsd #+debian-like
   - nmap-ncat #+redhat-like

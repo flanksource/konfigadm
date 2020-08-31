@@ -24,8 +24,10 @@ package_repos:
 
 packages:
   - python3-pip #debian-like
+  - python3-pip #photon
   - python3-distutils #debian-like
   - python3-netifaces #debian-like
+  - python3-netifaces #photon
   - yum-utils #redhat-like
   - python2-pip  #redhat-like
   - cloud-init=18.3-52-gc5f78957-1~bddeb~18.04.1
