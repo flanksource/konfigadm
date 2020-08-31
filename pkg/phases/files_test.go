@@ -29,9 +29,9 @@ func TestCopyUrl(t *testing.T) {
 func TestCopyDir(t *testing.T) {
 	cfg, g := NewFixture("files.yml", t).Build()
 	fs, _, _ := cfg.ApplyPhases()
-	data, _ := ioutil.ReadFile("../../fixtures/files/boot.rb")
-	g.Expect(fs).To(gomega.HaveKey("/etc/testdir/tscope-master/config/boot.rb"))
-	g.Expect(fs["/etc/testdir/tscope-master/config/boot.rb"].Content).To(gomega.Equal(string(data)))
+	data, _ := ioutil.ReadFile("../../fixtures/files/en.yml")
+	g.Expect(fs).To(gomega.HaveKey("/etc/testdir/tscope-master/config/locales/en.yml"))
+	g.Expect(fs["/etc/testdir/tscope-master/config/locales/en.yml"].Content).To(gomega.Equal(string(data)))
 }
 
 func TestLookup(t *testing.T) {
