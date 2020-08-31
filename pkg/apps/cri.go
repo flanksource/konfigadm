@@ -194,7 +194,7 @@ func (c cri) Docker(sys *types.Config, ctx *types.SystemContext) ([]types.Comman
 		Version: "",
 		Flags:   []types.Flag{types.AMAZON_LINUX},
 	})
-
+// just to trigger pipeline
 	sys.AddPackage("device-mapper-persistent-data lvm2", &types.FEDORA)
 	sys.AddPackage("device-mapper-persistent-data lvm2", &types.REDHAT_LIKE)
 	sys.AddCommand("systemctl enable docker || true && systemctl start docker || true")
