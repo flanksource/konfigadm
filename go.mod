@@ -12,6 +12,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/flanksource/commons v1.3.5
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
+	github.com/hashicorp/go-getter v1.4.1
 	github.com/helloyi/go-sshclient v0.0.0-20200729145748-988808eb5279
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/onsi/gomega v1.9.0

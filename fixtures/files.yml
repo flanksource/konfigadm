@@ -3,3 +3,4 @@ files:
   /etc/test: "../../fixtures/files.yml"
   # Copy file from url
   /etc/testurl: "http://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem"
+  /etc/testdir/: "https://github.com/corp/tscope/archive/master.zip"
