@@ -186,7 +186,7 @@ func (c cri) Docker(sys *types.Config, ctx *types.SystemContext) ([]types.Comman
 			Flags:   []types.Flag{*types.GetTag(tag), types.NOT_AMAZON_LINUX},
 		})
 	}
-
+	fs := types.Filesystem{}
 	// Amazon Linux has a non-standard mechanism for installing with limited support
 	// for specific docker versions
 	sys.AppendPackages(nil, types.Package{
@@ -203,5 +203,5 @@ func (c cri) Docker(sys *types.Config, ctx *types.SystemContext) ([]types.Comman
 		sys.AddCommand(fmt.Sprintf("docker pull %s", image))
 	}
 
-	return []types.Command{}, types.Filesystem{}, nil
+	return []types.Command{}, fs, nil
 }
