@@ -29,7 +29,7 @@ func TestCopyUrl(t *testing.T) {
 func TestCopyDir(t *testing.T) {
 	cfg, g := NewFixture("files.yml", t).Build()
 	fs, _, _ := cfg.ApplyPhases()
-	data, _ := ioutil.ReadFile("../../fixtures/files/robots.txt")
+	//data, _ := ioutil.ReadFile("../../fixtures/files/robots.txt")
 	g.Expect(fs).To(gomega.HaveKey("/etc/testdir/tscope-master/public/robots.txt"))
 	//g.Expect(fs["/etc/testdir/tscope-master/public/robots.txt"].Content).To(gomega.Equal(string(data)))
 }
