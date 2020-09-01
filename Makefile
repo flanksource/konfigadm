@@ -114,3 +114,8 @@ pack:
 .PHONY: test-env
 test-env:
 	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $(PWD):$(PWD) -w $(PWD)  --rm -it quay.io/footloose/debian10:0.6.3 /lib/systemd/systemd
+
+.PHONY: lint
+lint:
+	command -v golangci-lint  2>&1 > /dev/null || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+	golangci-lint run --verbose --print-resources-usage
