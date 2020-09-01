@@ -30,7 +30,11 @@ func (k kubernetes) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 			Name:   "kubernetes",
 			URL:    "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64",
 			GPGKey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg",
-		}, types.FEDORA)
+		}, types.FEDORA).
+		AppendPackageRepo(types.PackageRepo{
+			Name: "kubernetes",
+			URL:  "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64",
+		}, types.PHOTON)
 
 	sys.AppendPackages(&types.REDHAT_LIKE,
 		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
@@ -42,6 +46,11 @@ func (k kubernetes) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
 		types.Package{Name: "kubectl", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
 
+	sys.AppendPackages(&types.PHOTON,
+		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
+		types.Package{Name: "kubectl", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
+
 	sys.AppendPackages(&types.DEBIAN_LIKE,
 		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
 		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
@@ -49,6 +58,7 @@ func (k kubernetes) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 
 	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils", &types.REDHAT_LIKE)
 	sys.AddPackage("socat ebtables ntp libseccomp2 nfs-common", &types.DEBIAN_LIKE)
+	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils", &types.PHOTON)
 
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
 	sys.Sysctls["vm.swappiness"] = "0"

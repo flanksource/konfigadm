@@ -40,7 +40,7 @@ func main() {
 
 	root.PersistentFlags().StringSliceP("config", "c", []string{}, "Config file path in YAML or JSON format, Use - to read YAML from stdin")
 	root.PersistentFlags().StringSliceP("var", "e", []string{}, "Extra Variables to in key=value format ")
-	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to use, valid tags:  debian,ubuntu,redhat,rhel,centos,aws,vmware")
+	root.PersistentFlags().StringSliceP("tag", "t", []string{}, "Runtime tags to use, valid tags:  debian,ubuntu,redhat,rhel,centos,aws,vmware,photon")
 	root.PersistentFlags().BoolP("detect-tags", "d", true, "Detect tags to use")
 
 	root.AddCommand(&cmd.CloudInit, &cmd.Minify, &cmd.Apply, &cmd.Verify, &cmd.Images)

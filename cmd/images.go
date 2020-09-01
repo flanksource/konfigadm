@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/flanksource/konfigadm/pkg/build/ova"
@@ -80,6 +81,44 @@ func downloadImage(image string) string {
 	}
 	return cachedImage
 }
+func convertOvaToQcow2Image(image string) string {
+	if strings.HasPrefix(image, "http") {
+		image = downloadImage(image)
+	}
+	if strings.HasSuffix(image, "ova") {
+		imageDir := filepath.Dir(image)
+		if err := os.Chdir(imageDir); err != nil {
+			log.Fatalf("Error in changing directory: %s", err)
+		}
+		utils.SafeExec("tar -xf %s", image)
+		vmdkImage, _ := walkMatch(imageDir, "*.vmdk")
+		imageName := strings.TrimSuffix(vmdkImage, path.Ext(vmdkImage))
+		utils.SafeExec("qemu-img convert %s.vmdk %s.qcow2 -0 qcow2", imageName, imageName)
+		return imageName + ".qcow2"
+	}
+	return image
+}
+func walkMatch(root, pattern string) (string, error) {
+	var match string
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if matched, err := filepath.Match(pattern, filepath.Base(path)); err != nil {
+			return err
+		} else if matched {
+			match = path
+		}
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	return match, nil
+}
 
 func cloneImage(image string) string {
 	if image == "" {
@@ -88,6 +127,9 @@ func cloneImage(image string) string {
 
 	if strings.HasPrefix(image, "http") {
 		image = downloadImage(image)
+	}
+	if strings.HasSuffix(image, "ova") {
+		image = convertOvaToQcow2Image(image)
 	}
 	if !inline {
 		image = copyImage(image)

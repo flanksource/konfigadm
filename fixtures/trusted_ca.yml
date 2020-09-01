@@ -1,6 +1,7 @@
 packages:
   - openssl
   - python3
+  - coreutils #photon
   - ca-certificates #ubuntu
   - which #+centos
 ca:

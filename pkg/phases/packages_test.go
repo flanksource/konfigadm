@@ -41,6 +41,13 @@ func TestPackageDebian(t *testing.T) {
 
 }
 
+func TestPackagePhoton(t *testing.T) {
+	cfg, g := NewFixture("packages.yml", t).WithFlags(PHOTON).Build()
+	g.Expect(cfg).To(ContainPackage("lvm2"))
+	g.Expect(cfg).To(ContainPackage("netcat"))
+	g.Expect(cfg).NotTo(ContainPackage("nano"))
+}
+
 func TestPackageUbuntu(t *testing.T) {
 	cfg, g := NewFixture("packages.yml", t).WithFlags(UBUNTU, DEBIAN_LIKE).Build()
 	g.Expect(cfg).To(ContainPackage("netcat-openbsd"))

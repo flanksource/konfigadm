@@ -79,6 +79,16 @@ func (c Container) Name() string {
 	return name
 }
 
+//File is a primitive representing a single file
+type File struct {
+	Content        string `yaml:"content,omitempty"`
+	ContentFromURL string `yaml:"content_from_url,omitempty"`
+	Unarchive      bool   `yaml:"unarchive,omitempty"`
+	Permissions    string `yaml:"permissions,omitempty"`
+	Owner          string `yaml:"owner,omitempty"`
+	Flags          []Flag `yaml:"tags,omitempty"`
+}
+
 //User mirrors the CloudInit User struct.
 type User struct {
 	// The user's login name
@@ -165,16 +175,6 @@ type User struct {
 	SSHRedirectUser bool   `yaml:"ssh_redirect_user,omitempty"`
 	Shell           string `yaml:"shell,omitempty"`
 	UID             string `yaml:"uid,omitempty"`
-}
-
-//File is a primitive representing a single file
-type File struct {
-	Content        string `yaml:"content,omitempty"`
-	ContentFromURL string `yaml:"content_from_url,omitempty"`
-	Unarchive      bool   `yaml:"unarchive,omitempty"`
-	Permissions    string `yaml:"permissions,omitempty"`
-	Owner          string `yaml:"owner,omitempty"`
-	Flags          []Flag `yaml:"tags,omitempty"`
 }
 
 //Filesystem is a primitive for referencing all files

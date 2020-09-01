@@ -2,6 +2,7 @@ packages:
   - netcat-openbsd #+debian-like
   - nmap-ncat #+redhat-like
   - nmap-ncat #fedora
+  - netcat #+photon
 services:
   service1:
       name: service2

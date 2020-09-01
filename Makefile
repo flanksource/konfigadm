@@ -85,6 +85,10 @@ ubuntu20: deps
 fedora29: deps
 	IMAGE=quay.io/footloose/fedora29:0.6.3 ./scripts/e2e.sh $(test)
 
+.PHONY: photon3
+photon3: deps
+	IMAGE=docker.io/tarun18/photon:3.0 ./scripts/e2e.sh $(test)
+
 .PHONY: centos7
 centos7: deps
 	IMAGE=quay.io/footloose/centos7:0.6.3 ./scripts/e2e.sh $(test)
