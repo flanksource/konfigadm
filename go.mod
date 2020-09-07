@@ -14,7 +14,7 @@ require (
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/helloyi/go-sshclient v0.0.0-20200729145748-988808eb5279
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
-	github.com/onsi/gomega v1.9.0
+	github.com/onsi/gomega v1.10.2
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
