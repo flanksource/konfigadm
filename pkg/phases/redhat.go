@@ -1,6 +1,8 @@
 package phases
 
 import (
+	"gopkg.in/ini.v1"
+	"strconv"
 	"strings"
 
 	"github.com/flanksource/konfigadm/pkg/types"
@@ -43,6 +45,15 @@ func (r fedora) GetPackageManager() types.PackageManager {
 }
 
 func (r fedora) GetTags() []types.Flag {
+	osrelease, _ := ini.Load("/etc/os-release")
+	majorVersionID, _ := strconv.Atoi(strings.Split(osrelease.Section("").Key("VERSION_ID").String(), ".")[0])
+	if majorVersionID == 30 {
+		return []types.Flag{types.FEDORA, types.FEDORA30}
+	} else if majorVersionID == 31 {
+		return []types.Flag{types.FEDORA, types.FEDORA31}
+	} else if majorVersionID == 32 {
+		return []types.Flag{types.FEDORA, types.FEDORA32}
+	}
 	return []types.Flag{types.FEDORA}
 }
 
@@ -62,6 +73,13 @@ func (c centos) GetPackageManager() types.PackageManager {
 }
 
 func (c centos) GetTags() []types.Flag {
+	osrelease, _ := ini.Load("/etc/os-release")
+	majorVersionID, _ := strconv.Atoi(strings.Split(osrelease.Section("").Key("VERSION_ID").String(), ".")[0])
+	if majorVersionID == 7 {
+		return []types.Flag{types.CENTOS, types.CENTOS7, types.REDHAT_LIKE}
+	} else if majorVersionID == 8 {
+		return []types.Flag{types.CENTOS, types.CENTOS8, types.REDHAT_LIKE}
+	}
 	return []types.Flag{types.CENTOS, types.REDHAT_LIKE}
 }
 
@@ -81,6 +99,13 @@ func (r rhel) GetPackageManager() types.PackageManager {
 }
 
 func (r rhel) GetTags() []types.Flag {
+	osrelease, _ := ini.Load("/etc/os-release")
+	majorVersionID, _ := strconv.Atoi(strings.Split(osrelease.Section("").Key("VERSION_ID").String(), ".")[0])
+	if majorVersionID == 7 {
+		return []types.Flag{types.RHEL, types.RHEL7, types.REDHAT_LIKE}
+	} else if majorVersionID == 8 {
+		return []types.Flag{types.RHEL, types.RHEL8, types.REDHAT_LIKE}
+	}
 	return []types.Flag{types.RHEL, types.REDHAT_LIKE}
 }
 

@@ -1,6 +1,8 @@
 package phases
 
 import (
+	"gopkg.in/ini.v1"
+	"strconv"
 	"strings"
 
 	"github.com/flanksource/konfigadm/pkg/types"
@@ -24,6 +26,15 @@ func (u ubuntu) GetPackageManager() types.PackageManager {
 }
 
 func (u ubuntu) GetTags() []types.Flag {
+	osrelease, _ := ini.Load("/etc/os-release")
+	majorVersionID, _ := strconv.Atoi(strings.Split(osrelease.Section("").Key("VERSION_ID").String(), ".")[0])
+	if majorVersionID == 20 {
+		return []types.Flag{types.UBUNTU, types.UBUNTU20, types.DEBIAN_LIKE}
+	} else if majorVersionID == 18 {
+		return []types.Flag{types.UBUNTU, types.UBUNTU18, types.DEBIAN_LIKE}
+	} else if majorVersionID == 16 {
+		return []types.Flag{types.UBUNTU, types.UBUNTU16, types.DEBIAN_LIKE}
+	}
 	return []types.Flag{types.UBUNTU, types.DEBIAN_LIKE}
 }
 
@@ -47,6 +58,13 @@ func (d debian) GetPackageManager() types.PackageManager {
 }
 
 func (d debian) GetTags() []types.Flag {
+	osrelease, _ := ini.Load("/etc/os-release")
+	majorVersionID, _ := strconv.Atoi(strings.Split(osrelease.Section("").Key("VERSION_ID").String(), ".")[0])
+	if majorVersionID == 9 {
+		return []types.Flag{types.DEBIAN, types.DEBIAN9, types.DEBIAN_LIKE}
+	} else if majorVersionID == 10 {
+		return []types.Flag{types.DEBIAN, types.DEBIAN10, types.DEBIAN_LIKE}
+	}
 	return []types.Flag{types.DEBIAN, types.DEBIAN_LIKE}
 }
 
