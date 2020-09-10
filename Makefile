@@ -13,8 +13,8 @@ clean:
 
 .PHONY: deps
 deps:
-	which go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
-	which esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
+	command -v go2xunit 2>&1 > /dev/null || go get github.com/tebeka/go2xunit
+	command -v esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
 
 .PHONY: linux
 linux: pack
@@ -31,7 +31,7 @@ windows: pack
 .PHONY: compress
 compress:
 	# upx 3.95 has issues compressing darwin binaries - https://github.com/upx/upx/issues/301
-	which upx 2>&1 >  /dev/null  || (sudo apt-get update && sudo apt-get install -y xz-utils && wget -nv -O upx.tar.xz https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz; tar xf upx.tar.xz; mv upx-3.96-amd64_linux/upx /usr/bin )
+	command -v upx 2>&1 >  /dev/null  || (sudo apt-get update && sudo apt-get install -y xz-utils && wget -nv -O upx.tar.xz https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz; tar xf upx.tar.xz; mv upx-3.96-amd64_linux/upx /usr/bin )
 	upx ./.bin/$(NAME) ./.bin/$(NAME)_osx ./.bin/$(NAME).exe
 
 .PHONY: install
@@ -99,12 +99,12 @@ centos8: deps
 
 .PHONY: docs
 docs:
-	which mkdocs 2>&1 > /dev/null || pip install mkdocs mkdocs-material
+	command -v mkdocs 2>&1 > /dev/null || pip install mkdocs mkdocs-material
 	mkdocs build -d build/docs
 
 .PHONY: deploy-docs
 deploy-docs: docs
-	which netlify 2>&1 > /dev/null || sudo npm install -g netlify-cli
+	command -v netlify 2>&1 > /dev/null || sudo npm install -g netlify-cli
 	netlify deploy --site $(NETLIFY_ID) --prod --dir build/docs
 
 .PHONY: pack
@@ -114,3 +114,8 @@ pack:
 .PHONY: test-env
 test-env:
 	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $(PWD):$(PWD) -w $(PWD)  --rm -it quay.io/footloose/debian10:0.6.3 /lib/systemd/systemd
+
+.PHONY: lint
+lint:
+	command -v golangci-lint  2>&1 > /dev/null || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+	golangci-lint run --verbose --print-resources-usage
