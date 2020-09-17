@@ -22,6 +22,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
+	github.com/tebeka/go2xunit v1.4.10 // indirect
 	go.uber.org/dig v1.7.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	gopkg.in/flanksource/yaml.v3 v3.1.0

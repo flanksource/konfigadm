@@ -212,12 +212,12 @@ var _escData = map[string]*_escFile{
 	"/const.go": {
 		name:    "const.go",
 		local:   "resources/const.go",
-		size:    144,
-		modtime: 1598078892,
+		size:    203,
+		modtime: 1599227974,
 		compressed: `
-H4sIAAAAAAAC/ypITM5OTE9VKEotzi8tSk4t5uIqSyxScM7PK0nMzEstSglOLSrLTE5VsFVwC/YtLS4J
-LinKzEvXSEvMKU7VUVDST4ar1CuGKFXSBBvhXZqUmpNa4pyfl4ZTc3ZpUmpiSi6STkAAAAD//31F8UGQ
-AAAA
+H4sIAAAAAAAC/3TMsQrCMBCH8b1PETpZkPoEThUXcQq4X9N/Q2x7J3dJnl9QcBC6f7/vRWGhCKcwKRpg
+TVNJ3SCcKTF08tCaAtzZXf29WPZZE8fDTKvh6NpT+JW9fdO2+yxuZcSKPAjPu3gpI2ja/uRjNp9FKeKi
+qUJ3+UTYhPunCbdd8w4AAP//P7XeAcsAAAA=
 `,
 	},
 
@@ -225,7 +225,7 @@ AAAA
 		name:    "containerd.service",
 		local:   "resources/containerd.service",
 		size:    1421,
-		modtime: 1598078892,
+		modtime: 1598199216,
 		compressed: `
 H4sIAAAAAAAC/7xUwW7cNhC98ysG0aFA0ZVaoGnrADoksYsGjbuGnSIHwweKHK2mpjgCZ2h7+/UFufau
 UPhY9CSJmnnz5r0Hmts/I+mdaeBGbVJwHNVSxOTBCgSrWJ4Li9AQEB5JJ0goCzoFZXCBs99QJP1GTAMD
@@ -242,11 +242,21 @@ Zx+31xenoy9W7uXSPp1O/gkAAP//LPoJ6o0FAAA=
 `,
 	},
 
+	"/daemon.json": {
+		name:    "daemon.json",
+		local:   "resources/daemon.json",
+		size:    29,
+		modtime: 1599227974,
+		compressed: `
+H4sIAAAAAAAC/6rmUlBQKi7JL0pMT9VNKcosSy1SslJQKksrVuKqBQQAAP//uMYVpR0AAAA=
+`,
+	},
+
 	"/kubeadm.service": {
 		name:    "kubeadm.service",
 		local:   "resources/kubeadm.service",
 		size:    900,
-		modtime: 1598078892,
+		modtime: 1598199216,
 		compressed: `
 H4sIAAAAAAAC/3xSUW+bQAx+51dYtG8roLxOykO20Wrqlk1JJk2apsqAIW6Pu8hnaPn300FpEzXdE8b3
 +fPnz76AtVP6CLs9e6jEHdiCs2aARycPHh5Z9/DQFYRVC2irMTak0C/SxeJD9GdL0nNJf6Pc9izOtmR1
@@ -271,6 +281,7 @@ var _escDirs = map[string][]os.FileInfo{
 	"resources": {
 		_escData["/const.go"],
 		_escData["/containerd.service"],
+		_escData["/daemon.json"],
 		_escData["/kubeadm.service"],
 	},
 }

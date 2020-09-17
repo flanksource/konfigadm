@@ -52,6 +52,12 @@ func (p AptPackageManager) GetInstalledVersion(pkg string) string {
 	return version
 }
 
+func (p AptPackageManager) GetKernelPackageNames(version string) (string, string) {
+	kernelname := fmt.Sprintf("linux-image-%s", version)
+	headername := fmt.Sprintf("linux-headers-%s", version)
+	return kernelname, headername
+}
+
 func (p AptPackageManager) AddRepo(uri string, channel string, versionCodeName string, name string, gpgKey string, extraArgs map[string]string) types.Commands {
 	cmds := &types.Commands{}
 	if channel == "" {

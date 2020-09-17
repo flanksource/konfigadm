@@ -36,3 +36,16 @@ func (p photon) DetectAtRuntime() bool {
 func (p photon) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
 }
+
+func (p photon) GetKernelPackageNames(version string) (string, string) {
+	return TdnfPackageManager{}.GetKernelPackageNames(version)
+}
+
+func (p photon) UpdateDefaultKernel(version string) types.Commands {
+	return GrubbyManager{}.UpdateDefaultKernel(version)
+}
+
+func (p photon) ReadDefaultKernel() string {
+	readkernel, _ := GrubbyManager{}.ReadDefaultKernel()
+	return readkernel
+}

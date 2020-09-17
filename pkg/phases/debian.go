@@ -1,7 +1,9 @@
 package phases
 
 import (
+	"fmt"
 	"gopkg.in/ini.v1"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -46,6 +48,27 @@ func (u ubuntu) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
 }
 
+func (u ubuntu) GetKernelPackageNames(version string) (string, string) {
+	return AptPackageManager{}.GetKernelPackageNames(fmt.Sprintf("%s-generic", version))
+}
+
+func (u ubuntu) UpdateDefaultKernel(version string) types.Commands {
+	return GrubConfManager{}.UpdateDefaultKernel(fmt.Sprintf("Advanced options for Ubuntu>Ubuntu, with Linux %s-generic", version))
+}
+
+func (u ubuntu) ReadDefaultKernel() string {
+	readkernel, ok := GrubbyManager{}.ReadDefaultKernel()
+	if ok {
+		re := regexp.MustCompile("Advanced options for Ubuntu>Ubuntu, with Linux (.*?)-generic")
+		match := re.FindStringSubmatch(readkernel)
+		if len(match) > 1 {
+			return match[1]
+		}
+		return ""
+	}
+	return ""
+}
+
 type debian struct {
 }
 
@@ -74,6 +97,35 @@ func (d debian) DetectAtRuntime() bool {
 
 func (d debian) GetVersionCodeName() string {
 	return utils.IniToMap("/etc/os-release")["VERSION_CODENAME"]
+}
+
+func (d debian) GetKernelPackageNames(version string) (string, string) {
+	read, ok := utils.SafeExec("uname -p")
+	if !ok {
+		return AptPackageManager{}.GetKernelPackageNames(version)
+	}
+	arch := strings.TrimSuffix(read, "\n")
+	if arch == "unknown" {
+		arch = "amd64"
+	}
+	return AptPackageManager{}.GetKernelPackageNames(fmt.Sprintf("%s-%s", version, arch))
+}
+
+func (d debian) UpdateDefaultKernel(version string) types.Commands {
+	return GrubConfManager{}.UpdateDefaultKernel(fmt.Sprintf("Debian GNU/Linux, with Linux %s", version))
+}
+
+func (d debian) ReadDefaultKernel() string {
+	readkernel, ok := GrubbyManager{}.ReadDefaultKernel()
+	if ok {
+		re := regexp.MustCompile("Debian GNU/Linux, with Linux (.*?)")
+		match := re.FindStringSubmatch(readkernel)
+		if len(match) > 1 {
+			return match[1]
+		}
+		return ""
+	}
+	return ""
 }
 
 func (d debian) Cleanup() string {

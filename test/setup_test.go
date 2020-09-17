@@ -120,6 +120,7 @@ var fixtures = []struct {
 	{"containerd.yml"},
 	{"files.yml"},
 	{"kubernetes.yml"},
+	{"kernel.yml"},
 	{"packages.yml"},
 	{"trusted_ca.yml"},
 	// {"sysctl.yml"},
@@ -144,6 +145,9 @@ func TestYamlRoundTrip(t *testing.T) {
 
 func TestFull(t *testing.T) {
 	for _, f := range fixtures {
+		if strings.Contains(image, "fedora") && f.in == "kernel.yml" {
+			continue
+		}
 		t.Run(f.in, func(t *testing.T) {
 			g, container := setup(t)
 			defer container.Delete()

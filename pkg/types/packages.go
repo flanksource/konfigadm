@@ -48,6 +48,7 @@ type PackageManager interface {
 	GetInstalledVersion(pkg string) string
 	CleanupCaches() Commands
 	Update() Commands
+	GetKernelPackageNames(version string) (string, string)
 }
 
 func (p Package) String() string {
