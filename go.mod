@@ -10,7 +10,7 @@ require (
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/flanksource/commons v1.3.5
+	github.com/flanksource/commons v1.4.3
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/helloyi/go-sshclient v0.0.0-20200729145748-988808eb5279
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
