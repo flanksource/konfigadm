@@ -142,6 +142,13 @@ func Import(name, ova, network string) error {
 	return utils.Exec("govc import.ova --name %s --options %s %s", name, tmp.Name(), ova)
 }
 
+func ImportContentLibrary(library, name, ova string) error {
+	if name != "" {
+		return utils.Exec("govc library.import -n %s %s %s", name, library, ova)
+	}
+	return utils.Exec("govc library.import %s %s", library, ova)
+}
+
 func getVmx(name, image string, properties map[string]string) string {
 	vmx := fmt.Sprintf(base, name, image)
 

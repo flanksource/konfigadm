@@ -333,6 +333,7 @@ var (
 func init() {
 	cwd, _ := os.Getwd()
 	upload.AddCommand(&ova.Ova)
+	upload.AddCommand(&ova.Template)
 
 	convert.Flags().String("name", "", "Name of the template")
 	convert.Flags().String("format", "ova", "Target format for conversion")
