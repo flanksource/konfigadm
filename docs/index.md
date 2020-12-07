@@ -13,7 +13,7 @@ Usage:
   konfigadm [command]
 
 Available Commands:
-  apply       Apply the configuration to the local machine
+  apply       Apply the configuration to the local machine or to remove machines over SSH
   cloud-init  Exports the configuration in cloud-init format
   help        Help about any command
   minify      Resolve all lookups and dependencies and export a single config file
