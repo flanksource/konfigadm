@@ -8,5 +8,5 @@ Pre-commands are used to prepare the environment for execution, OS detection and
 #### commands
 Phases can only append to this Commands list.
 
-#### pre_commands
+#### post_commands
 Post commands run after all the phases have completed and can be used for cleanup functions are for handing off to other systems.
