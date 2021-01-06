@@ -59,7 +59,7 @@ e2e-all: deps linux debian ubuntu20 ubuntu18 ubuntu16 fedora centos
 
 .PHONY: amazonlinux2
 amazonlinux2: deps
-	IMAGE=quay.io/footloose/amazonlinux2:0.6.3 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/amazonlinux2:0.6.4 ./scripts/e2e.sh $(test)
 
 .PHONY: debian9
 debian9: deps
@@ -67,15 +67,15 @@ debian9: deps
 
 .PHONY: debian10
 debian10: deps
-	IMAGE=quay.io/footloose/debian10:0.6.3 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/debian10:0.6.4 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu16
 ubuntu16: deps
-	IMAGE=quay.io/footloose/ubuntu16.04:0.6.3 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/ubuntu16.04:0.6.4 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu18
 ubuntu18: deps
-	IMAGE=quay.io/footloose/ubuntu18.04:0.6.3 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/ubuntu18.04:0.6.4 ./scripts/e2e.sh $(test)
 
 .PHONY: ubuntu20
 ubuntu20: deps
@@ -83,7 +83,7 @@ ubuntu20: deps
 
 .PHONY: fedora29
 fedora29: deps
-	IMAGE=quay.io/footloose/fedora29:0.6.3 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/fedora29:0.6.4 ./scripts/e2e.sh $(test)
 
 .PHONY: photon3
 photon3: deps
@@ -91,7 +91,7 @@ photon3: deps
 
 .PHONY: centos7
 centos7: deps
-	IMAGE=quay.io/footloose/centos7:0.6.3 ./scripts/e2e.sh $(test)
+	IMAGE=quay.io/footloose/centos7:0.6.4 ./scripts/e2e.sh $(test)
 
 .PHONY: centos8
 centos8: deps
@@ -113,7 +113,7 @@ pack:
 
 .PHONY: test-env
 test-env:
-	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $(PWD):$(PWD) -w $(PWD)  --rm -it quay.io/footloose/debian10:0.6.3 /lib/systemd/systemd
+	docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup -v $(PWD):$(PWD) -w $(PWD)  --rm -it quay.io/footloose/debian10:0.6.4 /lib/systemd/systemd
 
 .PHONY: lint
 lint:
