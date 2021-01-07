@@ -2,15 +2,17 @@ package ansible
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/flanksource/konfigadm/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/knownhosts"
-	"net"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 func CheckKnownHosts() ssh.HostKeyCallback {
@@ -56,7 +58,8 @@ func VerifyHostKey(host string, remote net.Addr, pubKey ssh.PublicKey) error {
 		return hostErr
 	} else if hostErr != nil && len(hostErr.Want) == 0 { // New host
 		log.Warnf("%s is not trusted, adding key to known_hosts file", host)
-		return AddHostKey(host, remote, pubKey)
+		result := AddHostKey(host, remote, pubKey)
+		return result
 	}
 	log.Debugf("Public key exists for %s", host)
 	return nil
@@ -66,7 +69,16 @@ func SSHAgent() ssh.AuthMethod {
 	if sshAgent, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK")); err == nil {
 		return ssh.PublicKeysCallback(agent.NewClient(sshAgent).Signers)
 	}
-	return nil
+	key, err := ioutil.ReadFile(filepath.Join(os.Getenv("HOME"), ".ssh", "id_rsa"))
+	if err != nil {
+		log.Fatalf("unable to read private key: %v", err)
+	}
+
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		log.Fatalf("unable to parse private key: %v", err)
+	}
+	return ssh.PublicKeys(signer)
 }
 
 func ExecuteRemoteCommand(cmd string, host string) {

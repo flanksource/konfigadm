@@ -62,7 +62,8 @@ ignored. Further, hostname ranges, such as `ww[0-5].example.com` are not
 supported. `konfigadm` assumes several things:
 
 1. The SSH user is root
-1. SSH key authentication uses an SSH agent
+1. SSH key authentication uses an SSH agent or `~/.ssh/id_rsa` does not require
+   a password
 1. The SSH port is 22
 
 The inventory can be used by invoking:
