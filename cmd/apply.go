@@ -25,12 +25,13 @@ var (
 			var remoteHosts []string
 			if inventory, _ := cmd.Flags().GetString("inventory"); inventory != "" {
 				remoteHosts = ansible.ParseInventory(inventory)
+				port, _ := cmd.Flags().GetInt("port")
 				cmd, err := cfg.ToBash()
 				if err != nil {
 					panic(err)
 				}
 				for _, host := range remoteHosts {
-					ansible.ExecuteRemoteCommand(cmd, host)
+					ansible.ExecuteRemoteCommand(cmd, host, port)
 				}
 			} else {
 				runLocal(cfg)
@@ -93,4 +94,5 @@ func runLocal(cfg *types.Config) {
 
 func init() {
 	Apply.Flags().String("inventory", "", "An ansible inventory to apply the configuration to")
+	Apply.Flags().Int("port", 22, "The SSH port to use for applying the configuration remotely. Defaults to port 22")
 }

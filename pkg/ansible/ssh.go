@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/flanksource/konfigadm/pkg/utils"
@@ -81,11 +82,10 @@ func SSHAgent() ssh.AuthMethod {
 	return ssh.PublicKeys(signer)
 }
 
-func ExecuteRemoteCommand(cmd string, host string) {
+func ExecuteRemoteCommand(cmd string, host string, port int) {
 	log.Infof("Executing %s on %s\n", utils.LightGreenf(cmd), host)
-	port := "22"
 	user := "root"
-
+	strPort := strconv.Itoa(port)
 	config := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
@@ -95,7 +95,7 @@ func ExecuteRemoteCommand(cmd string, host string) {
 		Timeout:         5 * time.Second,
 	}
 
-	client, err := ssh.Dial("tcp", host+":"+port, config)
+	client, err := ssh.Dial("tcp", host+":"+strPort, config)
 	if err != nil {
 		log.Fatalf("Failed to run on %s: %s", host, err)
 	}

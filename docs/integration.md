@@ -64,7 +64,8 @@ supported. `konfigadm` assumes several things:
 1. The SSH user is root
 1. SSH key authentication uses an SSH agent or `~/.ssh/id_rsa` does not require
    a password
-1. The SSH port is 22
+1. The SSH port is the same for all hosts. The port defaults to 22, but can be
+   changed using the `--port` command-line flag
 
 The inventory can be used by invoking:
 
