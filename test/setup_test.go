@@ -174,3 +174,91 @@ func TestFull(t *testing.T) {
 		})
 	}
 }
+
+func TestSSH(t *testing.T) {
+	f := fixtures[0]
+	g, targetContainer := setup(t)
+	defer targetContainer.Delete()
+
+	sshContainer, err := newContainer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sshContainer.Delete()
+
+	stdout, err := targetContainer.Exec(binary, "verify", "-c", cwd+"/fixtures/"+f.in)
+	if err == nil {
+		t.Errorf("Verify should have failed %s:\n %s\n", f.in, stdout)
+	}
+	os.Stderr.WriteString(stdout)
+	stdout, err = targetContainer.Exec("cat", "/etc/os-release")
+	os.Stderr.WriteString(stdout)
+
+	stdout, err = SetupSSHContainers(sshContainer, targetContainer)
+	if err != nil {
+		t.Errorf("Unable to setup SSH container: %s: %s\n", err, stdout)
+	}
+
+	stdout, err = sshContainer.Exec(binary, "apply", "-c", cwd+"/fixtures/"+f.in,
+		"--inventory", cwd+"/inventory")
+	if err != nil {
+		_, _ = sshContainer.Exec("rm", cwd+"/inventory")
+		t.Errorf("Apply should succeed %s: %s\n", err, stdout)
+	}
+
+	os.Stderr.WriteString(stdout)
+	_, _ = sshContainer.Exec("rm", cwd+"/inventory")
+
+	g.Eventually(func() string {
+		stdout, err = targetContainer.Exec(binary, "verify", "-c", cwd+"/fixtures/"+f.in)
+		os.Stderr.WriteString(stdout + "\n")
+		if err != nil {
+			t.Fatal(err)
+		}
+		return stdout
+	}, "30s", "3s").Should(ContainSubstring("0 failed"))
+}
+
+func SetupSSHContainers(sshContainer *Container, targetContainer *Container) (string, error) {
+	stdout, err := sshContainer.Exec("sh", "-c",
+		"echo "+targetContainer.container.Container.NetworkSettings.IPAddress+" > "+cwd+"/inventory")
+	if err != nil {
+		return stdout, err
+	}
+	stdout, err = sshContainer.Exec("mkdir", "-p", "/root/.ssh")
+	if err != nil {
+		return stdout, err
+	}
+	stdout, err = sshContainer.Exec("chmod", "700", "/root/.ssh")
+	if err != nil {
+		return stdout, err
+	}
+	stdout, err = targetContainer.Exec("mkdir", "-p", "/root/.ssh")
+	if err != nil {
+		return stdout, err
+	}
+	stdout, err = targetContainer.Exec("chmod", "700", "/root/.ssh")
+	if err != nil {
+		return stdout, err
+	}
+	// TODO: Need to set up SSH daemon on the target container with SSH keys available on the SSH container
+	// SSH keys need adding to SSH agent or ClientConfig needs to support ~/.ssh/id_* directly.
+	stdout, err = sshContainer.Exec("ssh-keygen", "-t", "rsa", "-b", "4096", "-N", "", "-f", "/root/.ssh/id_rsa")
+	if err != nil {
+		return stdout, err
+	}
+	sshKey, err := sshContainer.Exec("cat", "/root/.ssh/id_rsa.pub")
+	if err != nil {
+		return sshKey, err
+	}
+	stdout, err = targetContainer.Exec("sh", "-c",
+		"echo \""+sshKey+"\" > /root/.ssh/authorized_keys")
+	if err != nil {
+		return stdout, err
+	}
+	stdout, err = targetContainer.Exec("chmod", "600", "/root/.ssh/authorized_keys")
+	if err != nil {
+		return stdout, err
+	}
+	return "", nil
+}
