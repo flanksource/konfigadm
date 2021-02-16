@@ -33,6 +33,7 @@ jobs:
   "debian10":
     <<: *test
   "centos7":
+
     <<: *test
   "fedora29":
     <<: *test
