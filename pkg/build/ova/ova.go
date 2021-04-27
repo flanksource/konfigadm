@@ -98,7 +98,7 @@ toolScripts.afterResume = "TRUE"
 toolScripts.beforePowerOff = "TRUE"
 toolScripts.beforeSuspend = "TRUE"
 virtualHW.productCompatibility = "hosted"
-virtualhw.version = "11"
+virtualhw.version = "15"
 vmci0.present = "TRUE"
 vmci0.unrestricted = "false"
 `
