@@ -1,0 +1,19 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/sirupsen/logrus
+    versions:
+    - 1.7.0
+    - 1.8.0
+  - dependency-name: github.com/onsi/gomega
+    versions:
+    - 1.10.4
+    - 1.10.5
+  - dependency-name: gopkg.in/ini.v1
+    versions:
+    - 1.62.0
