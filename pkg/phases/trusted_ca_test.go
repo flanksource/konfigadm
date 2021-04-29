@@ -17,7 +17,7 @@ func TestTrustedCA(t *testing.T) {
 	defer os.Chdir(wd) // nolint: errcheck
 	files, commands, err := cfg.ApplyPhases()
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(files).To(gomega.HaveLen(4))
+	g.Expect(files).To(gomega.HaveLen(3))
 
 	g.Expect(files).To(gomega.HaveKey("/tmp/install_certs"))
 	data, _ := ioutil.ReadFile("fixtures/files/example-k8s-ca.pem")
@@ -25,15 +25,11 @@ func TestTrustedCA(t *testing.T) {
 	file0 := files["/tmp/konfigadm-trusted-0.pem"]
 	g.Expect(file0.Content).To(gomega.Equal(string(data)))
 	file1 := files["/tmp/konfigadm-trusted-1.pem"]
-	g.Expect(file1.Content).To(gomega.Equal(""))
-	g.Expect(file1.ContentFromURL).To(gomega.Equal("https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem"))
-	file2 := files["/tmp/konfigadm-trusted-2.pem"]
-	g.Expect(file2.Content).To(gomega.Equal(string(cfg.TrustedCA[2])))
+	g.Expect(file1.Content).To(gomega.Equal(string(cfg.TrustedCA[1])))
 
-	g.Expect(commands).To(gomega.HaveLen(5))
+	g.Expect(commands).To(gomega.HaveLen(4))
 	g.Expect(commands[0].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-0.pem"))
 	g.Expect(commands[1].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-1.pem"))
-	g.Expect(commands[2].Cmd).To(gomega.Equal("/tmp/install_certs /tmp/konfigadm-trusted-2.pem"))
-	g.Expect(commands[3].Cmd).To(gomega.Equal("rm -r /tmp/konfigadm-trusted-*.pem"))
-	g.Expect(commands[4].Cmd).To(gomega.Equal("rm -r /tmp/install_certs"))
+	g.Expect(commands[2].Cmd).To(gomega.Equal("rm -r /tmp/konfigadm-trusted-*.pem"))
+	g.Expect(commands[3].Cmd).To(gomega.Equal("rm -r /tmp/install_certs"))
 }
