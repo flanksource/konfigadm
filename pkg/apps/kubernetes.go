@@ -61,7 +61,6 @@ func (k kubernetes) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 		types.Package{Name: "kubectl", Version: withDefaultPatch(version, "00"), Mark: true})
 
 	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils tc", &types.REDHAT_LIKE)
-	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils tc", &types.AMAZON_LINUX)
 	sys.AddPackage("socat ebtables ntp libseccomp2 nfs-common", &types.DEBIAN_LIKE)
 	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils", &types.PHOTON)
 	sys.AddCommand("modprobe br_filter")
