@@ -43,23 +43,11 @@ Flags:
 
 ## Installation
 
-### Ubuntu / Debian
-
-```bash
-wget https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm.deb
-dpkg -i konfigadm.deb
-```
-
-### Centos / Fedora / Redhat
-
-```bash
-rpm -i https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm.rpm
-```
 
 ### Binary
 
 ```bash
-wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/download/v0.4.2/konfigadm && chmod +x /usr/bin/konfigadm
+wget -O /usr/bin/konfigadm https://github.com/flanksource/konfigadm/releases/latest/download/konfigadm && chmod +x /usr/bin/konfigadm
 ```
 
 ## Getting Started
@@ -69,7 +57,7 @@ wget -O /usr/bin/konfigadm https://github.com/moshloop/konfigadm/releases/downlo
 ```bash
 sudo konfigadm apply -c - <<-EOF
 kubernetes:
-  version: 1.14.2
+  version: 1.21.2
 container_runtime:
   type: docker
 commands:
@@ -84,7 +72,7 @@ EOF
 ```bash
 sudo konfigadm images build --image ubuntu1804 -c - <<-EOF
 kubernetes:
-  version: 1.14.2
+  version: 1.21.2
 container_runtime:
   type: docker
 cleanup: true
@@ -97,7 +85,6 @@ Cloud Images are downloaded and then configured with `--build-driver` 2 drivers 
 2. `libguestfs` - Uses virt-customize to launch an appliance and chroot into the disk, does not require cloud-init in the image, but also cannot test/verify systemd based services due to the chroot.
 
 [![asciicast](https://asciinema.org/a/252399.svg)](https://asciinema.org/a/252399)
-
 
 ## Features
 
@@ -119,18 +106,6 @@ To run integration tests:
 ```bash
 make ubuntu
 ```
-
-**Compatibility Matrix**
-
-| Target   | OS                      | Status                                                       | Tags                       |
-| -------- | ----------------------- | ------------------------------------------------------------ | -------------------------- |
-| ubuntu16 | Ubuntu 16.04            | ![](https://img.shields.io/badge/-PASSED-brightgreen.svg?logo=circleci) | `#ubuntu debian-like`      |
-| ubuntu   | Ubuntu 18.04            | ![](https://img.shields.io/badge/-PASSED-brightgreen.svg?logo=circleci) | `#ubuntu debian-like`      |
-| centos   | Centos 7                | ![](https://img.shields.io/badge/-PASSED-brightgreen.svg?logo=circleci) | `#centos redhat-like`      |
-| debian9  | Debian 9                | ![](https://img.shields.io/badge/-PASSED-brightgreen.svg?logo=circleci) | `#debian debian-like`      |
-| fedora   | Fedora Latest           | ![](https://img.shields.io/badge/-FAILED-red.svg?logo=circleci) | `#fedora `                 |
-|          | Amazon Linux            | ![](https://img.shields.io/badge/-UNTESTED-gray.svg) but should work | `#amazonLinux redhat-like` |
-|          | Redhat Enterprise Linux | ![](https://img.shields.io/badge/-UNTESTED-gray.svg) but should work | `#rhel redhat-like`        |
 
 ## TODO
 

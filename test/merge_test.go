@@ -65,7 +65,7 @@ func TestImportKubernetesWithCommand(t *testing.T) {
 		WithFlags(types.DEBIAN, types.DEBIAN_LIKE).
 		Build()
 	cfg.Extra.FileEncoding = ""
-	count := strings.Count(cfg.ToCloudInit().String(), "echo 1.18.0 > /etc/kubernetes_version")
+	count := strings.Count(cfg.ToCloudInit().String(), "echo 1.21.2 > /etc/kubernetes_version")
 	g.Expect(count).To(gomega.BeEquivalentTo(1))
 	g.Expect(*cfg.Packages).NotTo(gomega.BeEmpty())
 

@@ -2,10 +2,11 @@ package phases
 
 import (
 	"fmt"
-	"gopkg.in/ini.v1"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"gopkg.in/ini.v1"
 
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
@@ -19,7 +20,7 @@ var (
 type ubuntu struct {
 }
 
-func (u ubuntu) String() string {
+func (u ubuntu) GetName() string {
 	return "ubuntu"
 }
 
@@ -72,7 +73,7 @@ func (u ubuntu) ReadDefaultKernel() string {
 type debian struct {
 }
 
-func (d debian) String() string {
+func (d debian) GetName() string {
 	return "debian"
 }
 
@@ -81,7 +82,10 @@ func (d debian) GetPackageManager() types.PackageManager {
 }
 
 func (d debian) GetTags() []types.Flag {
-	osrelease, _ := ini.Load("/etc/os-release")
+	osrelease, err := ini.Load("/etc/os-release")
+	if err != nil {
+		return []types.Flag{}
+	}
 	majorVersionID, _ := strconv.Atoi(strings.Split(osrelease.Section("").Key("VERSION_ID").String(), ".")[0])
 	if majorVersionID == 9 {
 		return []types.Flag{types.DEBIAN, types.DEBIAN9, types.DEBIAN_LIKE}

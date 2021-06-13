@@ -2,6 +2,7 @@ package phases
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/flanksource/konfigadm/pkg/types"
 )
@@ -17,6 +18,8 @@ type OS interface {
 
 	//GetTags returns all the tags to which this OS applies
 	GetTags() []types.Flag
+
+	GetName() string
 
 	//DetectAtRuntime will detect if it is compatible with the current running OS
 	DetectAtRuntime() bool
@@ -66,10 +69,8 @@ var BaseOperatingSystems = OperatingSystemList{
 func GetOSForTag(tags ...types.Flag) (OS, error) {
 	for _, t := range tags {
 		for _, os := range SupportedOperatingSystems {
-			for _, tag := range os.GetTags() {
-				if tag.Name == t.Name {
-					return os, nil
-				}
+			if strings.HasPrefix(t.Name, os.GetName()) {
+				return os, nil
 			}
 		}
 	}

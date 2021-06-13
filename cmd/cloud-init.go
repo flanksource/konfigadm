@@ -29,10 +29,9 @@ var (
 				hostname, _ := cmd.Flags().GetString("hostname")
 				path, err := cloudinit.CreateISO(hostname, userdata)
 				if err != nil {
-					log.Fatal(err)
+					log.Fatalf("%+v", err)
 				}
 				fmt.Println(path)
-
 			} else {
 				fmt.Println(userdata)
 			}

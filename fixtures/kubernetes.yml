@@ -1,4 +1,6 @@
 kubernetes:
-  version: 1.18.0
+  version: 1.21.2
+container_runtime:
+  type: containerd
 commands:
-  - echo 1.18.0 > /etc/kubernetes_version
+  - echo 1.21.2 > /etc/kubernetes_version

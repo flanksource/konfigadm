@@ -121,8 +121,8 @@ func addPackageCommands(sys *types.Config, commands *types.Commands) {
 			}
 			var ops packageOperations
 			var ok bool
-			if ops, ok = managers[getKeyFromTags(os.GetTags()...)]; !ok {
-				ops = packageOperations{tags: os.GetTags()}
+			if ops, ok = managers[os.GetName()]; !ok {
+				ops = packageOperations{tags: []types.Flag{*types.GetTag(os.GetName())}}
 			}
 			if p.Uninstall {
 				ops.uninstall = appendStrings(ops.uninstall, p.Name)
@@ -132,7 +132,7 @@ func addPackageCommands(sys *types.Config, commands *types.Commands) {
 			if p.Mark {
 				ops.mark = appendStrings(ops.mark, p.Name)
 			}
-			managers[getKeyFromTags(os.GetTags()...)] = ops
+			managers[os.GetName()] = ops
 		}
 	}
 
