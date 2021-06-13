@@ -111,6 +111,7 @@ func (c cri) Containerd(sys *types.Config, ctx *types.SystemContext) ([]types.Co
 	sys.AddPackage("lvm2 libseccomp", &types.PHOTON)
 	sys.AddPackage("libseccomp2", &types.DEBIAN_LIKE)
 	sys.AddPackage("runc", &types.DEBIAN_LIKE)
+	sys.AddPackage("runc", &types.AMAZON_LINUX)
 	if sys.ContainerRuntime.Version == "" {
 		sys.ContainerRuntime.Version = "1.3.3"
 	}
@@ -131,7 +132,7 @@ func (c cri) Containerd(sys *types.Config, ctx *types.SystemContext) ([]types.Co
 		ChecksumType: "sha256",
 		Destination:  "/usr/local",
 	})
-	sys.AddCommand("mkdir -p /etc/containerd && containerd config default > /etc/containerd/config.toml")
+	sys.AddCommand("mkdir -p /etc/containerd && /usr/local/bin/containerd config default > /etc/containerd/config.toml")
 	sys.AddCommand("systemctl enable containerd || true && systemctl restart containerd ")
 	sys.Environment["CONTAINER_RUNTIME_ENDPOINT"] = "unix:///var/run/containerd/containerd.sock"
 	sys.AddCommand("export CONTAINER_RUNTIME_ENDPOINT=unix:///var/run/containerd/containerd.sock")

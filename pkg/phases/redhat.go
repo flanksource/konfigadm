@@ -1,9 +1,10 @@
 package phases
 
 import (
-	"gopkg.in/ini.v1"
 	"strconv"
 	"strings"
+
+	"gopkg.in/ini.v1"
 
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
@@ -18,6 +19,10 @@ var (
 )
 
 type redhat struct {
+}
+
+func (r redhat) GetName() string {
+	return "redhat"
 }
 
 func (r redhat) GetPackageManager() types.PackageManager {
@@ -51,6 +56,10 @@ func (r redhat) ReadDefaultKernel() string {
 }
 
 type fedora struct {
+}
+
+func (f fedora) GetName() string {
+	return "fedora"
 }
 
 func (r fedora) GetPackageManager() types.PackageManager {
@@ -94,6 +103,10 @@ func (r fedora) ReadDefaultKernel() string {
 type centos struct {
 }
 
+func (c centos) GetName() string {
+	return "centos"
+}
+
 func (c centos) GetPackageManager() types.PackageManager {
 	return YumPackageManager{}
 }
@@ -133,6 +146,10 @@ func (c centos) ReadDefaultKernel() string {
 type rhel struct {
 }
 
+func (r rhel) GetName() string {
+	return "rhel"
+}
+
 func (r rhel) GetPackageManager() types.PackageManager {
 	return YumPackageManager{}
 }
@@ -170,6 +187,10 @@ func (r rhel) ReadDefaultKernel() string {
 }
 
 type amazonLinux struct {
+}
+
+func (a amazonLinux) GetName() string {
+	return "amazonLinux"
 }
 
 func (a amazonLinux) GetPackageManager() types.PackageManager {

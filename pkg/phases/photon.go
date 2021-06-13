@@ -1,16 +1,21 @@
 package phases
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/flanksource/konfigadm/pkg/types"
 	"github.com/flanksource/konfigadm/pkg/utils"
 	"gopkg.in/ini.v1"
-	"strconv"
-	"strings"
 )
 
 var Photon = photon{}
 
 type photon struct {
+}
+
+func (p photon) GetName() string {
+	return "photon"
 }
 
 func (p photon) GetPackageManager() types.PackageManager {

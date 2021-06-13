@@ -14,6 +14,10 @@ func (k kubernetes) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 	if sys.Kubernetes == nil {
 		return []types.Command{}, types.Filesystem{}, nil
 	}
+	version := sys.Kubernetes.Version
+	if strings.HasPrefix(version, "v") {
+		version = version[1:]
+	}
 	sys.
 		AppendPackageRepo(types.PackageRepo{
 			Name:            "kubernetes",
@@ -37,29 +41,31 @@ func (k kubernetes) ApplyPhase(sys *types.Config, ctx *types.SystemContext) ([]t
 		}, types.PHOTON)
 
 	sys.AppendPackages(&types.REDHAT_LIKE,
-		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		types.Package{Name: "kubectl", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
+		types.Package{Name: "kubelet", Version: withDefaultPatch(version, "0"), Mark: true},
+		types.Package{Name: "kubeadm", Version: withDefaultPatch(version, "0"), Mark: true},
+		types.Package{Name: "kubectl", Version: withDefaultPatch(version, "0"), Mark: true})
 
 	sys.AppendPackages(&types.FEDORA,
-		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		types.Package{Name: "kubectl", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
+		types.Package{Name: "kubelet", Version: withDefaultPatch(version, "0"), Mark: true},
+		types.Package{Name: "kubeadm", Version: withDefaultPatch(version, "0"), Mark: true},
+		types.Package{Name: "kubectl", Version: withDefaultPatch(version, "0"), Mark: true})
 
 	sys.AppendPackages(&types.PHOTON,
-		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true},
-		types.Package{Name: "kubectl", Version: withDefaultPatch(sys.Kubernetes.Version, "0"), Mark: true})
+		types.Package{Name: "kubelet", Version: withDefaultPatch(version, "0"), Mark: true},
+		types.Package{Name: "kubeadm", Version: withDefaultPatch(version, "0"), Mark: true},
+		types.Package{Name: "kubectl", Version: withDefaultPatch(version, "0"), Mark: true})
 
 	sys.AppendPackages(&types.DEBIAN_LIKE,
-		types.Package{Name: "kubelet", Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
-		types.Package{Name: "kubeadm", Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true},
-		types.Package{Name: "kubectl", Version: withDefaultPatch(sys.Kubernetes.Version, "00"), Mark: true})
+		types.Package{Name: "kubelet", Version: withDefaultPatch(version, "00"), Mark: true},
+		types.Package{Name: "kubeadm", Version: withDefaultPatch(version, "00"), Mark: true},
+		types.Package{Name: "kubectl", Version: withDefaultPatch(version, "00"), Mark: true})
 
-	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils", &types.REDHAT_LIKE)
+	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils tc", &types.REDHAT_LIKE)
+	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils tc", &types.AMAZON_LINUX)
 	sys.AddPackage("socat ebtables ntp libseccomp2 nfs-common", &types.DEBIAN_LIKE)
 	sys.AddPackage("socat ebtables ntp libseccomp nfs-utils", &types.PHOTON)
-
+	sys.AddCommand("modprobe br_filter")
+	sys.AddCommand("systemctl enable kubelet && systemctl start kubelet", &types.AMAZON_LINUX)
 	sys.Environment["KUBECONFIG"] = "/etc/kubernetes/admin.conf"
 	sys.Sysctls["vm.swappiness"] = "0"
 	sys.Sysctls["net.bridge.bridge-nf-call-iptables"] = "1"
