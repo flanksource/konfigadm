@@ -20,4 +20,4 @@ jobs:
           - photon3
     steps:
       - uses: actions/checkout@main
-      - run: make test linux "$distro"
+      - run: make test linux ${{matrix.distro}}
