@@ -14,7 +14,6 @@ require (
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/helloyi/go-sshclient v0.0.0-20200729145748-988808eb5279
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
-	github.com/mjibson/esc v0.2.0 // indirect
 	github.com/onsi/gomega v1.9.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
@@ -23,12 +22,9 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
-	github.com/tebeka/go2xunit v1.4.10 // indirect
 	go.uber.org/dig v1.7.0
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
-	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
-	golang.org/x/sys v0.0.0-20210611083646-a4fc73990273 // indirect
-	golang.org/x/tools v0.1.3 // indirect
+	golang.org/x/crypto v0.1.0
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/flanksource/yaml.v3 v3.1.0
 	gopkg.in/ini.v1 v1.61.0
 	gotest.tools v2.2.0+incompatible // indirect
