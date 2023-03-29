@@ -12,7 +12,7 @@ jobs:
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         env:
           OVFTOOL_LOCATION: ${{secrets.OVFTOOL_LOCATION}}
           KONFIGADM_VERSION: ${{ steps.vars.outputs.tag }}
